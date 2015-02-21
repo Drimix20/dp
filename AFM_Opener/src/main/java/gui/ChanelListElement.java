@@ -1,11 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gui;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Map;
 import java.util.List;
@@ -17,25 +13,41 @@ import javax.swing.AbstractButton;
  */
 public class ChanelListElement extends javax.swing.JPanel {
     private String label;
-    private File file;
-    private int index;
-    Map<File, List<Integer>> map;
+    private File imageFile;
+    private int indexOfElement;
+    private Map<File, List<Integer>> selectedImages;
 
-    public ChanelListElement(String name, File file, int index, Map<File, List<Integer>> map) {
+    public ChanelListElement(String label, File file,int index, Map<File, List<Integer>> selectedImages, boolean setSelected) {
         initComponents();
-        label = name;
-        this.file = file;
+        this.label = label;
         NameLabel.setText(label);
-        this.index = index;
-        this.map = map;
+        this.imageFile = file;
+        this.indexOfElement = index;
+        this.selectedImages = selectedImages;
+
+        if(setSelected){
+            putImageIntoSelectedImages();
+        }
+    }
+
+    private void putImageIntoSelectedImages() {
+        openSpecificImage.setSelected(true);
+        Integer elem = new Integer(indexOfElement);
+        List<Integer> values = selectedImages.get(imageFile);
+        values.add(elem);
+        selectedImages.put(imageFile, values);
     }
 
     public String getLabel(){
         return label;
     }
-    
+
     public int getIndex(){
-        return index;
+        return indexOfElement;
+    }
+
+    public void selectOpenSpecificImage(boolean select){
+        openSpecificImage.setSelected(select);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -46,15 +58,15 @@ public class ChanelListElement extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        SelectCheckbox = new javax.swing.JCheckBox();
+        openSpecificImage = new javax.swing.JCheckBox();
         NameLabel = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(150, 30));
 
-        SelectCheckbox.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        SelectCheckbox.addActionListener(new java.awt.event.ActionListener() {
+        openSpecificImage.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        openSpecificImage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SelectCheckboxActionPerformed(evt);
+                openSpecificImagePerformed(evt);
             }
         });
 
@@ -66,7 +78,7 @@ public class ChanelListElement extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(NameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(SelectCheckbox)
+                .addComponent(openSpecificImage)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -74,30 +86,30 @@ public class ChanelListElement extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(SelectCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(openSpecificImage, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(NameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void SelectCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SelectCheckboxActionPerformed
+    private void openSpecificImagePerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openSpecificImagePerformed
         AbstractButton button = (AbstractButton) evt.getSource();
-        Integer elem = new Integer(index);
-        List<Integer> values = map.get(file);
+        Integer elem = new Integer(indexOfElement);
+        List<Integer> values = selectedImages.get(imageFile);
         if(button.getModel().isSelected()){
-            values.add(elem);      
+            values.add(elem);
         }else{
             values.remove(elem);
         }
-        map.put(file, values);
-    }//GEN-LAST:event_SelectCheckboxActionPerformed
-    
+        selectedImages.put(imageFile, values);
+    }//GEN-LAST:event_openSpecificImagePerformed
+
     public javax.swing.JCheckBox getCheckBox(){
-        return SelectCheckbox;
+        return openSpecificImage;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel NameLabel;
-    public javax.swing.JCheckBox SelectCheckbox;
+    public javax.swing.JCheckBox openSpecificImage;
     // End of variables declaration//GEN-END:variables
 }

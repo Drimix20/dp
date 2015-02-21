@@ -2,24 +2,12 @@ package gui;
 
 import common.FilePreprocessor;
 import common.FileOpener;
-import ij.ImagePlus;
+import common.ImageOptionManager;
 import ij.ImageStack;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.GridLayout;
-import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -28,13 +16,14 @@ import javax.swing.event.ChangeListener;
 public class OpenerFrame extends javax.swing.JFrame {
     private File currentDirectory;
     private Map<File, List<Integer>> selectedChannels;
+    private ImageOptionManager imageOptionManager;
 
     /**
      * Creates new form OpenerFrame
      */
     public OpenerFrame() {
         initComponents();
-        selectedChannels = new HashMap<File, List<Integer>>();
+        imageOptionManager = new ImageOptionManager(imageOptionPanel);
     }
 
     /**
@@ -50,12 +39,15 @@ public class OpenerFrame extends javax.swing.JFrame {
         nameField = new javax.swing.JTextField();
         SelectButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        imageOptionPanel = new javax.swing.JScrollPane();
         CancelButton = new javax.swing.JButton();
         OpenButton = new javax.swing.JButton();
+        selectAll = new javax.swing.JCheckBox();
+        showInStack = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setIconImages(null);
+        setResizable(false);
 
         jLabel1.setText("Select folder/ file");
 
@@ -85,6 +77,25 @@ public class OpenerFrame extends javax.swing.JFrame {
             }
         });
 
+        selectAll.setText("Select all:                                      ");
+        selectAll.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        selectAll.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        selectAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectAllPerformed(evt);
+            }
+        });
+
+        showInStack.setSelected(true);
+        showInStack.setText("Show in stack:                              ");
+        showInStack.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        showInStack.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        showInStack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showInStackPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -96,15 +107,18 @@ public class OpenerFrame extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(OpenButton)
-                                .addGap(18, 18, 18)
-                                .addComponent(CancelButton))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(SelectButton)
-                            .addComponent(nameField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))))
-                .addContainerGap(22, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(selectAll)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(OpenButton)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(CancelButton))
+                                .addComponent(imageOptionPanel, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(SelectButton)
+                                .addComponent(nameField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
+                            .addComponent(showInStack))))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -117,13 +131,17 @@ public class OpenerFrame extends javax.swing.JFrame {
                 .addComponent(SelectButton)
                 .addGap(1, 1, 1)
                 .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                .addComponent(selectAll)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(imageOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(11, 11, 11)
+                .addComponent(showInStack)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(CancelButton)
                     .addComponent(OpenButton))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -132,18 +150,20 @@ public class OpenerFrame extends javax.swing.JFrame {
     private void SelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SelectButtonActionPerformed
         JFileChooser fileChooser = new JFileChooser(currentDirectory);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        
+
         int returnVal = fileChooser.showOpenDialog(OpenerFrame.this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
-            
+
             currentDirectory = file.getParentFile();
             nameField.setText(file.getName());
             nameField.setToolTipText(file.getName());
-            
+
             FilePreprocessor processor = new FilePreprocessor(file);
             Map<File, List<Integer>> channels = processor.preprocess();
-            createElementForScrollPanel(channels);
+            imageOptionManager.setChannels(channels);
+            imageOptionManager.run();
+            selectedChannels = imageOptionManager.getSelectedChannels();
         }
     }//GEN-LAST:event_SelectButtonActionPerformed
 
@@ -155,7 +175,7 @@ public class OpenerFrame extends javax.swing.JFrame {
         System.out.println("Opening files:");
         for (Map.Entry<File, List<Integer>> entry : selectedChannels.entrySet()) {
             for (Integer integer : entry.getValue()) {
-                System.out.println("selected Channel: "+integer);            
+                System.out.println("selected Channel: "+integer);
             }
         }
         FileOpener opener = new FileOpener();
@@ -164,47 +184,20 @@ public class OpenerFrame extends javax.swing.JFrame {
         //imp.show();
     }//GEN-LAST:event_OpenButtonActionPerformed
 
-        private void createElementForScrollPanel(Map<File, List<Integer>> channels) {
-        
-        for (Map.Entry<File, List<Integer>> entry : channels.entrySet()) {
-                File key = entry.getKey();
-                selectedChannels.put(key, new ArrayList<Integer>());                
+    private void selectAllPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllPerformed
+        if(selectAll.isSelected()){
+            imageOptionManager.selectAllImages(true);
+        }else{
+            imageOptionManager.selectAllImages(false);
         }
+        imageOptionManager.run();
+        selectedChannels = imageOptionManager.getSelectedChannels();
+    }//GEN-LAST:event_selectAllPerformed
+
+    private void showInStackPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showInStackPerformed
         
-        JPanel backgroundPanel = new JPanel();
-        jScrollPane1.setViewportView(backgroundPanel);
-        backgroundPanel.setLayout(new BorderLayout(0, 0));
-        
-        jScrollPane1.getViewport().addChangeListener(new ChangeListener(){
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                repaint();
-            }
-        });
-        
-        JPanel columnpanel = new JPanel();
-        backgroundPanel.add(columnpanel, BorderLayout.NORTH);
-        columnpanel.setLayout(new GridLayout(0, 1, 0, 1));
-        columnpanel.setBackground(Color.ORANGE);
-        
-        int fileIndex=1;
-        
-        for (Map.Entry<File, List<Integer>> entry : channels.entrySet()) {
-            File file = entry.getKey();
-            int i=1;
-            for(Integer value : entry.getValue()){
-                final ChanelListElement rowPanel = new ChanelListElement("Image_"+fileIndex+"/"+i, file, value, selectedChannels);
-                
-                columnpanel.add(rowPanel);
-                if(i%2==0){
-                    rowPanel.setBackground(SystemColor.inactiveCaptionBorder);
-                }
-                i++;
-            }
-            fileIndex++;
-        }
-    }
-        
+    }//GEN-LAST:event_showInStackPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -244,9 +237,11 @@ public class OpenerFrame extends javax.swing.JFrame {
     private javax.swing.JButton CancelButton;
     private javax.swing.JButton OpenButton;
     private javax.swing.JButton SelectButton;
+    private javax.swing.JScrollPane imageOptionPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField nameField;
+    private javax.swing.JCheckBox selectAll;
+    private javax.swing.JCheckBox showInStack;
     // End of variables declaration//GEN-END:variables
 }

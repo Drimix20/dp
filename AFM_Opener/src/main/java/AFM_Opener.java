@@ -3,17 +3,25 @@ import gui.OpenerFrame;
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.PlugIn;
+import javax.swing.SwingUtilities;
 
 /**
+ * Main class serve to run plugin in Fiji menu
  *
  * @author Drimal
  */
 public class AFM_Opener implements PlugIn {
 
     public void run(String arg) {
-        OpenerFrame frame = new OpenerFrame();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                OpenerFrame frame = new OpenerFrame();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            }
+        });        
     }
 
     public static void main(String[] args) {

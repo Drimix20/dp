@@ -4,11 +4,10 @@
 .mtj.tmp/
 
 # Package Files #
+*/target
 *.jar
 *.war
 *.ear
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-/sc.fiji_AFM_Opener_jar_1.0.0/target/
-/AFM_Volume/target/

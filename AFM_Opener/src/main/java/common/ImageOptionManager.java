@@ -60,11 +60,7 @@ public class ImageOptionManager extends Thread{
     }
 
     public void createElementForScrollPanel() {
-        selectedChannels = new TreeMap<File, List<Integer>>();
-        for (Map.Entry<File, List<Integer>> entry : channels.entrySet()) {
-                File key = entry.getKey();
-                selectedChannels.put(key, new ArrayList<Integer>());
-        }
+        initializeSelectedChannelsMap();
 
         JPanel backgroundPanel = new JPanel();
         scrollPane.setViewportView(backgroundPanel);
@@ -77,26 +73,43 @@ public class ImageOptionManager extends Thread{
             }
         });
 
+        JPanel columnpanel = createColumnPanelForOptionElements(backgroundPanel);
+
+        int fileIndex=1;
+        for (Map.Entry<File, List<Integer>> entry : channels.entrySet()) {
+            File imageFile=  entry.getKey();
+            int rowIndex=1;
+            for(Integer channelIndex : entry.getValue()){
+                final ChanelListElement rowPanel = new ChanelListElement(imageFile, fileIndex, channelIndex, selectedChannels, selectAll);
+
+                columnpanel.add(rowPanel);
+                if(rowIndex%2==0){
+                    rowPanel.setBackground(SystemColor.inactiveCaptionBorder);
+                }
+                rowIndex++;
+            }
+            fileIndex++;
+        }
+    }
+
+    private void initializeSelectedChannelsMap() {
+        selectedChannels = new TreeMap<File, List<Integer>>();
+        for (Map.Entry<File, List<Integer>> entry : channels.entrySet()) {
+            File key = entry.getKey();
+            selectedChannels.put(key, new ArrayList<Integer>());
+        }
+    }
+
+    /**
+     * Create column panel which will contains horizontal option panels for each image
+     * @param backgroundPanel panel where column panel will be added
+     * @return created column panel
+     */
+    private JPanel createColumnPanelForOptionElements(JPanel backgroundPanel) {
         JPanel columnpanel = new JPanel();
         backgroundPanel.add(columnpanel, BorderLayout.NORTH);
         columnpanel.setLayout(new GridLayout(0, 1, 0, 1));
         columnpanel.setBackground(Color.ORANGE);
-
-        int fileIndex=1;
-
-        for (Map.Entry<File, List<Integer>> entry : channels.entrySet()) {
-            File file = entry.getKey();
-            int i=1;
-            for(Integer value : entry.getValue()){
-                final ChanelListElement rowPanel = new ChanelListElement("Image_"+fileIndex+"/"+i, file, value, selectedChannels, selectAll);
-
-                columnpanel.add(rowPanel);
-                if(i%2==0){
-                    rowPanel.setBackground(SystemColor.inactiveCaptionBorder);
-                }
-                i++;
-            }
-            fileIndex++;
-        }
+        return columnpanel;
     }
 }

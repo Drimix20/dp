@@ -1,10 +1,9 @@
 package gui;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Map;
 import java.util.List;
+import java.util.TreeMap;
 import javax.swing.AbstractButton;
 
 /**
@@ -12,23 +11,30 @@ import javax.swing.AbstractButton;
  * @author Drimal
  */
 public class ChanelListElement extends javax.swing.JPanel {
-    private String label;
     private File imageFile;
     private int indexOfElement;
-    private Map<File, List<Integer>> selectedImages;
+    private Map<File, List<Integer>> selectedImages;//TODO create singleton class
 
-    public ChanelListElement(String label, File file,int index, Map<File, List<Integer>> selectedImages, boolean setSelected) {
+    public ChanelListElement(File file,int imageIndex, int channelIndex,Map<File, List<Integer>> selectedImages, boolean setSelected) {
         initComponents();
-        this.label = label;
-        imageElemLabel.setText(label);
+        String labelText = "Image_"+imageIndex+"/channel_"+channelIndex;
+        imageElemLabel.setText(labelText);
         imageElemLabel.setToolTipText(file.getName());
         this.imageFile = file;
-        this.indexOfElement = index;
+        this.indexOfElement = channelIndex;
         this.selectedImages = selectedImages;
 
         if(setSelected){
             putImageIntoSelectedImages();
         }
+    }
+
+    public Map<File, List<Integer>> getSelectedImages() {
+        return selectedImages;
+    }
+
+    public void setSelectedImages(Map<File, List<Integer>> selectedImages) {
+        this.selectedImages = selectedImages;
     }
 
     private void putImageIntoSelectedImages() {
@@ -40,7 +46,7 @@ public class ChanelListElement extends javax.swing.JPanel {
     }
 
     public String getLabel(){
-        return label;
+        return imageElemLabel.getText();
     }
 
     public int getIndex(){

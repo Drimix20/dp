@@ -1,118 +1,63 @@
 package common;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.io.FileInfo;
-import ij.io.TiffDecoder;
+import ij.*;
+import ij.process.*;
 import ij.measure.Calibration;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import ij.io.FileInfo;
 
 /**
+ * Images to stack converter
+ *
  * @author Drimal
  */
-public class FileOpener {
-    private List<ImagePlus> images;
-    private int stackType;
-    
+public class ImagesToStackConverter {
+
     private static final int rgb = 33;
     private static final int COPY_CENTER = 0, COPY_TOP_LEFT = 1, SCALE_SMALL = 2, SCALE_LARGE = 3;
     private static int method = COPY_CENTER;
     private static boolean bicubic;
     private static boolean keep;
+    private static boolean titlesAsLabels = true;
+    private String filter;
+    private int width, height;
+    private int maxWidth, maxHeight;
+    private int minWidth, minHeight;
+    private int minSize, maxSize;
     private Calibration cal2;
-    private String name = "Stack";
+    private int stackType;
+    private ImagePlus[] image;
+    private ImagePlus imageStack;
+    private String name = "OpenerStack";
 
-    public ImageStack openFiles(Map<File, List<Integer>> map){
-        images = new ArrayList<ImagePlus>();
-        IJ.showStatus("Loading image...");
-        int currentIndex=1;
-                
-        for (Map.Entry<File, List<Integer>> entry : map.entrySet()) {
-            File file = entry.getKey();
-            List<Integer> list = entry.getValue();
-            
-            FileInfo[] fi = retrieveFiloInfos(file);
-            
-            for(Integer integer : list){
-                ImagePlus img = loadImage(fi, integer, false);
-                images.add(img);
-                img.show();                
+    public void convertImagesToStack(ImagePlus[] images) {
+        boolean scale = false;
+        image = images;
+        int count = images.length;
+        if (count < 2) {
+            IJ.error("Images to Stack", "There must be at least two open images.");
+            return;
+        }
+
+        filter = null;
+        count = findMinMaxSize(count);
+        boolean sizesDiffer = width != minWidth || height != minHeight;
+        String macroOptions = Macro.getOptions();
+        if (IJ.macroRunning() && macroOptions == null) {
+            if (sizesDiffer) {
+                IJ.error("Images are not all the same size");
+                return;
             }
-            IJ.showProgress(currentIndex, map.size());
-            currentIndex++;
         }
-        
-        //convertImagesToStack();
-        return null;
-    }
+        keep = false;
 
-    /**
-     * Initialization of image stack. Set of width and height
-     * @param fi array of file infos
-     * @param index index of image used to settings
-     * @return new instance of image stack
-     */
-    private ImageStack initImageStack(FileInfo[] fi, int index) {
-        ImageProcessor ip = loadImage(fi,index, false).getProcessor();        
-        return new ImageStack(ip.getWidth(), ip.getHeight());
-    }
-    
-    private FileInfo[] retrieveFiloInfos(File file){
-        String dir = file.getParent();
-        String name = file.getName();
-        TiffDecoder td = new TiffDecoder(dir, name);
-        td.enableDebugging();
-        FileInfo[] fi = new FileInfo[1];
-        
-        try {
-            fi = td.getTiffInfo();
-        } catch (IOException ex) {
-            IJ.log(ex.getMessage());
-            return null;
+        if (method == SCALE_SMALL) {
+            width = minWidth;
+            height = minHeight;
+        } else if (method == SCALE_LARGE) {
+            width = maxWidth;
+            height = maxHeight;
         }
-        String str = fi[0].debugInfo;
-        return fi;
-    }
-    
-    private ImagePlus loadImage(FileInfo[] infos, int index, boolean show){
-        ij.io.FileOpener fo = new ij.io.FileOpener(infos[0]);
-        TiffDecoder decoder = new TiffDecoder(infos[0].directory, infos[0].fileName);
-        decoder.enableDebugging();
-        FileInfo[] info = new FileInfo[1];
-        try{
-            info = decoder.getTiffInfo();
-        }catch(Exception e){}
 
-        ImagePlus imp1 = fo.open(false);
-        Calibration cal = imp1.getCalibration();
-        System.out.println("Type"+imp1.getType());
-        
-        fo = new ij.io.FileOpener(infos[index]);
-        ImagePlus imp2 = fo.open(show);
-
-        return imp2;
-    }
-    
-    private ImagePlus[] convertToArray(List<ImagePlus> imageList){
-        return imageList.toArray(new ImagePlus[imageList.size()]);
-    }
-    
-    private void convertImagesToStack(){
-        ImagePlus[] image = convertToArray(images);
-        int count = image.length;
-        int width = image[0].getWidth();
-        int height = image[0].getHeight();
         double min = Double.MAX_VALUE;
         double max = -Double.MAX_VALUE;
         ImageStack stack = new ImageStack(width, height);
@@ -131,7 +76,7 @@ public class FileOpener {
             if (ip.getMax() > max) {
                 max = ip.getMax();
             }
-            String label = image[i].getTitle();
+            String label = titlesAsLabels ? image[i].getTitle() : null;
             if (label != null) {
                 String info = (String) image[i].getProperty("Info");
                 if (info != null) {
@@ -216,7 +161,67 @@ public class FileOpener {
             fi.nImages = imp.getStackSize();
             imp.setFileInfo(fi);
         }
-        imp.show();
+        imageStack = imp;
     }
 
+    public ImagePlus getConvertedStack() {
+        return imageStack;
+    }
+
+    final int findMinMaxSize(int count) {
+        int index = 0;
+        stackType = 8;
+        width = 0;
+        height = 0;
+        cal2 = image[0].getCalibration();
+        maxWidth = 0;
+        maxHeight = 0;
+        minWidth = Integer.MAX_VALUE;
+        minHeight = Integer.MAX_VALUE;
+        minSize = Integer.MAX_VALUE;
+        maxSize = 0;
+        for (int i = 0; i < count; i++) {
+            if (exclude(image[i].getTitle())) {
+                continue;
+            }
+            if (image[i].getType() == ImagePlus.COLOR_256) {
+                stackType = rgb;
+            }
+            int type = image[i].getBitDepth();
+            if (type == 24) {
+                type = rgb;
+            }
+            if (type > stackType) {
+                stackType = type;
+            }
+            int w = image[i].getWidth(), h = image[i].getHeight();
+            if (w > width) {
+                width = w;
+            }
+            if (h > height) {
+                height = h;
+            }
+            int size = w * h;
+            if (size < minSize) {
+                minSize = size;
+                minWidth = w;
+                minHeight = h;
+            }
+            if (size > maxSize) {
+                maxSize = size;
+                maxWidth = w;
+                maxHeight = h;
+            }
+            Calibration cal = image[i].getCalibration();
+            if (!image[i].getCalibration().equals(cal2)) {
+                cal2 = null;
+            }
+            image[index++] = image[i];
+        }
+        return index;
+    }
+
+    final boolean exclude(String title) {
+        return filter != null && title != null && title.indexOf(filter) == -1;
+    }
 }

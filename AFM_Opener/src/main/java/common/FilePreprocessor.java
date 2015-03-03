@@ -16,53 +16,73 @@ import java.util.Map;
  * @author Drimal
  */
 public class FilePreprocessor {
-    //File choose by user
-    private File parent;
-    
-    public FilePreprocessor(File parent) {
-        this.parent = parent;
-    }
-    
-    public Map<File, List<Integer>> preprocess(){
-        Map<File, List<Integer>> map = new HashMap<File, List<Integer>>();
-        
-        if(parent.isDirectory()){
-            File[] dirFiles = parent.listFiles();
-            for(int i=0; i<dirFiles.length; i++){
-                File dirFile = dirFiles[i];
-                map.put(dirFile, processFile(dirFile));
-            }
-        }else{
-            map.put(parent, processFile(parent));
+
+    public Map<File, List<Integer>> preprocess(File parent) {
+        Map<File, List<Integer>> map;
+
+        if (parent.isDirectory()) {
+            map = processDirectory(parent);
+        } else {
+            map = processSimpleFile(parent);
         }
-        
+
         return map;
     }
 
-    public List<Integer> processFile(File file){
+    private Map<File, List<Integer>> processDirectory(File dir) {
+        Map<File, List<Integer>> map = new HashMap<File, List<Integer>>();
+        File[] dirFiles = dir.listFiles();
+        for (int i = 0; i < dirFiles.length; i++) {
+            File dirFile = dirFiles[i];
+            List<Integer> allChannelsIndexesList = retrieveImageChannelIndexes(dirFile);
+            if (!allChannelsIndexesList.isEmpty()) {
+                map.put(dirFile, allChannelsIndexesList);
+            }
+        }
+
+        return map;
+    }
+
+    private Map<File, List<Integer>> processSimpleFile(File file) {
+        Map<File, List<Integer>> map = new HashMap<File, List<Integer>>();
+        List<Integer> allChannelIndexesList = retrieveImageChannelIndexes(file);
+        if (!allChannelIndexesList.isEmpty()) {
+            map.put(file, allChannelIndexesList);
+        }
+
+        return map;
+    }
+
+    /**
+     * Method retrieve indexes for image channels saved in specific file
+     *
+     * @param file
+     * @return indexes of channels
+     */
+    public List<Integer> retrieveImageChannelIndexes(File file) {
         List<Integer> slices = new ArrayList<Integer>();
-        
+
         String dir = file.getParent();
         String name = file.getName();
-        
+
         TiffDecoder td = new TiffDecoder(dir, name);
         td.enableDebugging();
         FileInfo[] fi = new FileInfo[1];
-        
-        try{
+
+        try {
             fi = td.getTiffInfo();
-        }catch (IOException ex) {
+        } catch (IOException ex) {
             IJ.log(ex.getMessage());
             return null;
         }
-        
-        if(fi == null){
-            IJ.error("AFM Opener", "Unsupported file: \n"+name);
+
+        if (fi == null) {
+            IJ.error("AFM Opener", "Unsupported file: \n" + name);
             return Collections.emptyList();
         }
-        
-        if(fi.length != 1){
-            for(int i=1; i< fi.length; i++){
+
+        if (fi.length != 1) {
+            for (int i = 1; i < fi.length; i++) {
                 slices.add(i);
             }
         }

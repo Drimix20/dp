@@ -20,7 +20,7 @@ import javax.swing.event.ChangeListener;
  *
  * @author Drimal
  */
-public class ImageOptionManager extends Thread{
+public class ImageOptionManager extends Thread {
 
     private final JScrollPane scrollPane;
     private Map<File, List<Integer>> channels;
@@ -66,7 +66,7 @@ public class ImageOptionManager extends Thread{
         scrollPane.setViewportView(backgroundPanel);
         backgroundPanel.setLayout(new BorderLayout(0, 0));
 
-        scrollPane.getViewport().addChangeListener(new ChangeListener(){
+        scrollPane.getViewport().addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 scrollPane.repaint();
@@ -75,15 +75,14 @@ public class ImageOptionManager extends Thread{
 
         JPanel columnpanel = createColumnPanelForOptionElements(backgroundPanel);
 
-        int fileIndex=1;
+        int fileIndex = 1;
         for (Map.Entry<File, List<Integer>> entry : channels.entrySet()) {
-            File imageFile=  entry.getKey();
-            int rowIndex=1;
-            for(Integer channelIndex : entry.getValue()){
+            File imageFile = entry.getKey();
+            int rowIndex = 1;
+            for (Integer channelIndex : entry.getValue()) {
                 final ChanelListElement rowPanel = new ChanelListElement(imageFile, fileIndex, channelIndex, selectedChannels, selectAll);
-
                 columnpanel.add(rowPanel);
-                if(rowIndex%2==0){
+                if (rowIndex % 2 == 0) {
                     rowPanel.setBackground(SystemColor.inactiveCaptionBorder);
                 }
                 rowIndex++;
@@ -101,7 +100,9 @@ public class ImageOptionManager extends Thread{
     }
 
     /**
-     * Create column panel which will contains horizontal option panels for each image
+     * Create column panel which will contains horizontal option panels for each
+     * image
+     *
      * @param backgroundPanel panel where column panel will be added
      * @return created column panel
      */

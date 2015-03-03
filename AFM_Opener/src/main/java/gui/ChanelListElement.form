@@ -23,7 +23,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="NameLabel" min="-2" pref="64" max="-2" attributes="0"/>
+              <Component id="imageElemLabel" min="-2" pref="64" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
               <Component id="openSpecificImage" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -36,7 +36,7 @@
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="openSpecificImage" min="-2" pref="17" max="-2" attributes="0"/>
-                  <Component id="NameLabel" min="-2" pref="14" max="-2" attributes="0"/>
+                  <Component id="imageElemLabel" min="-2" pref="14" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -55,7 +55,7 @@
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JLabel" name="NameLabel">
+    <Component class="javax.swing.JLabel" name="imageElemLabel">
     </Component>
   </SubComponents>
 </Form>

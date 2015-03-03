@@ -14,7 +14,7 @@ import javax.swing.JFileChooser;
  * @author Drimal
  */
 public class OpenerFrame extends javax.swing.JFrame {
-    private File currentDirectory;
+    private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
     private Map<File, List<Integer>> selectedChannels;
     private ImageOptionManager imageOptionManager;
 

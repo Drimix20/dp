@@ -60,7 +60,7 @@ public class ImageOptionManager extends Thread{
     }
 
     public void createElementForScrollPanel() {
-        selectedChannels = new TreeMap<>();
+        selectedChannels = new TreeMap<File, List<Integer>>();
         for (Map.Entry<File, List<Integer>> entry : channels.entrySet()) {
                 File key = entry.getKey();
                 selectedChannels.put(key, new ArrayList<Integer>());

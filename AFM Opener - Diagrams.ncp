@@ -45,7 +45,7 @@
       <Entity type="Class">
         <Name>ImagesToStackConverter</Name>
         <Access>Public</Access>
-        <Location left="1072" top="618" />
+        <Location left="1119" top="651" />
         <Size width="289" height="145" />
         <Collapsed>False</Collapsed>
         <Member type="Constructor">public ImagesToStackConverter()</Member>
@@ -135,7 +135,7 @@
       </Entity>
       <Entity type="Comment">
         <Text>Class for showing loaded images to user</Text>
-        <Location left="1423" top="557" />
+        <Location left="1457" top="564" />
         <Size width="160" height="75" />
       </Entity>
     </Entities>
@@ -174,21 +174,6 @@
         <BendPoint relativeToStartShape="True">
           <X>389</X>
           <Y>373</Y>
-        </BendPoint>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Association</AssociationType>
-      </Relationship>
-      <Relationship type="Association" first="7" second="4">
-        <Label>uses</Label>
-        <StartOrientation>Vertical</StartOrientation>
-        <EndOrientation>Vertical</EndOrientation>
-        <BendPoint relativeToStartShape="True">
-          <X>1237</X>
-          <Y>574</Y>
-        </BendPoint>
-        <BendPoint relativeToStartShape="False">
-          <X>1219</X>
-          <Y>593</Y>
         </BendPoint>
         <Direction>Unidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -248,6 +233,17 @@
           <X>675</X>
           <Y>635</Y>
         </BendPoint>
+      </Relationship>
+      <Relationship type="Association" first="11" second="4">
+        <Label>uses</Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1492</X>
+          <Y>575</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
       </Relationship>
     </Relationships>
   </ProjectItem>

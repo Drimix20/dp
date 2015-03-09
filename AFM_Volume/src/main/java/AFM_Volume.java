@@ -1,12 +1,9 @@
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 import ij.plugin.frame.*;
 import ij.*;
-import ij.process.*;
 import ij.gui.*;
-import ij.io.*;
 
 public class AFM_Volume extends PlugInFrame implements ActionListener {
 
@@ -98,16 +95,16 @@ public class AFM_Volume extends PlugInFrame implements ActionListener {
 
     public static void main(String[] args) {
         //TODO progres bar, name stack
-            // set the plugins.dir property to make the plugin appear in the Plugins menu
-            Class<?> clazz = AFM_Volume.class;
-            String url = clazz.getResource("/" + clazz.getName().replace('.', '/') + ".class").toString();
-            String pluginsDir = url.substring(5, url.length() - clazz.getName().length() - 6);
-            System.setProperty("plugins.dir", pluginsDir);
+        // set the plugins.dir property to make the plugin appear in the Plugins menu
+        Class<?> clazz = AFM_Volume.class;
+        String url = clazz.getResource("/" + clazz.getName().replace('.', '/') + ".class").toString();
+        String pluginsDir = url.substring(5, url.length() - clazz.getName().length() - 6);
+        System.setProperty("plugins.dir", pluginsDir);
 
-            // start ImageJ
-            new ImageJ();
+        // start ImageJ
+        new ImageJ();
 
-            // run the plugin
-            IJ.runPlugIn(clazz.getName(), "");
+        // run the plugin
+        IJ.runPlugIn(clazz.getName(), "");
     }
 }

@@ -13,8 +13,6 @@ import java.util.*;
 /**
  * @author Drimal
  */
-//TODO make run as new thread
-//TODO if makeStack show just stack
 public class ImageLoader {
 
     private List<ImagePlus> images;
@@ -92,7 +90,6 @@ public class ImageLoader {
             IJ.log(ex.getMessage());
             return null;
         }
-        String str = fi[0].debugInfo;
         return fi;
     }
 
@@ -128,116 +125,7 @@ public class ImageLoader {
         ImagesToStackConverter converter = new ImagesToStackConverter();
         ImagePlus[] imageArray = convertToArray(images);
         converter.convertImagesToStack(imageArray);
+
         return converter.getConvertedStack();
-
-//
-//        int count = image.length;
-//        int width = image[0].getWidth();
-//        int height = image[0].getHeight();
-//        double min = Double.MAX_VALUE;
-//        double max = -Double.MAX_VALUE;
-//        ImageStack stack = new ImageStack(width, height);
-//        FileInfo fi = image[0].getOriginalFileInfo();
-//        if (fi != null && fi.directory == null) {
-//            fi = null;
-//        }
-//        for (int i = 0; i < count; i++) {
-//            ImageProcessor ip = image[i].getProcessor();
-//            if (ip == null) {
-//                break;
-//            }
-//            if (ip.getMin() < min) {
-//                min = ip.getMin();
-//            }
-//            if (ip.getMax() > max) {
-//                max = ip.getMax();
-//            }
-//            String label = image[i].getTitle();
-//            if (label != null) {
-//                String info = (String) image[i].getProperty("Info");
-//                if (info != null) {
-//                    label += "\n" + info;
-//                }
-//            }
-//            if (fi != null) {
-//                FileInfo fi2 = image[i].getOriginalFileInfo();
-//                if (fi2 != null && !fi.directory.equals(fi2.directory)) {
-//                    fi = null;
-//                }
-//            }
-//            switch (stackType) {
-//                case 16:
-//                    ip = ip.convertToShort(false);
-//                    break;
-//                case 32:
-//                    ip = ip.convertToFloat();
-//                    break;
-//                case rgb:
-//                    ip = ip.convertToRGB();
-//                    break;
-//                default:
-//                    break;
-//            }
-//            if (ip.getWidth() != width || ip.getHeight() != height) {
-//                switch (method) {
-//                    case COPY_TOP_LEFT:
-//                    case COPY_CENTER:
-//                        ImageProcessor ip2 = null;
-//                        switch (stackType) {
-//                            case 8:
-//                                ip2 = new ByteProcessor(width, height);
-//                                break;
-//                            case 16:
-//                                ip2 = new ShortProcessor(width, height);
-//                                break;
-//                            case 32:
-//                                ip2 = new FloatProcessor(width, height);
-//                                break;
-//                            case rgb:
-//                                ip2 = new ColorProcessor(width, height);
-//                                break;
-//                        }
-//                        int xoff = 0,
-//                         yoff = 0;
-//                        if (method == COPY_CENTER) {
-//                            xoff = (width - ip.getWidth()) / 2;
-//                            yoff = (height - ip.getHeight()) / 2;
-//                        }
-//                        ip2.insert(ip, xoff, yoff);
-//                        ip = ip2;
-//                        break;
-//                    case SCALE_SMALL:
-//                    case SCALE_LARGE:
-//                        ip.setInterpolationMethod((bicubic ? ImageProcessor.BICUBIC : ImageProcessor.BILINEAR));
-//                        ip.resetRoi();
-//                        ip = ip.resize(width, height);
-//                        break;
-//                }
-//            } else if (keep) {
-//                ip = ip.duplicate();
-//            }
-//            stack.addSlice(label, ip);
-//            if (!keep) {
-//                image[i].changes = false;
-//                image[i].close();
-//            }
-//        }
-//        if (stack.getSize() == 0) {
-//            return new ImagePlus();
-//        }
-//        ImagePlus imp = new ImagePlus(name, stack);
-//        if (stackType == 16 || stackType == 32) {
-//            imp.getProcessor().setMinAndMax(min, max);
-//        }
-//        if (cal2 != null) {
-//            imp.setCalibration(cal2);
-//        }
-//        if (fi != null) {
-//            fi.fileName = "";
-//            fi.nImages = imp.getStackSize();
-//            imp.setFileInfo(fi);
-//        }
-//        return imp;
     }
-
 }

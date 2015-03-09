@@ -2,11 +2,9 @@ package common;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.io.FileInfo;
 import ij.io.TiffDecoder;
 import ij.measure.Calibration;
-import ij.process.*;
 import java.io.*;
 import java.util.*;
 
@@ -16,17 +14,9 @@ import java.util.*;
 public class ImageLoader {
 
     private List<ImagePlus> images;
-    private int stackType;
-
-    private static final int rgb = 33;
-    private static final int COPY_CENTER = 0, COPY_TOP_LEFT = 1, SCALE_SMALL = 2, SCALE_LARGE = 3;
-    private static int method = COPY_CENTER;
-    private static boolean bicubic;
-    private static boolean keep;
-    private Calibration cal2;
-    private String name = "Stack";
     private boolean makeStack;
 
+    //load selected images
     public void loadImages(Map<File, List<Integer>> channelMap) {
         images = new ArrayList<ImagePlus>();
         IJ.showStatus("Loading image...");
@@ -66,18 +56,6 @@ public class ImageLoader {
 
     public void makeStack(boolean make) {
         makeStack = make;
-    }
-
-    /**
-     * Initialization of image stack. Set of width and height
-     *
-     * @param fi array of file infos
-     * @param index index of image used to settings
-     * @return new instance of image stack
-     */
-    private ImageStack initImageStack(FileInfo[] fi, int index) {
-        ImageProcessor ip = loadImage(fi, index, false).getProcessor();
-        return new ImageStack(ip.getWidth(), ip.getHeight());
     }
 
     private FileInfo[] retrieveFiloInfos(File file) {

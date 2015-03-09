@@ -21,7 +21,7 @@ public class AFM_Opener implements PlugIn {
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
             }
-        });        
+        });
     }
 
     public static void main(String[] args) {

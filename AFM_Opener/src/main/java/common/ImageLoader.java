@@ -49,7 +49,10 @@ public class ImageLoader {
 
     public void show() {
         if (makeStack) {
-            convertImagesToStack().show();
+            ImagePlus imagesConvertedToStack = convertImagesToStack();
+            if (imagesConvertedToStack != null) {
+                imagesConvertedToStack.show();
+            }
         } else {
             showImages();
         }
@@ -119,7 +122,7 @@ public class ImageLoader {
 
     private ImagePlus convertImagesToStack() {
         if (images.isEmpty()) {
-            return new ImagePlus();
+            return null;
         }
 
         ImagesToStackConverter converter = new ImagesToStackConverter();

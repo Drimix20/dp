@@ -1,5 +1,5 @@
 
-import gui.OpenerFrame;
+import gui.AfmOpenerFrame;
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.PlugIn;
@@ -17,7 +17,7 @@ public class AFM_Opener implements PlugIn {
 
             @Override
             public void run() {
-                OpenerFrame frame = new OpenerFrame();
+                AfmOpenerFrame frame = new AfmOpenerFrame();
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
             }

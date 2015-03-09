@@ -1,0 +1,254 @@
+<Project>
+  <Name>AFM Opener</Name>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>Diagram</Name>
+    <Language>Java</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>SelectedSubimageContainer</Name>
+        <Access>Public</Access>
+        <Location left="1094" top="52" />
+        <Size width="272" height="212" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private SelectedSubimageContainer instance</Member>
+        <Member type="Field">private Map&lt;File, List&lt;Integer&gt;&gt; selectedSubimageMap</Member>
+        <Member type="Method">public SelectedChannelsContainer newInstance()</Member>
+        <Member type="Method">public int getNumberOfChannels()</Member>
+        <Member type="Method">public int getNumberOfFiles()</Member>
+        <Member type="Method">public void initializeKey(File key)</Member>
+        <Member type="Method">public void pub(File key, Integer index)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Comment">
+        <Text>Singleton class for storing selected channels by user</Text>
+        <Location left="1425" top="65" />
+        <Size width="160" height="50" />
+      </Entity>
+      <Entity type="Class">
+        <Name>AFM_Opener</Name>
+        <Access>Public</Access>
+        <Location left="80" top="247" />
+        <Size width="162" height="111" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public void run(String arg)</Member>
+        <Member type="Method">public static void main()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Interface">
+        <Name>PlugIn</Name>
+        <Access>Public</Access>
+        <Location left="80" top="141" />
+        <Size width="162" height="94" />
+        <Collapsed>True</Collapsed>
+        <Member type="Method">void run(String arg)</Member>
+      </Entity>
+      <Entity type="Class">
+        <Name>ImagesToStackConverter</Name>
+        <Access>Public</Access>
+        <Location left="1072" top="618" />
+        <Size width="289" height="145" />
+        <Collapsed>False</Collapsed>
+        <Member type="Constructor">public ImagesToStackConverter()</Member>
+        <Member type="Method">public void convertImagesToStack(ImagePlus[] images)</Member>
+        <Member type="Method">private void findMinMaxSize(int count)</Member>
+        <Member type="Method">private void exclude()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>ImageOptionManager</Name>
+        <Access>Public</Access>
+        <Location left="488" top="372" />
+        <Size width="394" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private JScrollPane scrollPane</Member>
+        <Member type="Field">private Map&lt;File, List&lt;Integer&gt;&gt; channels</Member>
+        <Member type="Field">private boolean selectAll</Member>
+        <Member type="Method">public void selectAllImages(boolean select)</Member>
+        <Member type="Method">public void run()</Member>
+        <Member type="Method">private void initializeSelectedChannelMapl()</Member>
+        <Member type="Method">private JPanel createColumnPanelForOptionElements(JPanel backgroundPanel)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Comment">
+        <Text>Manager object for create elements in image option panel.</Text>
+        <Location left="749" top="606" />
+        <Size width="160" height="61" />
+      </Entity>
+      <Entity type="Class">
+        <Name>ImageLoader</Name>
+        <Access>Public</Access>
+        <Location left="1167" top="330" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public void loadImages()</Member>
+        <Member type="Method">private FileInfo[] retrieveFileInfos(File file)</Member>
+        <Member type="Method">private ImagePlus loadImage(FileInfo[] infos, int index, boolean show)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>FileSearcher</Name>
+        <Access>Public</Access>
+        <Location left="19" top="445" />
+        <Size width="296" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public void searchSupportedFile(File parent)</Member>
+        <Member type="Method">public String[] getSupportedFile()</Member>
+        <Member type="Method">public List&lt;Integer&gt; retrieveImageSubfilesIndexes(File fle)</Member>
+        <Member type="Method">private void searchDirectory(File dir)</Member>
+        <Member type="Method">private Map&lt;File, List&lt;Integer&gt;&gt; searchFile(File file)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>SubimageListElement</Name>
+        <Access>Public</Access>
+        <Location left="360" top="79" />
+        <Size width="677" height="97" />
+        <Collapsed>False</Collapsed>
+        <Member type="Constructor">public SubimageListElement(File file, int mageIndex, int channelIndex, Map&lt;File, List&lt;Integer&gt;&gt; selectedImages, boolean setSelected)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>AfmOpenerFrame</Name>
+        <Access>Public</Access>
+        <Location left="316" top="247" />
+        <Size width="162" height="77" />
+        <Collapsed>False</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>ImagePresenter</Name>
+        <Access>Public</Access>
+        <Location left="1370" top="388" />
+        <Size width="244" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public void show()</Member>
+        <Member type="Method">private void showStack()</Member>
+        <Member type="Method">private void showSingleImage()</Member>
+        <Member type="Method">private ImagePlus[] convertToArray(List&lt;ImagePlus&gt; images)</Member>
+        <Member type="Method">private void convertImagesToStack()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Comment">
+        <Text>Class for loading images by specified files infos</Text>
+        <Location left="1005" top="498" />
+        <Size width="152" height="50" />
+      </Entity>
+      <Entity type="Comment">
+        <Text>Class for showing loaded images to user</Text>
+        <Location left="1423" top="557" />
+        <Size width="160" height="75" />
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Comment" first="1" second="0">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1396</X>
+          <Y>82</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1391</X>
+          <Y>83</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Association" first="2" second="3">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="2" second="10">
+        <Label>create</Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="10" second="8">
+        <Label>uses</Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>389</X>
+          <Y>373</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="7" second="4">
+        <Label>uses</Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1237</X>
+          <Y>574</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1219</X>
+          <Y>593</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="5" second="9">
+        <Label>uses</Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>626</X>
+          <Y>347</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>626</X>
+          <Y>287</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="9" second="0">
+        <Label>uses</Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>681</X>
+          <Y>232</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="7" second="0">
+        <Label>uses</Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="5" second="0">
+        <Label>uses</Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>735</X>
+          <Y>347</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Comment" first="6" second="5">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>724</X>
+          <Y>634</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>675</X>
+          <Y>635</Y>
+        </BendPoint>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+</Project>

@@ -15,7 +15,7 @@
         <Member type="Method">public SelectedChannelsContainer newInstance()</Member>
         <Member type="Method">public int getNumberOfChannels()</Member>
         <Member type="Method">public int getNumberOfFiles()</Member>
-        <Member type="Method">public void initializeKey(File key)</Member>
+        <Member type="Method">public void initializeKeyIndex(File key)</Member>
         <Member type="Method">public void pub(File key, Integer index)</Member>
         <Modifier>None</Modifier>
       </Entity>
@@ -45,7 +45,7 @@
       <Entity type="Class">
         <Name>ImagesToStackConverter</Name>
         <Access>Public</Access>
-        <Location left="1119" top="651" />
+        <Location left="126" top="923" />
         <Size width="289" height="145" />
         <Collapsed>False</Collapsed>
         <Member type="Constructor">public ImagesToStackConverter()</Member>
@@ -55,9 +55,9 @@
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
-        <Name>ImageOptionManager</Name>
+        <Name>SubimageOptionManager</Name>
         <Access>Public</Access>
-        <Location left="488" top="372" />
+        <Location left="565" top="358" />
         <Size width="394" height="216" />
         <Collapsed>False</Collapsed>
         <Member type="Field">private JScrollPane scrollPane</Member>
@@ -70,15 +70,16 @@
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Comment">
-        <Text>Manager object for create elements in image option panel.</Text>
-        <Location left="749" top="606" />
-        <Size width="160" height="61" />
+        <Text>Manager object for create elements in image option panel. Each SubimageListElement is created for each subimage.
+</Text>
+        <Location left="787" top="617" />
+        <Size width="160" height="86" />
       </Entity>
       <Entity type="Class">
         <Name>ImageLoader</Name>
         <Access>Public</Access>
-        <Location left="1167" top="330" />
-        <Size width="162" height="216" />
+        <Location left="1167" top="331" />
+        <Size width="162" height="141" />
         <Collapsed>False</Collapsed>
         <Member type="Method">public void loadImages()</Member>
         <Member type="Method">private FileInfo[] retrieveFileInfos(File file)</Member>
@@ -88,7 +89,7 @@
       <Entity type="Class">
         <Name>FileSearcher</Name>
         <Access>Public</Access>
-        <Location left="19" top="445" />
+        <Location left="38" top="553" />
         <Size width="296" height="162" />
         <Collapsed>False</Collapsed>
         <Member type="Method">public void searchSupportedFile(File parent)</Member>
@@ -108,9 +109,9 @@
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
-        <Name>AfmOpenerFrame</Name>
+        <Name>AfmOpenerGui</Name>
         <Access>Public</Access>
-        <Location left="316" top="247" />
+        <Location left="292" top="247" />
         <Size width="162" height="77" />
         <Collapsed>False</Collapsed>
         <Modifier>None</Modifier>
@@ -118,7 +119,7 @@
       <Entity type="Class">
         <Name>ImagePresenter</Name>
         <Access>Public</Access>
-        <Location left="1370" top="388" />
+        <Location left="377" top="660" />
         <Size width="244" height="162" />
         <Collapsed>False</Collapsed>
         <Member type="Method">public void show()</Member>
@@ -129,14 +130,25 @@
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Comment">
-        <Text>Class for loading images by specified files infos</Text>
-        <Location left="1005" top="498" />
-        <Size width="152" height="50" />
+        <Text>Class for loading images by specified files infos, i.e.  information about tiff stack
+</Text>
+        <Location left="991" top="430" />
+        <Size width="152" height="83" />
       </Entity>
       <Entity type="Comment">
-        <Text>Class for showing loaded images to user</Text>
-        <Location left="1457" top="564" />
+        <Text>Class for showing loaded images to user. Class distinguish if images are loadesd are stack or sinlge images.</Text>
+        <Location left="457" top="882" />
         <Size width="160" height="75" />
+      </Entity>
+      <Entity type="Comment">
+        <Text>Main class which uses all other classes. </Text>
+        <Location left="90" top="421" />
+        <Size width="160" height="75" />
+      </Entity>
+      <Entity type="Comment">
+        <Text>Preprocess direcotry for retrieve all supported files. Class handle errors if no file is supported</Text>
+        <Location left="10" top="775" />
+        <Size width="159" height="63" />
       </Entity>
     </Entities>
     <Relationships>
@@ -167,24 +179,13 @@
         <Direction>Unidirectional</Direction>
         <AssociationType>Association</AssociationType>
       </Relationship>
-      <Relationship type="Association" first="10" second="8">
-        <Label>uses</Label>
-        <StartOrientation>Vertical</StartOrientation>
-        <EndOrientation>Vertical</EndOrientation>
-        <BendPoint relativeToStartShape="True">
-          <X>389</X>
-          <Y>373</Y>
-        </BendPoint>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Association</AssociationType>
-      </Relationship>
       <Relationship type="Association" first="5" second="9">
         <Label>uses</Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>626</X>
-          <Y>347</Y>
+          <X>703</X>
+          <Y>333</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>626</X>
@@ -216,8 +217,8 @@
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>735</X>
-          <Y>347</Y>
+          <X>812</X>
+          <Y>333</Y>
         </BendPoint>
         <Direction>Unidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -226,12 +227,12 @@
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>724</X>
-          <Y>634</Y>
+          <X>762</X>
+          <Y>645</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>675</X>
-          <Y>635</Y>
+          <X>752</X>
+          <Y>621</Y>
         </BendPoint>
       </Relationship>
       <Relationship type="Association" first="11" second="4">
@@ -239,11 +240,75 @@
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>1492</X>
-          <Y>575</Y>
+          <X>425</X>
+          <Y>849</Y>
         </BendPoint>
         <Direction>Unidirectional</Direction>
         <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Comment" first="12" second="7">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+      <Relationship type="Comment" first="13" second="11">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>541</X>
+          <Y>857</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>542</X>
+          <Y>847</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Association" first="10" second="5">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>515</X>
+          <Y>473</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="10" second="11">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>374</X>
+          <Y>586</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="10" second="8">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>375</X>
+          <Y>520</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Comment" first="15" second="8">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>101</X>
+          <Y>741</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>216</X>
+          <Y>740</Y>
+        </BendPoint>
       </Relationship>
     </Relationships>
   </ProjectItem>

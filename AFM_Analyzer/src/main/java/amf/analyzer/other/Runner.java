@@ -1,3 +1,5 @@
+package amf.analyzer.other;
+
 
 import java.io.*;
 import ij.*;

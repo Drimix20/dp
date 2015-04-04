@@ -1,3 +1,5 @@
+package amf.analyzer.other;
+
 
 import ij.IJ;
 import ij.ImageJ;

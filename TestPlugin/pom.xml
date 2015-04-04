@@ -29,30 +29,30 @@
 
 	<dependencies>
             <!-- API -->
-		<dependency>
-                    <groupId>org.opencb.commons</groupId>
-                    <artifactId>bioformats</artifactId>
-                    <version>2.0.0</version>
-                    <classifier>javadoc</classifier>
-                </dependency>
-	 <dependency>
-	  <groupId>sc.fiji</groupId>
-	  <artifactId>fiji-lib</artifactId>
-	  <type>jar</type>
-	 </dependency>
-	 <dependency>
-	  <groupId>loci</groupId>
-	  <artifactId>bio-formats</artifactId>
-	  <version>5.0-SNAPSHOT</version>
-	  <type>jar</type>
-	 </dependency>
-	 <dependency>
-	  <groupId>loci</groupId>
-	  <artifactId>loci_tools</artifactId>
-	  <version>4.4.9</version>
-	  <type>jar</type>
-	 </dependency>
-	</dependencies>
+            <dependency>
+                <groupId>org.opencb.commons</groupId>
+                <artifactId>bioformats</artifactId>
+                <version>2.0.0</version>
+                <classifier>javadoc</classifier>
+            </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>fiji-lib</artifactId>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>loci</groupId>
+                <artifactId>bio-formats</artifactId>
+                <version>5.0-SNAPSHOT</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>loci</groupId>
+                <artifactId>loci_tools</artifactId>
+                <version>4.4.9</version>
+                <type>jar</type>
+            </dependency>
+        </dependencies>
 
 	<build>
 		<resources>

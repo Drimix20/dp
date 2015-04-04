@@ -1,103 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 		http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>sc.fiji</groupId>
+    <artifactId>AFM_Opener</artifactId>
+    <version>1.0.0</version>
+
+
+    <parent>
         <groupId>sc.fiji</groupId>
-	<artifactId>AFM_Opener</artifactId>
-	<version>1.0.0</version>
-
-
-	<parent>
-		<groupId>sc.fiji</groupId>
-                    <version>2.0.0-beta-1-SNAPSHOT</version>
-                    <artifactId>fiji</artifactId>
-		<relativePath />
-	</parent>
-        <repositories>
-          <!-- NB: for project parent -->
-          <repository>
+        <version>2.0.0-beta-1-SNAPSHOT</version>
+        <artifactId>fiji</artifactId>
+        <relativePath />
+    </parent>
+    <repositories>
+        <!-- NB: for project parent -->
+        <repository>
             <id>imagej.releases</id>
             <url>http://maven.imagej.net/content/repositories/releases</url>
-          </repository>
-                <repository>
-                        <id>unknown-jars-temp-repo</id>
-                        <name>A temporary repository created by NetBeans for libraries and jars it could not identify. Please replace the dependencies in this repository with correct ones and delete this repository.</name>
-                        <url>file:${project.basedir}/lib</url>
-                </repository>
-        </repositories>
+        </repository>
+        <repository>
+            <id>unknown-jars-temp-repo</id>
+            <name>A temporary repository created by NetBeans for libraries and jars it could not identify. Please replace the dependencies in this repository with correct ones and delete this repository.</name>
+            <url>file:${project.basedir}/lib</url>
+        </repository>
+    </repositories>
 
-	<name>plugins/AFM_Opener.jar</name>
-	<description>A Maven project implementing an ImageJ 1.x plugin</description>
+    <name>plugins/AFM_Opener.jar</name>
+    <description>A Maven project implementing an ImageJ 1.x plugin</description>
 
-        <dependencies>
-            <!-- API -->
-            <dependency>
-                <groupId>org.opencb.commons</groupId>
-                <artifactId>bioformats</artifactId>
-                <version>2.0.0</version>
-                <classifier>javadoc</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.jdesktop</groupId>
-                <artifactId>beansbinding</artifactId>
-                <version>1.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>unknown.binary</groupId>
-                <artifactId>AbsoluteLayout</artifactId>
-                <version>SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>sc.fiji</groupId>
-                <artifactId>fiji-lib</artifactId>
-                <version>2.1.1-SNAPSHOT</version>
-                <type>jar</type>
-            </dependency>
-        </dependencies>
+    <dependencies>
+        <!-- API -->
+        <dependency>
+            <groupId>org.opencb.commons</groupId>
+            <artifactId>bioformats</artifactId>
+            <version>2.0.0</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.jdesktop</groupId>
+            <artifactId>beansbinding</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>unknown.binary</groupId>
+            <artifactId>AbsoluteLayout</artifactId>
+            <version>SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>fiji-lib</artifactId>
+            <version>2.1.1-SNAPSHOT</version>
+        </dependency>
+        <!-- Logovani -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.10</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<resources>
-			<resource>
-				<directory>${basedir}/src/main/resources</directory>
-			</resource>
-			<resource>
-				<directory>${project.build.sourceDirectory}</directory>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>${basedir}/src/test/resources</directory>
-			</testResource>
-			<testResource>
-				<directory>${project.build.testSourceDirectory}</directory>
-			</testResource>
-		</testResources>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>java</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>Process_Pixels</mainClass>
-				</configuration>
-			</plugin>
-		 <plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-compiler-plugin</artifactId>
-		  <version>2.3.2</version>
-		  <configuration>
-		   <source>1.5</source>
-		   <target>1.5</target>
-		  </configuration>
-		 </plugin>
-		</plugins>
-	</build>
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.build.sourceDirectory}</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${basedir}/src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>${project.build.testSourceDirectory}</directory>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>AFM_Opener</mainClass>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

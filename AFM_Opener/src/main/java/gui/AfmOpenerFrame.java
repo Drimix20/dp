@@ -1,13 +1,20 @@
 package gui;
 
+import common.ChannelMetadata;
 import common.FilePreprocessor;
 import common.ImageLoader;
 import common.ImageOptionManager;
+import ij.ImagePlus;
+import ij.WindowManager;
+import ij.io.FileInfo;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.swing.JFileChooser;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import metadata.decoder.MetadataWriter;
 
 /**
  *
@@ -15,6 +22,7 @@ import javax.swing.JFileChooser;
  */
 public class AfmOpenerFrame extends javax.swing.JFrame {
 
+    private Logger logger = Logger.getLogger(AfmOpenerFrame.class);
     private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
     private Map<File, List<Integer>> selectedChannels;
     private ImageOptionManager imageOptionManager;
@@ -23,9 +31,18 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
      * Creates new form OpenerFrame
      */
     public AfmOpenerFrame() {
+        logger.setLevel(Level.ALL);
         initComponents();
         imageOptionManager = new ImageOptionManager(imageOptionPanel);
         selectedChannels = new TreeMap<File, List<Integer>>();
+        printFrameInformation();
+    }
+
+    private void printFrameInformation() {
+        System.out.println("ImageOptionPanel: width:" + imageOptionPanel.getWidth() + ",height: " + imageOptionPanel.getHeight());
+        System.out.println("Frame: width:" + this.getWidth() + ", height: " + this.getHeight());
+        System.out.println("ShowInStack: width:" + showInStack.getWidth() + ", height: " + showInStack.getHeight());
+        System.out.println("Select All: width:" + selectAll.getWidth() + ", height: " + selectAll.getHeight());
     }
 
     /**
@@ -49,6 +66,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("AFM Opener");
         setIconImages(null);
+        setPreferredSize(new java.awt.Dimension(246, 455));
         setResizable(false);
 
         jLabel1.setText("Select folder/ file");
@@ -65,6 +83,9 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
         jLabel2.setText("Images / Channels");
 
+        imageOptionPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        imageOptionPanel.setPreferredSize(new java.awt.Dimension(183, 195));
+
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -79,9 +100,11 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             }
         });
 
-        selectAll.setText("Select all:                                      ");
+        selectAll.setText("Select all:                                    ");
         selectAll.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         selectAll.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        selectAll.setMaximumSize(new java.awt.Dimension(198, 24));
+        selectAll.setPreferredSize(new java.awt.Dimension(198, 24));
         selectAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 selectAllPerformed(evt);
@@ -92,6 +115,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         showInStack.setText("Show in stack:                              ");
         showInStack.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         showInStack.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        showInStack.setMaximumSize(new java.awt.Dimension(198, 24));
+        showInStack.setPreferredSize(new java.awt.Dimension(198, 24));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -105,17 +130,17 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(selectAll)
+                            .addComponent(showInStack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addGroup(layout.createSequentialGroup()
                                     .addComponent(OpenButton)
                                     .addGap(18, 18, 18)
                                     .addComponent(cancelButton))
-                                .addComponent(imageOptionPanel, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(imageOptionPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(SelectButton)
-                                .addComponent(nameField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
-                            .addComponent(showInStack))))
-                .addContainerGap(20, Short.MAX_VALUE))
+                                .addComponent(nameField, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(selectAll, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -128,12 +153,12 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
                 .addComponent(SelectButton)
                 .addGap(1, 1, 1)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                .addComponent(selectAll)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                .addComponent(selectAll, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(imageOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(11, 11, 11)
-                .addComponent(showInStack)
+                .addComponent(showInStack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cancelButton)
@@ -172,6 +197,9 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void OpenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenButtonActionPerformed
+        logger.info("Opening files logger:");
+        logger.debug("debug log");
+        logger.error("error log");
         System.out.println("Opening files:");
         for (Map.Entry<File, List<Integer>> entry : selectedChannels.entrySet()) {
             for (Integer integer : entry.getValue()) {
@@ -181,8 +209,34 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         ImageLoader opener = new ImageLoader();
         opener.makeStack(showInStack.isSelected());
         opener.loadImages(selectedChannels);
-        opener.show();
+        opener.showLoadedImages();
+
+        FileToFileInfoWrapper fileToFileInfoWrapper = new FileToFileInfoWrapper();
+        List<ChannelMetadata> parsedMetada = null;
+        try {
+            parsedMetada = fileToFileInfoWrapper.parseMetada(selectedChannels);
+            for (ChannelMetadata channelMetadata : parsedMetada) {
+                logger.info("Channel-name: " + channelMetadata.getChannelName());
+                logger.info(channelMetadata.printTags());
+            }
+            //TODO check metadatawriter parameter
+            String saveFile = currentDirectory.getAbsolutePath() + File.separator + "tagSummary.txt";
+            MetadataWriter dataWriter = new MetadataWriter(new File(saveFile));
+            dataWriter.writeData(parsedMetada);
+
+        } catch (Exception ex) {
+            logger.warn(ex.getMessage());
+        }
     }//GEN-LAST:event_OpenButtonActionPerformed
+
+    private void printImagesInformation() {
+        int[] idList = WindowManager.getIDList();
+        for (int id : idList) {
+            ImagePlus img = WindowManager.getImage(id);
+            FileInfo originalFileInfo = img.getOriginalFileInfo();
+            System.out.println("debugInfo id-" + id + ":\n" + originalFileInfo.debugInfo);
+        }
+    }
 
     private void selectAllPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllPerformed
         if (selectAll.isSelected()) {

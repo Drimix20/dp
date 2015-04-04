@@ -4,7 +4,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.io.TiffDecoder;
-import ij.measure.Calibration;
 import java.io.*;
 import java.util.*;
 
@@ -29,7 +28,7 @@ public class ImageLoader {
             FileInfo[] fi = retrieveFiloInfos(file);
 
             for (Integer integer : list) {
-                ImagePlus img = loadImage(fi, integer, false);
+                ImagePlus img = loadImage(fi, integer);
                 images.add(img);
             }
             IJ.showProgress(currentIndex, channelMap.size());
@@ -37,7 +36,7 @@ public class ImageLoader {
         }
     }
 
-    public void show() {
+    public void showLoadedImages() {
         if (makeStack) {
             ImagePlus imagesConvertedToStack = convertImagesToStack();
             if (imagesConvertedToStack != null) {
@@ -74,22 +73,14 @@ public class ImageLoader {
         return fi;
     }
 
-    private ImagePlus loadImage(FileInfo[] infos, int index, boolean show) {
-        ij.io.FileOpener fo = new ij.io.FileOpener(infos[0]);
-        TiffDecoder decoder = new TiffDecoder(infos[0].directory, infos[0].fileName);
-        decoder.enableDebugging();
-        FileInfo[] info = new FileInfo[1];
-        try {
-            info = decoder.getTiffInfo();
-        } catch (Exception e) {
-        }
+    private ImagePlus loadImage(FileInfo[] infos, int index) {
+        String debugInfoForAllFileInfos = infos[0].debugInfo;
+        String debugInfoByIndex = debugInfoForAllFileInfos.split("nextIFD=\\d+")[index];
 
-        ImagePlus imp1 = fo.open(false);
-        Calibration cal = imp1.getCalibration();
-        System.out.println("Type" + imp1.getType());
-
-        fo = new ij.io.FileOpener(infos[index]);
-        ImagePlus imp2 = fo.open(show);
+        FileInfo fiForLoad = infos[index];
+        fiForLoad.debugInfo = debugInfoByIndex;
+        ij.io.FileOpener fo = new ij.io.FileOpener(fiForLoad);
+        ImagePlus imp2 = fo.open(false);
 
         return imp2;
     }

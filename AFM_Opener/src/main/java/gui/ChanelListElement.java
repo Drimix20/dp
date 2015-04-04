@@ -17,7 +17,7 @@ public class ChanelListElement extends javax.swing.JPanel {
 
     public ChanelListElement(File file, int imageIndex, int channelIndex, Map<File, List<Integer>> selectedImages, boolean setSelected) {
         initComponents();
-        String labelText = "Image_" + imageIndex + "/channel_" + channelIndex;
+        String labelText = "Image_" + imageIndex + "/subimage_" + channelIndex;
         imageElemLabel.setText(labelText);
         imageElemLabel.setToolTipText(file.getName());
         this.imageFile = file;

@@ -11,13 +11,13 @@ import java.util.Map;
  */
 public class SelectedChannelsContainer {
 
-    private static SelectedChannelsContainer instance;
+    private static SelectedChannelsContainer instance = new SelectedChannelsContainer();
     private Map<File, List<Integer>> selectedChannels;
 
+    private SelectedChannelsContainer() {
+    }
+
     public static synchronized SelectedChannelsContainer newInstance() {
-        if (instance == null) {
-            instance = new SelectedChannelsContainer();
-        }
         return instance;
     }
 

@@ -75,7 +75,7 @@
     </dependencies>
 
     <build>
-        <resources>
+<!--        <resources>
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
             </resource>
@@ -90,7 +90,7 @@
             <testResource>
                 <directory>${project.build.testSourceDirectory}</directory>
             </testResource>
-        </testResources>
+        </testResources>-->
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

@@ -1,6 +1,5 @@
 package gui;
 
-import common.ChannelMetadata;
 import common.FilePreprocessor;
 import common.ImageLoader;
 import common.ImageOptionManager;
@@ -14,7 +13,6 @@ import java.util.TreeMap;
 import javax.swing.JFileChooser;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import metadata.decoder.MetadataWriter;
 
 /**
  *
@@ -210,23 +208,24 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         opener.makeStack(showInStack.isSelected());
         opener.loadImages(selectedChannels);
         opener.showLoadedImages();
+        /*
+         FileToFileInfoWrapper fileToFileInfoWrapper = new FileToFileInfoWrapper();
+         List<ChannelMetadata> parsedMetada = null;
+         try {
+         parsedMetada = fileToFileInfoWrapper.parseMetada(selectedChannels);
+         for (ChannelMetadata channelMetadata : parsedMetada) {
+         logger.info("Channel-name: " + channelMetadata.getChannelName());
+         logger.info(channelMetadata.printTags());
+         }
 
-        FileToFileInfoWrapper fileToFileInfoWrapper = new FileToFileInfoWrapper();
-        List<ChannelMetadata> parsedMetada = null;
-        try {
-            parsedMetada = fileToFileInfoWrapper.parseMetada(selectedChannels);
-            for (ChannelMetadata channelMetadata : parsedMetada) {
-                logger.info("Channel-name: " + channelMetadata.getChannelName());
-                logger.info(channelMetadata.printTags());
-            }
-            //TODO check metadatawriter parameter
-            String saveFile = currentDirectory.getAbsolutePath() + File.separator + "tagSummary.txt";
-            MetadataWriter dataWriter = new MetadataWriter(new File(saveFile));
-            dataWriter.writeData(parsedMetada);
+         String saveFile = currentDirectory.getAbsolutePath() + File.separator + "tagSummary.txt";
+         MetadataWriter dataWriter = new MetadataWriter(new File(saveFile));
+         dataWriter.writeData(parsedMetada);
 
-        } catch (Exception ex) {
-            logger.warn(ex.getMessage());
-        }
+         } catch (Exception ex) {
+         logger.warn(ex.getMessage());
+         }
+         */
     }//GEN-LAST:event_OpenButtonActionPerformed
 
     private void printImagesInformation() {

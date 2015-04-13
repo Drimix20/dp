@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>PA165</groupId>
+    <groupId>DP</groupId>
     <artifactId>MetadataDecoder</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -12,19 +12,25 @@
     </properties>
 
     <repositories>
-        <repository>
+<!--        <repository>
             <id>com.springsource.repository.bundles.external</id>
             <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
             <url>http://repository.springsource.com/maven/bundles/external</url>
-        </repository>
+        </repository>-->
+<!--        <repository>
+            <id>LocalRepository</id>
+            <url>file:${project.basedir}/lib</url>
+        </repository>-->
     </repositories>
+
     <dependencies>
         <dependency>
             <groupId>javax.media.jai</groupId>
-            <artifactId>com.springsource.javax.media.jai.core</artifactId>
+            <artifactId>com.springsource.javax.media.jai.codec</artifactId>
             <version>1.1.3</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/jai_codec.jar</systemPath>
         </dependency>
-        <!-- Logovani -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

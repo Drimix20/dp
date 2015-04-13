@@ -20,10 +20,10 @@ public class MetadataWriter {
     private Set<String> tagHeader;
     private Set<String> tagExclusion;
 
-    public MetadataWriter(File directory) {
-        this.outputFile = directory;
-        tagHeader = new TreeSet<>();
-        tagExclusion = new TreeSet<>();
+    public MetadataWriter(File outputFile) {
+        this.outputFile = outputFile;
+        tagHeader = new TreeSet<String>();
+        tagExclusion = new TreeSet<String>();
     }
 
     public void setTagExclusion(Set<String> tagExclusion) {
@@ -41,7 +41,9 @@ public class MetadataWriter {
         StringBuilder stringBuilder = new StringBuilder(printHeader());
 
         stringBuilder.append(NEW_LINE);
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)))) {
+        Writer writer = null;
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)));
 
             for (ChannelMetadata singleChannel : metadata) {
                 stringBuilder.append(singleChannel.getFilePath()).append(DELIMETR);
@@ -64,6 +66,15 @@ public class MetadataWriter {
             writer.write(stringBuilder.toString());
         } catch (Exception ex) {
             logger.error("Error while writing to file", ex);
+            throw new IllegalStateException("Error while writing to file");
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException ex) {
+                logger.warn("Errow while closing writer", ex);
+            }
         }
 
     }

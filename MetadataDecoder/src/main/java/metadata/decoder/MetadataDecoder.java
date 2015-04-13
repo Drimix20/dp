@@ -20,8 +20,12 @@ public class MetadataDecoder {
 
     public List<ChannelMetadata> decodeMetadata(File file) throws Exception {
         logger.warn("Decoding metadata for file " + file.getName());
-        List<ChannelMetadata> channels = new ArrayList<>();
-        try (SeekableStream stream = new FileSeekableStream(file)) {
+        List<ChannelMetadata> channels = new ArrayList<ChannelMetadata>();
+
+        SeekableStream stream = null;
+        try {
+            stream = new FileSeekableStream(file);
+
             int numDirectories = TIFFDirectory.getNumDirectories(stream);
             for (int i = 0; i < numDirectories; i++) {
                 ChannelMetadata metadata = null;
@@ -41,6 +45,13 @@ public class MetadataDecoder {
                 channels.add(metadata);
             }
             logger.info("End of IFD");
+        } catch (Exception ex) {
+            logger.error("Errow while decoding data", ex);
+            throw new IllegalStateException("Errow while decoding data", ex);
+        } finally {
+            if (stream != null) {
+                stream.close();
+            }
         }
 
         return channels;

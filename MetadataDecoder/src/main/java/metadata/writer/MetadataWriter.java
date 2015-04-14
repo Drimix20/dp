@@ -18,23 +18,23 @@ public class MetadataWriter implements Writer {
     private static final String NEW_LINE = "\n";
     private static final String DELIMETR = "\t";
     private File outputFile;
-    private Set<String> tagHeader;
-    private Set<String> tagExclusion;
+    private Set<Integer> tagHeader;
+    private Set<Integer> tagExclusion;
 
     public MetadataWriter(File outputFile) {
         this.outputFile = outputFile;
-        tagHeader = new TreeSet<String>();
-        tagExclusion = new TreeSet<String>();
+        tagHeader = new TreeSet<Integer>();
+        tagExclusion = new TreeSet<Integer>();
     }
 
     @Override
-    public void setTagExclusion(Set<String> tagExclusion) {
+    public void setTagExclusion(Set<Integer> tagExclusion) {
         logger.info("Setting tag exclusion: " + tagExclusion);
         this.tagExclusion = tagExclusion;
     }
 
     @Override
-    public void setTagHeader(Set<String> tagHeader) {
+    public void setTagHeader(Set<Integer> tagHeader) {
         logger.info("Setting tag headers: " + tagHeader);
         this.tagHeader = tagHeader;
     }
@@ -42,7 +42,8 @@ public class MetadataWriter implements Writer {
     @Override
     public void writeData(List<ChannelMetadata> metadata) {
         logger.info("Writing metadata to file " + outputFile);
-        StringBuilder stringBuilder = new StringBuilder(printHeader());
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getTagHeaders(metadata));
 
         stringBuilder.append(NEW_LINE);
         java.io.Writer writer = null;
@@ -52,13 +53,12 @@ public class MetadataWriter implements Writer {
             for (ChannelMetadata singleChannel : metadata) {
                 stringBuilder.append(singleChannel.getFilePath());
 
-                for (String tag : tagHeader) {
-                    if (tagExclusion.contains(tag)) {
+                for (Integer tagKey : tagHeader) {
+                    if (tagExclusion.contains(tagKey)) {
                         stringBuilder.append(DELIMETR).append("");
                         continue;
                     }
-                    Integer tagInt = Integer.parseInt(tag.trim());
-                    Object tagValue = singleChannel.getTagValue(tagInt);
+                    Object tagValue = singleChannel.getTagValue(tagKey);
                     if (tagValue instanceof String) {
                         tagValue = ((String) tagValue).replace("\n", ";");
                     }
@@ -83,11 +83,28 @@ public class MetadataWriter implements Writer {
 
     }
 
-    private String printHeader() {
+    private String getTagHeaders(List<ChannelMetadata> metadata) {
         String output = "file";
-        for (Iterator<String> it = tagHeader.iterator(); it.hasNext();) {
+        Set<Integer> headers = getAllTagKeys(metadata);
+        for (Iterator<Integer> it = headers.iterator(); it.hasNext();) {
             output += DELIMETR + it.next();
         }
         return output;
+    }
+
+    private Set<Integer> getAllTagKeys(List<ChannelMetadata> metadata) {
+        if (isTagHeaderSet()) {
+            return tagHeader;
+        }
+
+        Set<Integer> header = new TreeSet<Integer>();
+        for (ChannelMetadata data : metadata) {
+            header.addAll(data.getTags());
+        }
+        return header;
+    }
+
+    private boolean isTagHeaderSet() {
+        return !tagHeader.isEmpty();
     }
 }

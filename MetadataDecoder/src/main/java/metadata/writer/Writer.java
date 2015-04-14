@@ -10,9 +10,9 @@ import metadata.decoder.ChannelMetadata;
  */
 public interface Writer {
 
-    void setTagExclusion(Set<String> tagExclusion);
+    void setTagExclusion(Set<Integer> tagExclusion);
 
-    void setTagHeader(Set<String> tagHeader);
+    void setTagHeader(Set<Integer> tagHeader);
 
     void writeData(List<ChannelMetadata> metadata);
 

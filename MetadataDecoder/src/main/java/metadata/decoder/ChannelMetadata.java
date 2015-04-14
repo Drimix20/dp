@@ -96,7 +96,7 @@ public class ChannelMetadata {
         throw new NotImplementedException();
     }
 
-    public String printTags() {
+    public String printTagValues() {
         StringBuilder sb = new StringBuilder("Tags:\n");
         for (Map.Entry<Integer, Object> entry : tags.entrySet()) {
             Integer tag = entry.getKey();

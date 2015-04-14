@@ -50,7 +50,7 @@ public class MetadataWriter implements Writer {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)));
 
             for (ChannelMetadata singleChannel : metadata) {
-                stringBuilder.append(singleChannel.getFilePath()).append(DELIMETR);
+                stringBuilder.append(singleChannel.getFilePath());
 
                 for (String tag : tagHeader) {
                     if (tagExclusion.contains(tag)) {
@@ -84,7 +84,7 @@ public class MetadataWriter implements Writer {
     }
 
     private String printHeader() {
-        String output = "file" + DELIMETR;
+        String output = "file";
         for (Iterator<String> it = tagHeader.iterator(); it.hasNext();) {
             output += DELIMETR + it.next();
         }

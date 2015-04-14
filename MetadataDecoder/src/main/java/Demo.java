@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 import metadata.decoder.ChannelMetadata;
 import metadata.decoder.Decoder;
 import metadata.decoder.MetadataDecoder;
-import metadata.decoder.MetadataWriter;
-import metadata.decoder.Writer;
+import metadata.writer.MetadataWriter;
+import metadata.writer.Writer;
 
 /**
  *
@@ -18,7 +18,7 @@ public class Demo {
 
     public static void main(String[] args) {
         try {
-            File mainDirectory = new File("c:\\Users\\Drimal\\Downloads\\allDpFiles\\");
+            File mainDirectory = new File("c:\\Users\\Drimal\\Downloads\\testData\\");
 
             File[] listFiles = mainDirectory.listFiles(new JpkFilter());
             List<ChannelMetadata> metadata = new ArrayList<ChannelMetadata>();

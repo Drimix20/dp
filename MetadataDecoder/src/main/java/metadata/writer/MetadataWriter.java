@@ -1,10 +1,11 @@
-package metadata.decoder;
+package metadata.writer;
 
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import metadata.decoder.ChannelMetadata;
 import org.apache.log4j.Logger;
 
 /**

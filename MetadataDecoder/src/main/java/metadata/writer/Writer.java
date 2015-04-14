@@ -1,7 +1,8 @@
-package metadata.decoder;
+package metadata.writer;
 
 import java.util.List;
 import java.util.Set;
+import metadata.decoder.ChannelMetadata;
 
 /**
  *

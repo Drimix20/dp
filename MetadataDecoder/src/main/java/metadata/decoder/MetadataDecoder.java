@@ -24,7 +24,7 @@ public class MetadataDecoder implements Decoder {
             try {
                 channels.addAll(decodeMetadata(file));
             } catch (Exception ex) {
-                logger.warn("Error while decoding", ex);
+                logger.warn("Error while decoding metadata", ex);
             }
         }
 
@@ -42,26 +42,13 @@ public class MetadataDecoder implements Decoder {
 
             int numDirectories = TIFFDirectory.getNumDirectories(stream);
             for (int i = 0; i < numDirectories; i++) {
-                ChannelMetadata metadata = null;
                 TIFFDirectory tiffDirectory = new TIFFDirectory(stream, i);
-                metadata = new ChannelMetadata(file.getName());
-                metadata.setIFD("" + tiffDirectory.getIFDOffset());
-
-                TIFFField[] fields = tiffDirectory.getFields();
-                logger.info("File: " + file.getName() + ", offsetIFD: " + tiffDirectory.getIFDOffset());
-                for (int j = 0; j < fields.length; j++) {
-                    TIFFField tIFFField = fields[j];
-                    Object tagValue = getTagValue(tIFFField);
-                    metadata.setTagValue(tIFFField.getTag(), tagValue);
-
-                    logger.info("Tag: " + tIFFField.getTag() + ", value: " + tagValue);
-                }
-                channels.add(metadata);
+                channels.add(decodeTiffDirectory(file.getName(), tiffDirectory));
             }
             logger.info("End of IFD");
         } catch (Exception ex) {
-            logger.error("Errow while decoding data", ex);
-            throw new IllegalStateException("Errow while decoding data", ex);
+            logger.error("Errow while decoding metadata", ex);
+            throw new IllegalStateException("Errow while decoding metadadata", ex);
         } finally {
             if (stream != null) {
                 stream.close();
@@ -69,6 +56,22 @@ public class MetadataDecoder implements Decoder {
         }
 
         return channels;
+    }
+
+    private ChannelMetadata decodeTiffDirectory(String fileName, TIFFDirectory tiffDirectory) {
+        ChannelMetadata metadata = new ChannelMetadata(fileName);
+        metadata.setIFD("" + tiffDirectory.getIFDOffset());
+
+        TIFFField[] fields = tiffDirectory.getFields();
+        logger.info("File: " + fileName + ", offsetIFD: " + tiffDirectory.getIFDOffset());
+        for (int j = 0; j < fields.length; j++) {
+            TIFFField tIFFField = fields[j];
+            Object tagValue = getTagValue(tIFFField);
+            metadata.setTagValue(tIFFField.getTag(), tagValue);
+
+            logger.info("Tag: " + tIFFField.getTag() + ", value: " + tagValue);
+        }
+        return metadata;
     }
 
     private static Object getTagValue(TIFFField tag) {

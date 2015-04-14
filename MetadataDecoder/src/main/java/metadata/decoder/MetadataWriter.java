@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class MetadataWriter {
+public class MetadataWriter implements Writer {
 
     Logger logger = Logger.getLogger(MetadataWriter.class);
     private static final String NEW_LINE = "\n";
@@ -26,22 +26,25 @@ public class MetadataWriter {
         tagExclusion = new TreeSet<String>();
     }
 
+    @Override
     public void setTagExclusion(Set<String> tagExclusion) {
         logger.info("Setting tag exclusion: " + tagExclusion);
         this.tagExclusion = tagExclusion;
     }
 
+    @Override
     public void setTagHeader(Set<String> tagHeader) {
         logger.info("Setting tag headers: " + tagHeader);
         this.tagHeader = tagHeader;
     }
 
+    @Override
     public void writeData(List<ChannelMetadata> metadata) {
         logger.info("Writing metadata to file " + outputFile);
         StringBuilder stringBuilder = new StringBuilder(printHeader());
 
         stringBuilder.append(NEW_LINE);
-        Writer writer = null;
+        java.io.Writer writer = null;
         try {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)));
 

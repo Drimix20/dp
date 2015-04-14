@@ -14,10 +14,24 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class MetadataDecoder {
+public class MetadataDecoder implements Decoder {
 
     private Logger logger = Logger.getLogger(MetadataDecoder.class);
 
+    public List<ChannelMetadata> decodeMetadata(List<File> files) throws Exception {
+        List<ChannelMetadata> channels = new ArrayList<ChannelMetadata>();
+        for (File file : files) {
+            try {
+                channels.addAll(decodeMetadata(file));
+            } catch (Exception ex) {
+                logger.warn("Error while decoding", ex);
+            }
+        }
+
+        return channels;
+    }
+
+    @Override
     public List<ChannelMetadata> decodeMetadata(File file) throws Exception {
         logger.warn("Decoding metadata for file " + file.getName());
         List<ChannelMetadata> channels = new ArrayList<ChannelMetadata>();

@@ -17,7 +17,7 @@
     </appender>
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>
-        <priority value="debug"/>
+        <priority value="all"/>
         <appender-ref ref="STDOUT"/>
     </root>
 </log4j:configuration>

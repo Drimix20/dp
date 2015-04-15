@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import metadata.decoder.ChannelMetadata;
 
 /**
  * Manager object for element option in image option panel
@@ -25,6 +26,7 @@ public class ImageOptionManager extends Thread {
     private final JScrollPane scrollPane;
     private Map<File, List<Integer>> channels;
     private Map<File, List<Integer>> selectedChannels;
+    private List<ChannelMetadata> metadatas;
     private boolean selectAll;
 
     public ImageOptionManager(JScrollPane scrollPane) {
@@ -43,9 +45,12 @@ public class ImageOptionManager extends Thread {
         return selectedChannels;
     }
 
+    public void setMetadatas(List<ChannelMetadata> metadatas) {
+        this.metadatas = metadatas;
+    }
+
     /**
-     * Method select check button for all elements in image option panel. If
-     * boolean parameter is true then all elements will be selected else
+     * Method select check button for all elements in image option panel. If boolean parameter is true then all elements will be selected else
      * elements will be unselected.
      *
      * @param select selection flag
@@ -100,8 +105,7 @@ public class ImageOptionManager extends Thread {
     }
 
     /**
-     * Create column panel which will contains horizontal option panels for each
-     * image
+     * Create column panel which will contains horizontal option panels for each image
      *
      * @param backgroundPanel panel where column panel will be added
      * @return created column panel

@@ -3,6 +3,7 @@ package gui;
 import common.FilePreprocessor;
 import common.ImageLoader;
 import common.ImageOptionManager;
+import common.MetadataRetriever;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.io.FileInfo;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.swing.JFileChooser;
-import org.apache.log4j.Level;
+import metadata.decoder.ChannelMetadata;
 import org.apache.log4j.Logger;
 
 /**
@@ -29,18 +30,9 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
      * Creates new form OpenerFrame
      */
     public AfmOpenerFrame() {
-        logger.setLevel(Level.ALL);
         initComponents();
         imageOptionManager = new ImageOptionManager(imageOptionPanel);
         selectedChannels = new TreeMap<File, List<Integer>>();
-        printFrameInformation();
-    }
-
-    private void printFrameInformation() {
-        System.out.println("ImageOptionPanel: width:" + imageOptionPanel.getWidth() + ",height: " + imageOptionPanel.getHeight());
-        System.out.println("Frame: width:" + this.getWidth() + ", height: " + this.getHeight());
-        System.out.println("ShowInStack: width:" + showInStack.getWidth() + ", height: " + showInStack.getHeight());
-        System.out.println("Select All: width:" + selectAll.getWidth() + ", height: " + selectAll.getHeight());
     }
 
     /**
@@ -181,6 +173,15 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
             FilePreprocessor processor = new FilePreprocessor();
             Map<File, List<Integer>> channels = processor.preprocess(file);
+
+            MetadataRetriever metadataRetriever = new MetadataRetriever();
+            try {
+                metadataRetriever.parseMetada(channels);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+            List<ChannelMetadata> imagesMetadata = metadataRetriever.getImagesMetadata();
+            imageOptionManager.setMetadatas(imagesMetadata);
             imageOptionManager.setChannels(channels);
             imageOptionManager.run();
             selectedChannels = imageOptionManager.getSelectedChannels();
@@ -195,37 +196,16 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void OpenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenButtonActionPerformed
-        logger.info("Opening files logger:");
-        logger.debug("debug log");
-        logger.error("error log");
-        System.out.println("Opening files:");
+        logger.info("Opening files:");
         for (Map.Entry<File, List<Integer>> entry : selectedChannels.entrySet()) {
             for (Integer integer : entry.getValue()) {
                 System.out.println("selected Channel: " + integer);
             }
         }
-        ImageLoader opener = new ImageLoader();
-        opener.makeStack(showInStack.isSelected());
-        opener.loadImages(selectedChannels);
-        opener.showLoadedImages();
-        /*
-         FileToFileInfoWrapper fileToFileInfoWrapper = new FileToFileInfoWrapper();
-         List<ChannelMetadata> parsedMetada = null;
-         try {
-         parsedMetada = fileToFileInfoWrapper.parseMetada(selectedChannels);
-         for (ChannelMetadata channelMetadata : parsedMetada) {
-         logger.info("Channel-name: " + channelMetadata.getChannelName());
-         logger.info(channelMetadata.printTags());
-         }
-
-         String saveFile = currentDirectory.getAbsolutePath() + File.separator + "tagSummary.txt";
-         MetadataWriter dataWriter = new MetadataWriter(new File(saveFile));
-         dataWriter.writeData(parsedMetada);
-
-         } catch (Exception ex) {
-         logger.warn(ex.getMessage());
-         }
-         */
+        ImageLoader loader = new ImageLoader();
+        loader.makeStack(showInStack.isSelected());
+        loader.loadImages(selectedChannels);
+        loader.showLoadedImages();
     }//GEN-LAST:event_OpenButtonActionPerformed
 
     private void printImagesInformation() {

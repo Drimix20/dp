@@ -13,7 +13,7 @@ public class ChanelListElement extends javax.swing.JPanel {
 
     private File imageFile;
     private int indexOfElement;
-    private Map<File, List<Integer>> selectedImages;//TODO create singleton class
+    private Map<File, List<Integer>> selectedImages;
 
     public ChanelListElement(File file, int imageIndex, int channelIndex, Map<File, List<Integer>> selectedImages, boolean setSelected) {
         initComponents();

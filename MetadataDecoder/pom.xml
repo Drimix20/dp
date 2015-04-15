@@ -39,7 +39,7 @@
 
     <build>
     <plugins>
-      <!-- any other plugins -->
+<!--       any other plugins
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
@@ -55,7 +55,19 @@
             <descriptorRef>with-dependencies</descriptorRef>
           </descriptorRefs>
         </configuration>
-      </plugin>
+      </plugin>-->
+      <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
     </plugins>
   </build>
 </project>

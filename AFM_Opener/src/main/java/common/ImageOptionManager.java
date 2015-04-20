@@ -15,6 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import metadata.decoder.ChannelMetadata;
+import selector.ChannelContainer;
 
 /**
  * Manager object for element option in image option panel
@@ -24,21 +25,23 @@ import metadata.decoder.ChannelMetadata;
 public class ImageOptionManager extends Thread {
 
     private final JScrollPane scrollPane;
-    private Map<File, List<Integer>> channels;
+    private Map<File, List<Integer>> originalChannels;
+    private List<ChannelContainer> originalChannels2;
     private Map<File, List<Integer>> selectedChannels;
     private List<ChannelMetadata> metadatas;
     private boolean selectAll;
 
-    public ImageOptionManager(JScrollPane scrollPane) {
+    public ImageOptionManager(JScrollPane scrollPane, List<ChannelContainer> originalChannels) {
         this.scrollPane = scrollPane;
+        this.originalChannels2 = originalChannels;
     }
 
-    public Map<File, List<Integer>> getChannels() {
-        return channels;
+    public Map<File, List<Integer>> getOriginalChannels() {
+        return originalChannels;
     }
 
     public void setChannels(Map<File, List<Integer>> channels) {
-        this.channels = channels;
+        this.originalChannels = channels;
     }
 
     public Map<File, List<Integer>> getSelectedChannels() {
@@ -81,11 +84,12 @@ public class ImageOptionManager extends Thread {
         JPanel columnpanel = createColumnPanelForOptionElements(backgroundPanel);
 
         int fileIndex = 1;
-        for (Map.Entry<File, List<Integer>> entry : channels.entrySet()) {
+        for (Map.Entry<File, List<Integer>> entry : originalChannels.entrySet()) {
             File imageFile = entry.getKey();
             int rowIndex = 1;
             for (Integer channelIndex : entry.getValue()) {
-                final ChanelListElement rowPanel = new ChanelListElement(imageFile, fileIndex, channelIndex, selectedChannels, selectAll);
+                String channelName = (String) this.metadatas.get(channelIndex).getTagValue(32848);
+                final ChanelListElement rowPanel = new ChanelListElement(imageFile, fileIndex, channelIndex, channelName, selectedChannels, selectAll);
                 columnpanel.add(rowPanel);
                 if (rowIndex % 2 == 0) {
                     rowPanel.setBackground(SystemColor.inactiveCaptionBorder);
@@ -98,7 +102,7 @@ public class ImageOptionManager extends Thread {
 
     private void initializeSelectedChannelsMap() {
         selectedChannels = new TreeMap<File, List<Integer>>();
-        for (Map.Entry<File, List<Integer>> entry : channels.entrySet()) {
+        for (Map.Entry<File, List<Integer>> entry : originalChannels.entrySet()) {
             File key = entry.getKey();
             selectedChannels.put(key, new ArrayList<Integer>());
         }
@@ -111,10 +115,10 @@ public class ImageOptionManager extends Thread {
      * @return created column panel
      */
     private JPanel createColumnPanelForOptionElements(JPanel backgroundPanel) {
-        JPanel columnpanel = new JPanel();
-        backgroundPanel.add(columnpanel, BorderLayout.NORTH);
-        columnpanel.setLayout(new GridLayout(0, 1, 0, 1));
-        columnpanel.setBackground(Color.ORANGE);
-        return columnpanel;
+        JPanel columnPanel = new JPanel();
+        backgroundPanel.add(columnPanel, BorderLayout.NORTH);
+        columnPanel.setLayout(new GridLayout(0, 1, 0, 1));
+        columnPanel.setBackground(Color.ORANGE);
+        return columnPanel;
     }
 }

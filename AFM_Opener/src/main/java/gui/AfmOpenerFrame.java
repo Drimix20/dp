@@ -1,12 +1,9 @@
 package gui;
 
-import common.FilePreprocessor;
+import common.FilePreloader;
 import common.ImageLoader;
 import common.ImageOptionManager;
-import common.MetadataRetriever;
-import ij.ImagePlus;
-import ij.WindowManager;
-import ij.io.FileInfo;
+import common.MetadataLoader;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +11,7 @@ import java.util.TreeMap;
 import javax.swing.JFileChooser;
 import metadata.decoder.ChannelMetadata;
 import org.apache.log4j.Logger;
+import selector.ChannelContainer;
 
 /**
  *
@@ -31,7 +29,6 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
      */
     public AfmOpenerFrame() {
         initComponents();
-        imageOptionManager = new ImageOptionManager(imageOptionPanel);
         selectedChannels = new TreeMap<File, List<Integer>>();
     }
 
@@ -171,18 +168,16 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             nameField.setText(file.getName());
             nameField.setToolTipText(file.getName());
 
-            FilePreprocessor processor = new FilePreprocessor();
-            Map<File, List<Integer>> channels = processor.preprocess(file);
+            FilePreloader processor = new FilePreloader();
+            Map<File, List<Integer>> allPreloadedChannels = processor.preprocess(file);
+            List<ChannelContainer> channelContainer = processor.getChannelContainer();
 
-            MetadataRetriever metadataRetriever = new MetadataRetriever();
-            try {
-                metadataRetriever.parseMetada(channels);
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
-            List<ChannelMetadata> imagesMetadata = metadataRetriever.getImagesMetadata();
+            MetadataLoader metadataLoader = new MetadataLoader();
+            metadataLoader.parseMetadata(allPreloadedChannels);
+            List<ChannelMetadata> imagesMetadata = metadataLoader.getImagesMetadata();
+            imageOptionManager = new ImageOptionManager(imageOptionPanel, channelContainer);
             imageOptionManager.setMetadatas(imagesMetadata);
-            imageOptionManager.setChannels(channels);
+            imageOptionManager.setChannels(allPreloadedChannels);
             imageOptionManager.run();
             selectedChannels = imageOptionManager.getSelectedChannels();
         }
@@ -204,18 +199,9 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         }
         ImageLoader loader = new ImageLoader();
         loader.makeStack(showInStack.isSelected());
-        loader.loadImages(selectedChannels);
+        List<ChannelContainer> loadImages = loader.loadImages(selectedChannels);
         loader.showLoadedImages();
     }//GEN-LAST:event_OpenButtonActionPerformed
-
-    private void printImagesInformation() {
-        int[] idList = WindowManager.getIDList();
-        for (int id : idList) {
-            ImagePlus img = WindowManager.getImage(id);
-            FileInfo originalFileInfo = img.getOriginalFileInfo();
-            System.out.println("debugInfo id-" + id + ":\n" + originalFileInfo.debugInfo);
-        }
-    }
 
     private void selectAllPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllPerformed
         if (selectAll.isSelected()) {

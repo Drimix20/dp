@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Object represents container for metadata information about image channel
@@ -54,46 +53,11 @@ public class ChannelMetadata {
         tags.put(tag, value);
     }
 
-    public int getIntegerTagValue(int tag) {
-        if (tag <= 0) {
-            throw new IllegalArgumentException("Parameter tag is negative or zero");
-        }
-        throw new NotImplementedException();
-    }
-
-    public String getStringTagValue(int tag) {
-        if (tag <= 0) {
-            throw new IllegalArgumentException("Parameter tag is negative or zero");
-        }
-        throw new NotImplementedException();
-    }
-
-    public boolean getBoolTagValue(int tag) {
-        if (tag <= 0) {
-            throw new IllegalArgumentException("Parameter tag is negative or zero");
-        }
-        throw new NotImplementedException();
-    }
-
-    public double getDoubleTagValue(int tag) {
-        if (tag <= 0) {
-            throw new IllegalArgumentException("Parameter tag is negative or zero");
-        }
-        throw new NotImplementedException();
-    }
-
     public Object getTagValue(int tag) {
         if (tag <= 0) {
             throw new IllegalArgumentException("Parameter tag is negative or zero");
         }
         return tags.get(tag);
-    }
-
-    public double getDateTagValue(int tag) {
-        if (tag <= 0) {
-            throw new IllegalArgumentException("Parameter tag is negative or zero");
-        }
-        throw new NotImplementedException();
     }
 
     public String printTagValues() {

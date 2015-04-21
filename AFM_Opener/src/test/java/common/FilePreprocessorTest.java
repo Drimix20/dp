@@ -1,5 +1,6 @@
 package common;
 
+import importer.FileSearcher;
 import java.io.File;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -22,7 +23,7 @@ public class FilePreprocessorTest {
     @Test
     public void prealoadJpkFileFromDirectory() {
         File parent = new File(parentPath);
-        FilePreloader instance = new FilePreloader();
+        FileSearcher instance = new FileSearcher();
 
         List<ChannelContainer> result = instance.preloadJpkImageFiles(parent);
         assertEquals("Wrong size of result", 9, result.size());
@@ -41,7 +42,7 @@ public class FilePreprocessorTest {
     @Test
     public void prealoadJpkFileFromOneFile() {
         File parent = new File(parentPath + "/thyroglobulin 669 kDa-2013.08.13-13.59.14.jpk");
-        FilePreloader instance = new FilePreloader();
+        FileSearcher instance = new FileSearcher();
 
         List<ChannelContainer> result = instance.preloadJpkImageFiles(parent);
         assertEquals("Wrong size of result", 7, result.size());

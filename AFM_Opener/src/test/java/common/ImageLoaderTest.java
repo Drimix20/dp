@@ -1,5 +1,6 @@
 package common;
 
+import importer.ImageLoader;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;

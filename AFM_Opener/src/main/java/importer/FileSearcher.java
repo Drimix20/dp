@@ -1,4 +1,4 @@
-package common;
+package importer;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -11,7 +11,9 @@ import selector.ChannelContainer;
  *
  * @author Drimal
  */
-public class FilePreprocessor2 {
+public class FileSearcher {
+
+    private List<ChannelContainer> channelContainer = new ArrayList<ChannelContainer>();
 
     public List<ChannelContainer> preloadJpkImageFiles(File parent) {
         FileFilter fileFilter = new JkpFileFilter();
@@ -32,7 +34,7 @@ public class FilePreprocessor2 {
             File processingFile = filesToPreprocess[i];
             MetadataLoader metadataLoader = new MetadataLoader();
             List<ChannelMetadata> parseMetadata = metadataLoader.parseMetadata(processingFile);
-            container.addAll(mapMetadataToChannelContainerList(file, parseMetadata));
+            container.addAll(mapMetadataToChannelContainerList(processingFile, parseMetadata));
         }
 
         return container;

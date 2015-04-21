@@ -1,4 +1,4 @@
-package common;
+package importer;
 
 import ij.*;
 import ij.process.*;

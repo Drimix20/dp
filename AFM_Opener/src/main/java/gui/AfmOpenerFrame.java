@@ -1,15 +1,13 @@
 package gui;
 
-import common.FilePreloader;
-import common.ImageLoader;
+import importer.FileSearcher;
+import importer.ImageLoader;
 import common.ImageOptionManager;
-import common.MetadataLoader;
+import common.ImagePresenter;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import javax.swing.JFileChooser;
-import metadata.decoder.ChannelMetadata;
 import org.apache.log4j.Logger;
 import selector.ChannelContainer;
 
@@ -21,15 +19,21 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
     private Logger logger = Logger.getLogger(AfmOpenerFrame.class);
     private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
-    private Map<File, List<Integer>> selectedChannels;
+    private List<ChannelContainer> selectedChannelContainer;
     private ImageOptionManager imageOptionManager;
+    private boolean showLoadedImages;
 
     /**
      * Creates new form OpenerFrame
      */
     public AfmOpenerFrame() {
         initComponents();
-        selectedChannels = new TreeMap<File, List<Integer>>();
+        showLoadedImages = true;
+        selectedChannelContainer = new ArrayList<ChannelContainer>();
+    }
+
+    public void showLoadedImages(boolean showLoadedImages) {
+        this.showLoadedImages = showLoadedImages;
     }
 
     /**
@@ -157,6 +161,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void SelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SelectButtonActionPerformed
+        logger.info("Clicked on select button...");
         JFileChooser fileChooser = new JFileChooser(currentDirectory);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
@@ -168,22 +173,16 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             nameField.setText(file.getName());
             nameField.setToolTipText(file.getName());
 
-            FilePreloader processor = new FilePreloader();
-            Map<File, List<Integer>> allPreloadedChannels = processor.preprocess(file);
-            List<ChannelContainer> channelContainer = processor.getChannelContainer();
+            FileSearcher processor = new FileSearcher();
+            List<ChannelContainer> channelContainer = processor.preloadJpkImageFiles(file);
 
-            MetadataLoader metadataLoader = new MetadataLoader();
-            metadataLoader.parseMetadata(allPreloadedChannels);
-            List<ChannelMetadata> imagesMetadata = metadataLoader.getImagesMetadata();
-            imageOptionManager = new ImageOptionManager(imageOptionPanel, channelContainer);
-            imageOptionManager.setMetadatas(imagesMetadata);
-            imageOptionManager.setChannels(allPreloadedChannels);
+            imageOptionManager = new ImageOptionManager(imageOptionPanel, channelContainer, selectedChannelContainer);
             imageOptionManager.run();
-            selectedChannels = imageOptionManager.getSelectedChannels();
         }
     }//GEN-LAST:event_SelectButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+        logger.info("Canceled");
         if (imageOptionManager != null && imageOptionManager.isAlive()) {
             imageOptionManager.interrupt();
         }
@@ -191,26 +190,26 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void OpenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenButtonActionPerformed
-        logger.info("Opening files:");
-        for (Map.Entry<File, List<Integer>> entry : selectedChannels.entrySet()) {
-            for (Integer integer : entry.getValue()) {
-                System.out.println("selected Channel: " + integer);
-            }
-        }
+        logger.info("Loading images...");
         ImageLoader loader = new ImageLoader();
-        loader.makeStack(showInStack.isSelected());
-        List<ChannelContainer> loadImages = loader.loadImages(selectedChannels);
-        loader.showLoadedImages();
+        List<ChannelContainer> loadedImages = loader.loadImages(selectedChannelContainer);
+
+        if (showLoadedImages) {
+            ImagePresenter presenter = new ImagePresenter();
+            presenter.showAsStack(showInStack.isSelected());
+            presenter.show(loadedImages);
+        }
+        logger.info("Images were loaded");
     }//GEN-LAST:event_OpenButtonActionPerformed
 
     private void selectAllPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllPerformed
+        logger.info("All channels selected");
         if (selectAll.isSelected()) {
             imageOptionManager.selectAllImages(true);
         } else {
             imageOptionManager.selectAllImages(false);
         }
         imageOptionManager.run();
-        selectedChannels = imageOptionManager.getSelectedChannels();
     }//GEN-LAST:event_selectAllPerformed
 
     /**

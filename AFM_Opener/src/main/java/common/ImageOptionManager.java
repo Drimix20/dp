@@ -1,20 +1,17 @@
 package common;
 
-import gui.ChanelListElement;
+import gui.ChannelListElement;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.SystemColor;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import metadata.decoder.ChannelMetadata;
+import org.apache.log4j.Logger;
 import selector.ChannelContainer;
 
 /**
@@ -24,32 +21,20 @@ import selector.ChannelContainer;
  */
 public class ImageOptionManager extends Thread {
 
+    private Logger logger = Logger.getLogger(ImageOptionManager.class);
     private final JScrollPane scrollPane;
-    private Map<File, List<Integer>> originalChannels;
-    private List<ChannelContainer> originalChannels2;
-    private Map<File, List<Integer>> selectedChannels;
-    private List<ChannelMetadata> metadatas;
+    private List<ChannelContainer> originalChannels;
+    private List<ChannelContainer> selectedChannels;
     private boolean selectAll;
 
-    public ImageOptionManager(JScrollPane scrollPane, List<ChannelContainer> originalChannels) {
+    public ImageOptionManager(JScrollPane scrollPane, List<ChannelContainer> originalChannels, List<ChannelContainer> selectedChannels) {
         this.scrollPane = scrollPane;
-        this.originalChannels2 = originalChannels;
+        this.originalChannels = originalChannels;
+        this.selectedChannels = selectedChannels;
     }
 
-    public Map<File, List<Integer>> getOriginalChannels() {
-        return originalChannels;
-    }
-
-    public void setChannels(Map<File, List<Integer>> channels) {
-        this.originalChannels = channels;
-    }
-
-    public Map<File, List<Integer>> getSelectedChannels() {
+    public List<ChannelContainer> getSelectedChannels2() {
         return selectedChannels;
-    }
-
-    public void setMetadatas(List<ChannelMetadata> metadatas) {
-        this.metadatas = metadatas;
     }
 
     /**
@@ -60,6 +45,7 @@ public class ImageOptionManager extends Thread {
      */
     public void selectAllImages(boolean select) {
         selectAll = select;
+        createElementForScrollPanel();
     }
 
     @Override
@@ -68,8 +54,6 @@ public class ImageOptionManager extends Thread {
     }
 
     public void createElementForScrollPanel() {
-        initializeSelectedChannelsMap();
-
         JPanel backgroundPanel = new JPanel();
         scrollPane.setViewportView(backgroundPanel);
         backgroundPanel.setLayout(new BorderLayout(0, 0));
@@ -83,28 +67,18 @@ public class ImageOptionManager extends Thread {
 
         JPanel columnpanel = createColumnPanelForOptionElements(backgroundPanel);
 
-        int fileIndex = 1;
-        for (Map.Entry<File, List<Integer>> entry : originalChannels.entrySet()) {
-            File imageFile = entry.getKey();
-            int rowIndex = 1;
-            for (Integer channelIndex : entry.getValue()) {
-                String channelName = (String) this.metadatas.get(channelIndex).getTagValue(32848);
-                final ChanelListElement rowPanel = new ChanelListElement(imageFile, fileIndex, channelIndex, channelName, selectedChannels, selectAll);
-                columnpanel.add(rowPanel);
-                if (rowIndex % 2 == 0) {
-                    rowPanel.setBackground(SystemColor.inactiveCaptionBorder);
-                }
-                rowIndex++;
-            }
-            fileIndex++;
-        }
-    }
+        int rowIndex = 1;
+        for (int i = 0; i < originalChannels.size(); i++) {
+            ChannelContainer channelContainer = originalChannels.get(i);
+            File parentFile = channelContainer.getFile();
 
-    private void initializeSelectedChannelsMap() {
-        selectedChannels = new TreeMap<File, List<Integer>>();
-        for (Map.Entry<File, List<Integer>> entry : originalChannels.entrySet()) {
-            File key = entry.getKey();
-            selectedChannels.put(key, new ArrayList<Integer>());
+            String channelName = (String) channelContainer.getMetadata().getTagValue(32848);
+            final ChannelListElement rowPanel = new ChannelListElement(channelContainer, selectedChannels, selectAll);
+            columnpanel.add(rowPanel);
+            if (rowIndex % 2 == 0) {
+                rowPanel.setBackground(SystemColor.inactiveCaptionBorder);
+            }
+            rowIndex++;
         }
     }
 

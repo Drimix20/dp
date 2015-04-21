@@ -1,49 +1,32 @@
 package gui;
 
 import java.io.File;
-import java.util.Map;
 import java.util.List;
 import javax.swing.AbstractButton;
+import selector.ChannelContainer;
 
 /**
  *
  * @author Drimal
  */
-public class ChanelListElement extends javax.swing.JPanel {
+public class ChannelListElement extends javax.swing.JPanel {
 
     private File imageFile;
-    private int indexOfElement;
-    private Map<File, List<Integer>> selectedImages;
+    private ChannelContainer container;
+    private List<ChannelContainer> selectedChannels;
 
-    public ChanelListElement(File file, int imageIndex, int channelIndex, String channelName, Map<File, List<Integer>> selectedImages,
-            boolean setSelected) {
+    private int indexOfElement;
+
+    public ChannelListElement(ChannelContainer channelContainer, List<ChannelContainer> selectedChannels, boolean setSelected) {
         initComponents();
-        String labelText = "Image_" + imageIndex + "/" + channelName;
+        this.selectedChannels = selectedChannels;
+        this.container = channelContainer;
+        File file = channelContainer.getFile();
+        String labelText = file.getName().substring(0, 14) + "/" + channelContainer.getMetadata().getTagValue(32848);
         imageElemLabel.setText(labelText);
         imageElemLabel.setToolTipText(file.getName());
-        this.imageFile = file;
-        this.indexOfElement = channelIndex;
-        this.selectedImages = selectedImages;
 
-        if (setSelected) {
-            putImageIntoSelectedImages();
-        }
-    }
-
-    public Map<File, List<Integer>> getSelectedImages() {
-        return selectedImages;
-    }
-
-    public void setSelectedImages(Map<File, List<Integer>> selectedImages) {
-        this.selectedImages = selectedImages;
-    }
-
-    private void putImageIntoSelectedImages() {
-        openSpecificImage.setSelected(true);
-        Integer elem = new Integer(indexOfElement);
-        List<Integer> values = selectedImages.get(imageFile);
-        values.add(elem);
-        selectedImages.put(imageFile, values);
+        manageThisChannelIntoSelectedChannels(setSelected);
     }
 
     public String getLabel() {
@@ -52,10 +35,6 @@ public class ChanelListElement extends javax.swing.JPanel {
 
     public int getIndex() {
         return indexOfElement;
-    }
-
-    public void selectOpenSpecificImage(boolean select) {
-        openSpecificImage.setSelected(select);
     }
 
     /**
@@ -102,15 +81,17 @@ public class ChanelListElement extends javax.swing.JPanel {
 
     private void openSpecificImagePerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openSpecificImagePerformed
         AbstractButton button = (AbstractButton) evt.getSource();
-        Integer elem = new Integer(indexOfElement);
-        List<Integer> values = selectedImages.get(imageFile);
-        if (button.getModel().isSelected()) {
-            values.add(elem);
-        } else {
-            values.remove(elem);
-        }
-        selectedImages.put(imageFile, values);
+        manageThisChannelIntoSelectedChannels(button.getModel().isSelected());
     }//GEN-LAST:event_openSpecificImagePerformed
+
+    private void manageThisChannelIntoSelectedChannels(boolean value) {
+        openSpecificImage.setSelected(value);
+        if (value) {
+            selectedChannels.add(container);
+        } else {
+            selectedChannels.remove(container);
+        }
+    }
 
     public javax.swing.JCheckBox getCheckBox() {
         return openSpecificImage;

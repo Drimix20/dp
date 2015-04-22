@@ -1,12 +1,13 @@
 package gui;
 
-import importer.FileSearcher;
-import importer.ImageLoader;
 import common.ImageOptionManager;
 import common.ImagePresenter;
+import importer.FileSearcher;
+import importer.ImageLoader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import javax.swing.JFileChooser;
 import org.apache.log4j.Logger;
 import selector.ChannelContainer;
@@ -18,18 +19,19 @@ import selector.ChannelContainer;
 public class AfmOpenerFrame extends javax.swing.JFrame {
 
     private Logger logger = Logger.getLogger(AfmOpenerFrame.class);
+    private final CountDownLatch latch;
     private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
     private List<ChannelContainer> selectedChannelContainer;
     private ImageOptionManager imageOptionManager;
     private boolean showLoadedImages;
+    private boolean disposeAfterOpen;
 
-    /**
-     * Creates new form OpenerFrame
-     */
-    public AfmOpenerFrame() {
+    public AfmOpenerFrame(CountDownLatch latch, boolean disposeAfterOpen) {
         initComponents();
-        showLoadedImages = true;
         selectedChannelContainer = new ArrayList<ChannelContainer>();
+        this.latch = latch;
+        this.disposeAfterOpen = disposeAfterOpen;
+        showLoadedImages = true;
     }
 
     public void showLoadedImages(boolean showLoadedImages) {
@@ -187,10 +189,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         logger.info("Canceled");
-        if (imageOptionManager != null && imageOptionManager.isAlive()) {
-            imageOptionManager.interrupt();
-        }
-        this.dispose();
+        disposeAfmOpener(true);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void OpenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenButtonActionPerformed
@@ -198,13 +197,39 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         ImageLoader loader = new ImageLoader();
         List<ChannelContainer> loadedImages = loader.loadImages(selectedChannelContainer);
 
+        showLoadedImages(loadedImages, showLoadedImages);
+        disposeAfmOpener(disposeAfterOpen);
+
+        latchCountDown();
+
+        logger.info(
+                "Images were loaded");
+    }//GEN-LAST:event_OpenButtonActionPerformed
+
+    private void showLoadedImages(List<ChannelContainer> loadedImages, boolean show) {
         if (showLoadedImages) {
             ImagePresenter presenter = new ImagePresenter();
             presenter.showAsStack(showInStack.isSelected());
             presenter.show(loadedImages);
         }
-        logger.info("Images were loaded");
-    }//GEN-LAST:event_OpenButtonActionPerformed
+    }
+
+    private void latchCountDown() {
+        if (latch != null) {
+            latch.countDown();
+        }
+    }
+
+    private void disposeAfmOpener(boolean dispose) {
+        if (!dispose) {
+            return;
+        }
+
+        if (imageOptionManager != null && imageOptionManager.isAlive()) {
+            imageOptionManager.interrupt();
+        }
+        this.dispose();
+    }
 
     private void selectAllPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllPerformed
         logger.info("All channels selected");
@@ -215,42 +240,6 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         }
         imageOptionManager.run();
     }//GEN-LAST:event_selectAllPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AfmOpenerFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AfmOpenerFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AfmOpenerFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AfmOpenerFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AfmOpenerFrame().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton OpenButton;

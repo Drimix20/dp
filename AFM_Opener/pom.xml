@@ -26,6 +26,7 @@
 
     <name>plugins/AFM_Opener.jar</name>
     <description>A Maven project implementing an ImageJ 1.x plugin</description>
+    <packaging>jar</packaging>
 
     <dependencies>
         <!-- API -->

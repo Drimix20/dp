@@ -3,7 +3,10 @@ import gui.AfmOpenerFrame;
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.PlugIn;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import javax.swing.SwingUtilities;
+import selector.ChannelContainer;
 
 /**
  * Main class serve to run plugin in Fiji menu
@@ -12,16 +15,45 @@ import javax.swing.SwingUtilities;
  */
 public class AFM_Opener implements PlugIn {
 
+    private CountDownLatch latch;
+    private boolean disposeAfterOpen;
+    private AfmOpenerRunnable afmOpenerRunnable;
+
+    public AFM_Opener() {
+        super();
+    }
+
+    public AFM_Opener(CountDownLatch latch, boolean disposeAfterOpen) {
+        super();
+        this.latch = latch;
+        this.disposeAfterOpen = disposeAfterOpen;
+    }
+
+    public List<ChannelContainer> getSelectedContainer() {
+        return afmOpenerRunnable.getSelectedChannels();
+    }
+
     public void run(String arg) {
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                AfmOpenerFrame frame = new AfmOpenerFrame();
+                AfmOpenerFrame frame = new AfmOpenerFrame(new CountDownLatch(1), false);
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
             }
         });
+    }
+
+    /**
+     * Execution method used to call plugin in other plugin
+     *
+     * @param disposeAfterOpen
+     * @return
+     */
+    public void exec(boolean disposeAfterOpen) {
+        afmOpenerRunnable = new AfmOpenerRunnable(latch, true);
+        SwingUtilities.invokeLater(afmOpenerRunnable);
     }
 
     public static void main(String[] args) {
@@ -36,5 +68,37 @@ public class AFM_Opener implements PlugIn {
 
         // run the plugin
         IJ.runPlugIn(clazz.getName(), "");
+    }
+
+    class AfmOpenerRunnable implements Runnable {
+
+        private AfmOpenerFrame frame;
+        private CountDownLatch latch;
+        private boolean disposeAfterOpen;
+
+        public AfmOpenerRunnable(CountDownLatch latch, boolean disposeAfterOpen) {
+            this.latch = latch;
+            this.disposeAfterOpen = disposeAfterOpen;
+        }
+
+        public List<ChannelContainer> getSelectedChannels() {
+            return frame.getSelectedChannelContainer();
+        }
+
+        public CountDownLatch getLatch() {
+            return latch;
+        }
+
+        public boolean isDisposeAfterOpne() {
+            return disposeAfterOpen;
+        }
+
+        @Override
+        public void run() {
+            frame = new AfmOpenerFrame(latch, disposeAfterOpen);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        }
+
     }
 }

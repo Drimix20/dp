@@ -1,5 +1,6 @@
 package afm.analyzer.threshold;
 
+import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
 /**
@@ -8,5 +9,5 @@ import ij.process.ImageProcessor;
  */
 public interface ImageThresholdStrategy {
 
-    ImageProcessor makeBinary(ImageProcessor originalImage);
+    ImageProcessor makeBinary(ImagePlus originalImage);
 }

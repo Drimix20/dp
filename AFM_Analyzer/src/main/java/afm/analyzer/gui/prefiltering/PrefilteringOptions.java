@@ -33,5 +33,4 @@ public class PrefilteringOptions {
     public static void setBlurSigma(int blurSigma) {
         PrefilteringOptions.blurSigma = blurSigma;
     }
-
 }

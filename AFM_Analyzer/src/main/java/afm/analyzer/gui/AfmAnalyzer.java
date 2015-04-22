@@ -1,7 +1,17 @@
 package afm.analyzer.gui;
 
+import afm.analyzer.threshold.ImageThresholdStrategy;
 import afm.analyzer.threshold.ThresholderExecutor;
+import afm.analyzer.threshold.ThresholderExecutor.Strategies;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.process.ImageProcessor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
+import selector.ChannelContainer;
 
 /**
  *
@@ -10,14 +20,19 @@ import javax.swing.SwingUtilities;
 public class AfmAnalyzer extends javax.swing.JFrame {
 
     private String[] strategiesName;
+    private List<ChannelContainer> selectedChannelContainer;
 
     /**
      * Creates new form AfmAnalyzer
      */
-    public AfmAnalyzer() {
+    public AfmAnalyzer() throws Exception {
         strategiesName = ThresholderExecutor.getStrategiesName();
         initComponents();
-        this.setLocationRelativeTo(null);
+        selectedChannelContainer = new ArrayList<ChannelContainer>();
+    }
+
+    public void setChannels(List<ChannelContainer> selectedChannelContainer) {
+        this.selectedChannelContainer = selectedChannelContainer;
     }
 
     /**
@@ -54,6 +69,11 @@ public class AfmAnalyzer extends javax.swing.JFrame {
         segmentationComboBox.setSelectedItem(ThresholderExecutor.getStrategiesName());
 
         segmentationPreviewButton.setText("Preview");
+        segmentationPreviewButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                segmentationPreviewButtonActionPerformed(evt);
+            }
+        });
 
         measurementsLabel.setText("Measurements");
 
@@ -138,6 +158,21 @@ public class AfmAnalyzer extends javax.swing.JFrame {
         });
     }//GEN-LAST:event_clickOnPrefilteringOptions
 
+    private void segmentationPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationPreviewButtonActionPerformed
+        List<ImageProcessor> binaryPreview = new ArrayList<ImageProcessor>();
+        ImageStack stack = new ImageStack();
+        ImageThresholdStrategy thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
+        for (ChannelContainer channelContainer : selectedChannelContainer) {
+            ImagePlus in = channelContainer.getImagePlus();
+            String label = channelContainer.getFile().getName();
+            new ImagePlus(label + "_bin", thresholder.makeBinary(in.duplicate()).duplicate()).show();
+        }
+    }//GEN-LAST:event_segmentationPreviewButtonActionPerformed
+
+    private Strategies getSelectedThresholdStrategy() {
+        return ThresholderExecutor.getStrategy((String) segmentationComboBox.getSelectedItem());
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -168,7 +203,11 @@ public class AfmAnalyzer extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AfmAnalyzer().setVisible(true);
+                try {
+                    new AfmAnalyzer().setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(AfmAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

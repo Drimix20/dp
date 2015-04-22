@@ -3,7 +3,11 @@ import afm.analyzer.gui.AfmAnalyzer;
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.PlugIn;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import javax.swing.SwingUtilities;
+import org.apache.log4j.Logger;
+import selector.ChannelContainer;
 
 /**
  *
@@ -11,13 +15,32 @@ import javax.swing.SwingUtilities;
  */
 public class AFM_Analyzer implements PlugIn {
 
-    public void run(String arg) {
-        SwingUtilities.invokeLater(new Runnable() {
+    private Logger logger = Logger.getLogger(AFM_Analyzer.class);
+    private List<ChannelContainer> selectedChannelContainer;
 
+    public void run(String arg) {
+        logger.info("Running plugin AFM_Analyzer");
+        final CountDownLatch latch = new CountDownLatch(1);
+        AFM_Opener openerPlugin = new AFM_Opener(latch, true);
+        openerPlugin.exec(true);
+
+        try {
+            latch.await();
+            selectedChannelContainer = openerPlugin.getSelectedContainer();
+        } catch (Exception ex) {
+            logger.error(ex);
+        }
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                AfmAnalyzer analyzer = new AfmAnalyzer();
-                analyzer.setVisible(true);
+                try {
+                    AfmAnalyzer analyzer = new AfmAnalyzer();
+                    analyzer.setChannels(selectedChannelContainer);
+                    analyzer.setLocationRelativeTo(null);
+                    analyzer.setVisible(true);
+                } catch (Exception ex) {
+                    logger.error(ex);
+                }
             }
         });
     }
@@ -36,4 +59,9 @@ public class AFM_Analyzer implements PlugIn {
         IJ.runPlugIn(clazz.getName(), "");
     }
 
+    //TODO po zavreni obrazku v ImageJ dojde ke ztrate informace
+    //TODO otevirani stacku - rozdilna dimense apod
+    //TODO preview - zobrazeni odprahovaneho obrazku na puvodnim
+    //TODO segmentace
+    //TODO profiler vyzkouset
 }

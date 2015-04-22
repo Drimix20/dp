@@ -38,6 +38,17 @@ public class ThresholderExecutor {
         return thresholder;
     }
 
+    public static Strategies getStrategy(String strategy) {
+        List<Strategies> strategiesAsList = Arrays.asList(Strategies.values());
+        for (int i = 0; i < strategiesAsList.size(); i++) {
+            if (strategiesAsList.get(i).getText().equals(strategy)) {
+                return strategiesAsList.get(i);
+            }
+        }
+
+        return Strategies.Unselected;
+    }
+
     public static String[] getStrategiesName() {
         List<Strategies> strategiesAsList = Arrays.asList(Strategies.values());
         String[] names = new String[strategiesAsList.size()];

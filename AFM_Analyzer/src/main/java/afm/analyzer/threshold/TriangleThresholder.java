@@ -1,5 +1,8 @@
 package afm.analyzer.threshold;
 
+import ij.IJ;
+import ij.ImagePlus;
+import ij.Prefs;
 import ij.process.ImageProcessor;
 
 /**
@@ -8,8 +11,11 @@ import ij.process.ImageProcessor;
  */
 public class TriangleThresholder implements ImageThresholdStrategy {
 
-    public ImageProcessor makeBinary(ImageProcessor originalImage) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ImageProcessor makeBinary(ImagePlus originalImg) {
+        IJ.setAutoThreshold(originalImg, "Triangle");
+        Prefs.blackBackground = false;
+        IJ.run(originalImg, "Convert to Mask", "");
+        return originalImg.getProcessor();
     }
 
 }

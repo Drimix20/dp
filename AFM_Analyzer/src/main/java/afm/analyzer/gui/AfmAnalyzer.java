@@ -3,14 +3,13 @@ package afm.analyzer.gui;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import afm.analyzer.threshold.ThresholderExecutor;
 import afm.analyzer.threshold.ThresholderExecutor.Strategies;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.process.ImageProcessor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
+import org.apache.log4j.Logger;
 import selector.ChannelContainer;
 
 /**
@@ -19,6 +18,7 @@ import selector.ChannelContainer;
  */
 public class AfmAnalyzer extends javax.swing.JFrame {
 
+    private static Logger logger = Logger.getLogger(AfmAnalyzer.class);
     private String[] strategiesName;
     private List<ChannelContainer> selectedChannelContainer;
 
@@ -87,7 +87,7 @@ public class AfmAnalyzer extends javax.swing.JFrame {
         );
         measurementsScrollPanelLayout.setVerticalGroup(
             measurementsScrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 218, Short.MAX_VALUE)
+            .addGap(0, 247, Short.MAX_VALUE)
         );
 
         cancelButton.setText("Cancel");
@@ -133,11 +133,11 @@ public class AfmAnalyzer extends javax.swing.JFrame {
                 .addComponent(segmentationComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(segmentationPreviewButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addComponent(measurementsLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(measurementsScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
                     .addComponent(measureButton))
@@ -159,13 +159,31 @@ public class AfmAnalyzer extends javax.swing.JFrame {
     }//GEN-LAST:event_clickOnPrefilteringOptions
 
     private void segmentationPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationPreviewButtonActionPerformed
-        List<ImageProcessor> binaryPreview = new ArrayList<ImageProcessor>();
+        String labelBtn = evt.getActionCommand();
         ImageStack stack = new ImageStack();
-        ImageThresholdStrategy thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
-        for (ChannelContainer channelContainer : selectedChannelContainer) {
-            ImagePlus in = channelContainer.getImagePlus();
-            String label = channelContainer.getFile().getName();
-            new ImagePlus(label + "_bin", thresholder.makeBinary(in.duplicate()).duplicate()).show();
+        if (segmentationComboBox.getSelectedItem() == "Unselected") {
+            IJ.showMessage("Unselected threshold option");
+            return;
+        }
+
+        if ("Preview" == labelBtn) {
+            logger.info("Clicked on Preview button");
+            this.segmentationPreviewButton.setText("Reset");
+
+            ImageThresholdStrategy thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
+            for (ChannelContainer channelContainer : selectedChannelContainer) {
+                ImagePlus imp = channelContainer.getImagePlus();
+                IJ.setAutoThreshold(imp, "Triangle");
+                //thresholder.makeBinary(imp);
+            }
+        }
+        if ("Reset" == labelBtn) {
+            logger.info("Clicked on Reset button");
+            this.segmentationPreviewButton.setText("Preview");
+            for (ChannelContainer channelContainer : selectedChannelContainer) {
+                ImagePlus imp = channelContainer.getImagePlus();
+                IJ.resetThreshold(imp);
+            }
         }
     }//GEN-LAST:event_segmentationPreviewButtonActionPerformed
 
@@ -206,7 +224,7 @@ public class AfmAnalyzer extends javax.swing.JFrame {
                 try {
                     new AfmAnalyzer().setVisible(true);
                 } catch (Exception ex) {
-                    Logger.getLogger(AfmAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.info(ex.getMessage(), ex);
                 }
             }
         });

@@ -148,14 +148,14 @@ public class Runner extends Thread {
                 }
             }
             //IJ.showMessage(Double.toString(totalVolume));
-            AFM_Vol.setText(Double.toString(totalVolume));
+            AFM_Volume.setText(Double.toString(totalVolume));
         }
     }
 
     public void reset() {
         ip.reset();
         ip.resetThreshold();
-        AFM_Vol.resetText();
+        AFM_Volume.resetText();
     }
 
     void threshold() {

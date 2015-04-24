@@ -5,7 +5,7 @@ import ij.plugin.frame.*;
 import ij.*;
 import ij.gui.*;
 
-public class AFM_Vol extends PlugInFrame implements ActionListener {
+public class AFM_Volume extends PlugInFrame implements ActionListener {
 
     private Panel panel;
     static private TextArea ta;
@@ -13,7 +13,7 @@ public class AFM_Vol extends PlugInFrame implements ActionListener {
     private int previousID;
     private static Frame instance;
 
-    public AFM_Vol() {
+    public AFM_Volume() {
         super("AFM_Volume");
         if (instance != null) {
             instance.toFront();

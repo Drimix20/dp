@@ -5,7 +5,6 @@ import afm.analyzer.threshold.ThresholderExecutor;
 import afm.analyzer.threshold.ThresholderExecutor.Strategies;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingUtilities;
@@ -21,6 +20,7 @@ public class AfmAnalyzer extends javax.swing.JFrame {
     private static Logger logger = Logger.getLogger(AfmAnalyzer.class);
     private String[] strategiesName;
     private List<ChannelContainer> selectedChannelContainer;
+    private ImageThresholdStrategy thresholder;
 
     /**
      * Creates new form AfmAnalyzer
@@ -28,6 +28,7 @@ public class AfmAnalyzer extends javax.swing.JFrame {
     public AfmAnalyzer() throws Exception {
         strategiesName = ThresholderExecutor.getStrategiesName();
         initComponents();
+        this.initMeasurementElement();
         selectedChannelContainer = new ArrayList<ChannelContainer>();
     }
 
@@ -49,7 +50,11 @@ public class AfmAnalyzer extends javax.swing.JFrame {
         segmentationComboBox = new javax.swing.JComboBox(strategiesName);
         segmentationPreviewButton = new javax.swing.JButton();
         measurementsLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
         measurementsScrollPanel = new javax.swing.JPanel();
+        measurementGuiElement = new javax.swing.JPanel();
+        nameLabel = new javax.swing.JLabel();
+        jCheckBox = new javax.swing.JCheckBox();
         cancelButton = new javax.swing.JButton();
         measureButton = new javax.swing.JButton();
 
@@ -77,18 +82,51 @@ public class AfmAnalyzer extends javax.swing.JFrame {
 
         measurementsLabel.setText("Measurements");
 
+        jScrollPane1.setBackground(new java.awt.Color(255, 153, 0));
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
         measurementsScrollPanel.setBackground(new java.awt.Color(255, 102, 0));
+
+        nameLabel.setText("Default_Name");
+        nameLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        jCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        javax.swing.GroupLayout measurementGuiElementLayout = new javax.swing.GroupLayout(measurementGuiElement);
+        measurementGuiElement.setLayout(measurementGuiElementLayout);
+        measurementGuiElementLayout.setHorizontalGroup(
+            measurementGuiElementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(measurementGuiElementLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(nameLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jCheckBox)
+                .addContainerGap())
+        );
+        measurementGuiElementLayout.setVerticalGroup(
+            measurementGuiElementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(measurementGuiElementLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(measurementGuiElementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(nameLabel)
+                    .addComponent(jCheckBox))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout measurementsScrollPanelLayout = new javax.swing.GroupLayout(measurementsScrollPanel);
         measurementsScrollPanel.setLayout(measurementsScrollPanelLayout);
         measurementsScrollPanelLayout.setHorizontalGroup(
             measurementsScrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(measurementGuiElement, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         measurementsScrollPanelLayout.setVerticalGroup(
             measurementsScrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 247, Short.MAX_VALUE)
+            .addGroup(measurementsScrollPanelLayout.createSequentialGroup()
+                .addComponent(measurementGuiElement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(262, Short.MAX_VALUE))
         );
+
+        jScrollPane1.setViewportView(measurementsScrollPanel);
 
         cancelButton.setText("Cancel");
 
@@ -101,7 +139,6 @@ public class AfmAnalyzer extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(measurementsScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(prefilteringLabel)
@@ -117,7 +154,8 @@ public class AfmAnalyzer extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(measureButton)
                                 .addGap(18, 18, 18)
-                                .addComponent(cancelButton)))))
+                                .addComponent(cancelButton))))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -133,10 +171,10 @@ public class AfmAnalyzer extends javax.swing.JFrame {
                 .addComponent(segmentationComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(segmentationPreviewButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(measurementsLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(measurementsScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
@@ -146,6 +184,40 @@ public class AfmAnalyzer extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private initMeasurementElement() {
+        measurementGuiElement = new javax.swing.JPanel();
+        nameLabel = new javax.swing.JLabel();
+        jCheckBox = new javax.swing.JCheckBox();
+
+        measurementsLabel.setText("Measurements");
+
+        nameLabel.setText("Default_Name");
+        nameLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        jCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        javax.swing.GroupLayout measurementGuiElementLayout = new javax.swing.GroupLayout(measurementGuiElement);
+        measurementGuiElement.setLayout(measurementGuiElementLayout);
+        measurementGuiElementLayout.setHorizontalGroup(
+                measurementGuiElementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(measurementGuiElementLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(nameLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jCheckBox)
+                        .addContainerGap())
+        );
+        measurementGuiElementLayout.setVerticalGroup(
+                measurementGuiElementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(measurementGuiElementLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(measurementGuiElementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(nameLabel)
+                                .addComponent(jCheckBox))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+    }
 
     private void clickOnPrefilteringOptions(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clickOnPrefilteringOptions
         SwingUtilities.invokeLater(new Runnable() {
@@ -160,9 +232,7 @@ public class AfmAnalyzer extends javax.swing.JFrame {
 
     private void segmentationPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationPreviewButtonActionPerformed
         String labelBtn = evt.getActionCommand();
-        ImageStack stack = new ImageStack();
-        if (segmentationComboBox.getSelectedItem() == "Unselected") {
-            IJ.showMessage("Unselected threshold option");
+        if (checkThatThresholderIsSelected()) {
             return;
         }
 
@@ -170,11 +240,10 @@ public class AfmAnalyzer extends javax.swing.JFrame {
             logger.info("Clicked on Preview button");
             this.segmentationPreviewButton.setText("Reset");
 
-            ImageThresholdStrategy thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
+            thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
             for (ChannelContainer channelContainer : selectedChannelContainer) {
                 ImagePlus imp = channelContainer.getImagePlus();
                 IJ.setAutoThreshold(imp, "Triangle");
-                //thresholder.makeBinary(imp);
             }
         }
         if ("Reset" == labelBtn) {
@@ -186,6 +255,14 @@ public class AfmAnalyzer extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_segmentationPreviewButtonActionPerformed
+
+    private boolean checkThatThresholderIsSelected() {
+        if (segmentationComboBox.getSelectedItem() == "Unselected") {
+            IJ.showMessage("Unselected threshold option");
+            return true;
+        }
+        return false;
+    }
 
     private Strategies getSelectedThresholdStrategy() {
         return ThresholderExecutor.getStrategy((String) segmentationComboBox.getSelectedItem());
@@ -232,9 +309,13 @@ public class AfmAnalyzer extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
+    private javax.swing.JCheckBox jCheckBox;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton measureButton;
+    private javax.swing.JPanel measurementGuiElement;
     private javax.swing.JLabel measurementsLabel;
     private javax.swing.JPanel measurementsScrollPanel;
+    private javax.swing.JLabel nameLabel;
     private javax.swing.JLabel prefilteringLabel;
     private javax.swing.JButton prefilteringOptionButton;
     private javax.swing.JComboBox segmentationComboBox;

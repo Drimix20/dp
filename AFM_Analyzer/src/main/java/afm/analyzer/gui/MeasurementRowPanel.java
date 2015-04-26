@@ -1,19 +1,27 @@
 package afm.analyzer.gui;
 
+import afm.analyzer.measurements.MeasurementComputationAbstract;
+import java.util.List;
 import javax.swing.JPanel;
 
 /**
  *
  * @author Drimal
  */
-public class MeasurementJPanel extends JPanel {
+public class MeasurementRowPanel extends JPanel {
+
+    private List<MeasurementComputationAbstract> selectedMeasurements;
+    private MeasurementComputationAbstract measurement;
 
     /**
      * Creates new form MeasurementJPanel
      */
-    public MeasurementJPanel(boolean enableOptions) {
+    public MeasurementRowPanel(MeasurementComputationAbstract measurement, List<MeasurementComputationAbstract> selectedMeasurements,
+            boolean enableOptions) {
         initComponents();
         jButton1.setEnabled(enableOptions);
+        this.measurement = measurement;
+        this.selectedMeasurements = selectedMeasurements;
     }
 
     /**
@@ -26,7 +34,7 @@ public class MeasurementJPanel extends JPanel {
 
         measurementGuiElement = new javax.swing.JPanel();
         nameLabel = new javax.swing.JLabel();
-        jCheckBox = new javax.swing.JCheckBox();
+        checkBox = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
 
         javax.swing.GroupLayout measurementGuiElementLayout = new javax.swing.GroupLayout(measurementGuiElement);
@@ -46,7 +54,12 @@ public class MeasurementJPanel extends JPanel {
         nameLabel.setText("Default_Name");
         nameLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
-        jCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        checkBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        checkBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkBoxActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("Opt");
 
@@ -60,7 +73,7 @@ public class MeasurementJPanel extends JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBox)
+                .addComponent(checkBox)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -68,7 +81,7 @@ public class MeasurementJPanel extends JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jCheckBox)
+                    .addComponent(checkBox)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(nameLabel)
                         .addComponent(jButton1)))
@@ -76,9 +89,21 @@ public class MeasurementJPanel extends JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void checkBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxActionPerformed
+        manageMeasurementIntoSelectedMeasurements();
+    }//GEN-LAST:event_checkBoxActionPerformed
+
+    private void manageMeasurementIntoSelectedMeasurements() {
+        if (checkBox.isSelected()) {
+            selectedMeasurements.add(measurement);
+        } else {
+            selectedMeasurements.remove(measurement);
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox checkBox;
     private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCheckBox;
     private javax.swing.JPanel measurementGuiElement;
     private javax.swing.JLabel nameLabel;
     // End of variables declaration//GEN-END:variables

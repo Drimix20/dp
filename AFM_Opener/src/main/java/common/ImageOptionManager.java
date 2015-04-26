@@ -28,6 +28,7 @@ public class ImageOptionManager extends Thread {
     private boolean selectAll;
 
     public ImageOptionManager(JScrollPane scrollPane, List<ChannelContainer> originalChannels, List<ChannelContainer> selectedChannels) {
+        super();
         this.scrollPane = scrollPane;
         this.originalChannels = originalChannels;
         this.selectedChannels = selectedChannels;
@@ -45,15 +46,15 @@ public class ImageOptionManager extends Thread {
      */
     public void selectAllImages(boolean select) {
         selectAll = select;
-        createElementForScrollPanel();
+        createElementsForScrollPanel();
     }
 
     @Override
     public void run() {
-        createElementForScrollPanel();
+        createElementsForScrollPanel();
     }
 
-    public void createElementForScrollPanel() {
+    public void createElementsForScrollPanel() {
         JPanel backgroundPanel = new JPanel();
         scrollPane.setViewportView(backgroundPanel);
         backgroundPanel.setLayout(new BorderLayout(0, 0));

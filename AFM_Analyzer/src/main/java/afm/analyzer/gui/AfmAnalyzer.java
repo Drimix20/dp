@@ -1,6 +1,9 @@
 package afm.analyzer.gui;
 
 import afm.analyzer.measurements.MeasurementComputationAbstract;
+import afm.analyzer.segmentation.Segment;
+import afm.analyzer.segmentation.Segmentation;
+import afm.analyzer.segmentation.SegmentedImage;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import afm.analyzer.threshold.ThresholderExecutor;
 import afm.analyzer.threshold.ThresholderExecutor.Strategies;
@@ -222,6 +225,19 @@ public class AfmAnalyzer extends javax.swing.JFrame {
 
     private void measureButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_measureButtonActionPerformed
         logger.info("Start computing");
+
+        Segmentation segmentation = new Segmentation();
+        List<SegmentedImage> segmentImages = segmentation.segmentImages(selectedChannelContainer, thresholder);
+        for (SegmentedImage segmImage : segmentImages) {
+            List<Segment> segments = segmImage.getSegments();
+            for (Segment segment : segments) {
+                System.out.println(segment.getLabel() + "\\t"
+                        + segment.getBx() + "\\t"
+                        + segment.getBy() + "\\t"
+                        + segment.getWidth() + "\\t"
+                        + segment.getHeight());
+            }
+        }
     }//GEN-LAST:event_measureButtonActionPerformed
 
     private void segmentationOptionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationOptionButtonActionPerformed

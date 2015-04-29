@@ -9,5 +9,9 @@ import ij.process.ImageProcessor;
  */
 public interface ImageThresholdStrategy {
 
+    double getUpperThreshold();
+
+    double getLowerThreshold();
+
     ImageProcessor makeBinary(ImagePlus originalImage);
 }

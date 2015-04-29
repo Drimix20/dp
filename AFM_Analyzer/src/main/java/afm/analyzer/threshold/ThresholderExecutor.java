@@ -1,5 +1,6 @@
 package afm.analyzer.threshold;
 
+import afm.analyzer.gui.SegmentationConfigDialog;
 import static afm.analyzer.threshold.ThresholderExecutor.Strategies.*;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +37,17 @@ public class ThresholderExecutor {
                 break;
         }
         return thresholder;
+    }
+
+    public static SegmentationConfigDialog getSegmentationConfigDialog(Strategies strategy) {
+        SegmentationConfigDialog configDialog = new SegmentationConfigDialog(null, true);
+        switch (strategy) {
+            case TriangleThresholder:
+                configDialog.enableThresholdValue(false);
+                break;
+        }
+
+        return configDialog;
     }
 
     public static Strategies getStrategy(String strategy) {

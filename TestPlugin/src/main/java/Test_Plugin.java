@@ -46,11 +46,28 @@ public class Test_Plugin implements PlugInFilter {
         ResultsTable resultsTable = new ResultsTable();
         //create new instance of my roiManager and set to don't show window
         RoiManager roiManager = new RoiManager(true);
-        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE, Measurements.ADD_TO_OVERLAY, resultsTable,
+        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE, Measurements.ADD_TO_OVERLAY | Measurements.RECT, resultsTable,
                 0, Double.POSITIVE_INFINITY, 0, 1);
         ParticleAnalyzer.setRoiManager(roiManager);
         ParticleAnalyzer.setLineWidth(1);
         analyzer.analyze(imp, ip);
+
+        resultsTable.show("Results");
+        int numberOfRows = resultsTable.size();
+        String[] headings = resultsTable.getHeadings();
+        int bxIndex = resultsTable.getColumnIndex(headings[0]);
+        int byIndex = resultsTable.getColumnIndex(headings[1]);
+        int widthIndex = resultsTable.getColumnIndex(headings[2]);
+        int heightIndex = resultsTable.getColumnIndex(headings[3]);
+        for (int i = 0; i < numberOfRows; i++) {
+            System.out.println(
+                    "id=" + (i + 1)
+                    + ", bx=" + resultsTable.getValueAsDouble(bxIndex, i)
+                    + ", by=" + resultsTable.getValueAsDouble(byIndex, i)
+                    + ", width=" + resultsTable.getValueAsDouble(widthIndex, i)
+                    + ", height=" + resultsTable.getValueAsDouble(heightIndex, i)
+            );
+        }
 
         Roi[] roisAsArray = roiManager.getRoisAsArray();
         System.out.println("RoisAsArray.size: " + roisAsArray.length);
@@ -63,6 +80,7 @@ public class Test_Plugin implements PlugInFilter {
         roiManager.runCommand("Delete");
         for (int i = 0; i < roisAsArray.length; i++) {
             ExtendedRoi extRoi = new ExtendedRoi(roisAsArray[i].getPolygon(), Roi.TRACED_ROI);
+            extRoi.setLabel(i + 1);
             roiManager.addRoi(extRoi);
         }
 

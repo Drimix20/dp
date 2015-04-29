@@ -9,12 +9,22 @@ import java.awt.event.MouseEvent;
  */
 public class ExtendedRoi extends PolygonRoi {
 
+    private int label;
+
     public ExtendedRoi(int[] xPoints, int[] yPoints, int nPoints, int type) {
         super(xPoints, yPoints, nPoints, type);
     }
 
     public ExtendedRoi(Polygon p, int type) {
         super(p, type);
+    }
+
+    public int getLabel() {
+        return label;
+    }
+
+    public void setLabel(int label) {
+        this.label = label;
     }
 
     @Override
@@ -26,7 +36,7 @@ public class ExtendedRoi extends PolygonRoi {
     @Override
     protected void handleMouseDown(int sx, int sy) {
         super.handleMouseDown(sx, sy);
-        System.out.println("Selected roi");
+        System.out.println("Selected roi with label=" + label);
     }
 
 }

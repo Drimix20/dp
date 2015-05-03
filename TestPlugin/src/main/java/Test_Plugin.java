@@ -9,6 +9,11 @@ import ij.plugin.filter.PlugInFilter;
 import ij.plugin.frame.RoiManager;
 import ij.process.ImageProcessor;
 import java.awt.Frame;
+import javax.measure.converter.UnitConverter;
+import javax.measure.quantity.Length;
+import static javax.measure.unit.SI.METRE;
+import static javax.measure.unit.SI.MetricPrefix.NANO;
+import javax.measure.unit.Unit;
 
 /**
  *
@@ -43,6 +48,14 @@ public class Test_Plugin implements PlugInFilter {
     }
 
     public void run(ImageProcessor ip) {
+        ImagePlus imp2 = IJ.openImage("http://imagej.nih.gov/ij/images/blobs.gif");
+        ImagePlus imp3 = IJ.openImage("C:\\Users\\Drimal\\Downloads\\testData\\Cell_Colony.jpg");
+
+        ImageStack stack = new ImageStack(imp2.getWidth(), imp2.getHeight());
+        stack.addSlice("Blobs", imp2.getProcessor());
+        stack.addSlice("Cell_colony", imp3.getProcessor());
+        new ImagePlus("stack", stack).show();
+
         ResultsTable resultsTable = new ResultsTable();
         //create new instance of my roiManager and set to don't show window
         RoiManager roiManager = new RoiManager(true);
@@ -88,6 +101,16 @@ public class Test_Plugin implements PlugInFilter {
 //        roiManager.select(0);
 //        roiManager.runCommand("Delete");
 //        roiManager.addRoi(extRoi);
+        Unit<Length> unit = METRE;
+        Unit<Length> target = NANO(METRE);
+        UnitConverter converter = unit.getConverterTo(target);
+        double result = converter.convert(1.0);
+        System.out.println("From 1 meter to nanometer:" + result);
+
+        converter = target.getConverterTo(unit);
+        result = converter.convert(1.0);
+        System.out.println("From 1 nanometer to meter:" + result);
+
     }
 
     private RoiManager instantiateRoiManager() {

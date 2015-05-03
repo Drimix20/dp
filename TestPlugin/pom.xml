@@ -33,7 +33,13 @@
                 <artifactId>fiji-lib</artifactId>
                 <type>jar</type>
             </dependency>
-        </dependencies>
+            <dependency>
+                <groupId>javax.measure</groupId>
+                <artifactId>jsr-275</artifactId>
+                <version>0.9.4</version>
+                <type>jar</type>
+            </dependency>
+	</dependencies>
 
 	<build>
 <!--		<resources>

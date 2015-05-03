@@ -1,6 +1,6 @@
 package afm.analyzer.gui;
 
-import afm.analyzer.measurements.MeasurementComputationAbstract;
+import afm.analyzer.measurements.AbstractMeasurement;
 import afm.analyzer.measurements.VolumeMeasurement;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 public class MeasurementsElementManager extends Thread {
 
     private Logger logger = Logger.getLogger(MeasurementsElementManager.class);
-    private List<MeasurementComputationAbstract> selectedMeasurements;
+    private List<AbstractMeasurement> selectedMeasurements;
     private final JScrollPane scrollPane;
 
     public MeasurementsElementManager(JScrollPane scrollPane) {
@@ -28,7 +28,7 @@ public class MeasurementsElementManager extends Thread {
         this.scrollPane = scrollPane;
     }
 
-    public void setSelectedMeasurements(List<MeasurementComputationAbstract> selectedMeasurements) {
+    public void setSelectedMeasurements(List<AbstractMeasurement> selectedMeasurements) {
         this.selectedMeasurements = selectedMeasurements;
     }
 

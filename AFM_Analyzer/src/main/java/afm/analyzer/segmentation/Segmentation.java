@@ -1,5 +1,7 @@
 package afm.analyzer.segmentation;
 
+import static afm.analyzer.segmentation.SegmentationConfiguration.*;
+import afm.analyzer.selection.ExtendedRoi;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import ij.IJ;
 import ij.ImagePlus;
@@ -29,18 +31,23 @@ public class Segmentation {
         List<SegmentedImage> segmentedImages = new ArrayList<>();
         ResultsTable resultsTable = new ResultsTable();
         RoiManager roiManager = new RoiManager(true);
-        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE, Measurements.ADD_TO_OVERLAY
-                | Measurements.RECT, resultsTable, 0, Double.POSITIVE_INFINITY, 0, 1);
+
+        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE,
+                Measurements.ADD_TO_OVERLAY | Measurements.RECT,
+                resultsTable, getMinPixelSize(), getMaxPixelSize(),
+                getMinCircularity(), getMaxCircularity());
         ParticleAnalyzer.setRoiManager(roiManager);
         ParticleAnalyzer.setLineWidth(1);
+
         int currentIndex = 1;
         for (ChannelContainer channel : channelContainers) {
-            SegmentedImage segmentedImage = new SegmentedImage();
             ImagePlus img = channel.getImagePlus();
-
+            logger.info("Make segments of image " + img.getTitle());
+            SegmentedImage segmentedImage = new SegmentedImage();
             ImageProcessor binaryIp = makeBinary(img, thresholdStrategy);
             segmentedImage.setThresholdedIp(binaryIp);
-            segmentedImage.setSegments(segmentImage(analyzer, resultsTable, roiManager, new ImagePlus("", binaryIp)));
+            analyzer.analyze(new ImagePlus("", binaryIp));
+            segmentedImage.setSegments(segmentImage(resultsTable, roiManager));
             segmentedImage.setRois(computeRoiOfSegments(roiManager));
 
             resultsTable.reset();
@@ -69,11 +76,9 @@ public class Segmentation {
         return thresholdStrategy.makeBinary(imp.duplicate());
     }
 
-    public List<Segment> segmentImage(ParticleAnalyzer analyzer, ResultsTable resultsTable, RoiManager roiManager, ImagePlus imp) {
-        logger.info("Make segments of image " + imp.getTitle());
+    @Deprecated
+    public List<Segment> segmentImage(ResultsTable resultsTable, RoiManager roiManager) {
         List<Segment> segments = new ArrayList<Segment>();
-
-        analyzer.analyze(imp);
 
         String[] headings = resultsTable.getHeadings();
         int bxIndex = resultsTable.getColumnIndex(headings[0]);
@@ -107,7 +112,10 @@ public class Segmentation {
         for (int i = 0; i < roisAsArray.length; i++) {
             ExtendedRoi extRoi = new ExtendedRoi(roisAsArray[i].getPolygon(), Roi.TRACED_ROI);
             extRoi.setLabel(i + 1);
+            extRoi.setNonScalable(true);
+//            Rectangle bounds = extRoi.getBounds();bounds.getX();bounds.getY();bounds.getHeight();bounds.getWidth();
             //roiManager.addRoi(extRoi);
+            rois.add(extRoi);
         }
 
         return rois;

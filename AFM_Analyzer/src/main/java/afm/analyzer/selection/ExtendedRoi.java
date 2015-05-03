@@ -1,4 +1,4 @@
-package afm.analyzer.segmentation;
+package afm.analyzer.selection;
 
 
 import ij.gui.PolygonRoi;

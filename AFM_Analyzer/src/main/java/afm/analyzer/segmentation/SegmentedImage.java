@@ -22,6 +22,7 @@ public class SegmentedImage {
         this.thresholdedIp = thresholdedIp;
     }
 
+    @Deprecated
     public List<Segment> getSegments() {
         return segments;
     }

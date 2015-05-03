@@ -19,10 +19,11 @@ public class TriangleThresholder implements ImageThresholdStrategy {
     public ImageProcessor makeBinary(ImagePlus originalImg) {
         IJ.setAutoThreshold(originalImg, "Triangle");
         Prefs.blackBackground = false;
-        //IJ.run(originalImg, "Convert to Mask", "");
 
         lowerThreshold = originalImg.getProcessor().getMinThreshold();
         upperThreshold = originalImg.getProcessor().getMaxThreshold();
+        IJ.run(originalImg, "Convert to Mask", "");
+
         logger.info("lower=" + lowerThreshold + ", upper=" + upperThreshold);
         return originalImg.getProcessor();
     }

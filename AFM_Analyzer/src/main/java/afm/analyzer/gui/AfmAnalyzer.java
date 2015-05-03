@@ -1,7 +1,7 @@
 package afm.analyzer.gui;
 
-import afm.analyzer.measurements.MeasurementComputationAbstract;
-import afm.analyzer.segmentation.Segment;
+import afm.analyzer.measurements.AbstractMeasurement;
+import afm.analyzer.measurements.MeasurementComputation;
 import afm.analyzer.segmentation.Segmentation;
 import afm.analyzer.segmentation.SegmentedImage;
 import afm.analyzer.threshold.ImageThresholdStrategy;
@@ -24,7 +24,7 @@ public class AfmAnalyzer extends javax.swing.JFrame {
 
     private static Logger logger = Logger.getLogger(AfmAnalyzer.class);
     private String[] strategiesName;
-    private List<MeasurementComputationAbstract> selectedMeasurements;
+    private List<AbstractMeasurement> selectedMeasurements;
     private List<ChannelContainer> selectedChannelContainer;
     private ImageThresholdStrategy thresholder;
     private SegmentationConfigDialog segmentationConfDialog;
@@ -35,7 +35,7 @@ public class AfmAnalyzer extends javax.swing.JFrame {
     public AfmAnalyzer() throws Exception {
         strategiesName = ThresholderExecutor.getStrategiesName();
         initComponents();
-        selectedMeasurements = new ArrayList<MeasurementComputationAbstract>();
+        selectedMeasurements = new ArrayList<AbstractMeasurement>();
         selectedChannelContainer = new ArrayList<ChannelContainer>();
         segmentationOptionButton.setEnabled(false);
         segmentationPreviewButton.setEnabled(false);
@@ -228,15 +228,15 @@ public class AfmAnalyzer extends javax.swing.JFrame {
 
         Segmentation segmentation = new Segmentation();
         List<SegmentedImage> segmentImages = segmentation.segmentImages(selectedChannelContainer, thresholder);
-        for (SegmentedImage segmImage : segmentImages) {
-            List<Segment> segments = segmImage.getSegments();
-            for (Segment segment : segments) {
-                System.out.println(segment.getLabel() + "\\t"
-                        + segment.getBx() + "\\t"
-                        + segment.getBy() + "\\t"
-                        + segment.getWidth() + "\\t"
-                        + segment.getHeight());
-            }
+        MeasurementComputation measComputation = new MeasurementComputation();
+        //for (SegmentedImage segmImage : segmentImages) {
+        for (int i = 0; i < selectedChannelContainer.size(); i++) {
+            ImagePlus imagePlus = selectedChannelContainer.get(i).getImagePlus();
+            imagePlus.unlock();
+            System.out.println("Compute volume for " + imagePlus.getTitle());
+            SegmentedImage segmentImage = segmentImages.get(i);
+            //TODO implement multiple measurements
+            measComputation.compute(selectedChannelContainer.get(i), segmentImage, selectedMeasurements.get(0));
         }
     }//GEN-LAST:event_measureButtonActionPerformed
 

@@ -61,7 +61,4 @@ public class AFM_Analyzer implements PlugIn {
 
     //TODO po zavreni obrazku v ImageJ dojde ke ztrate informace
     //TODO otevirani stacku - rozdilna dimense apod
-    //TODO preview - zobrazeni odprahovaneho obrazku na puvodnim
-    //TODO segmentace
-    //TODO profiler vyzkouset
 }

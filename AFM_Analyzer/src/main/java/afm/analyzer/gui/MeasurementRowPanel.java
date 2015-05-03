@@ -1,6 +1,6 @@
 package afm.analyzer.gui;
 
-import afm.analyzer.measurements.MeasurementComputationAbstract;
+import afm.analyzer.measurements.AbstractMeasurement;
 import java.util.List;
 import javax.swing.JPanel;
 
@@ -10,13 +10,13 @@ import javax.swing.JPanel;
  */
 public class MeasurementRowPanel extends JPanel {
 
-    private List<MeasurementComputationAbstract> selectedMeasurements;
-    private MeasurementComputationAbstract measurement;
+    private List<AbstractMeasurement> selectedMeasurements;
+    private AbstractMeasurement measurement;
 
     /**
      * Creates new form MeasurementJPanel
      */
-    public MeasurementRowPanel(MeasurementComputationAbstract measurement, List<MeasurementComputationAbstract> selectedMeasurements,
+    public MeasurementRowPanel(AbstractMeasurement measurement, List<AbstractMeasurement> selectedMeasurements,
             boolean enableOptions) {
         initComponents();
         jButton1.setEnabled(enableOptions);

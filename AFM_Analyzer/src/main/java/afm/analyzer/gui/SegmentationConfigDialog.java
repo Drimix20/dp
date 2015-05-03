@@ -1,6 +1,7 @@
 package afm.analyzer.gui;
 
 import afm.analyzer.segmentation.SegmentationConfiguration;
+import static afm.analyzer.segmentation.SegmentationConfiguration.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
@@ -13,6 +14,10 @@ public class SegmentationConfigDialog extends javax.swing.JDialog {
 
     private int threshold;
     private boolean excludeOnEdges;
+    private double minPixelSize;
+    private double maxPixelSize;
+    private double minCircularity;
+    private double maxCircularity;
 
     /**
      * A return status code - returned if Cancel button has been pressed
@@ -69,6 +74,10 @@ public class SegmentationConfigDialog extends javax.swing.JDialog {
         excludeOnEdgesLabel = new javax.swing.JLabel();
         excludeOnEdgesCheckBox = new javax.swing.JCheckBox();
         jSeparator1 = new javax.swing.JSeparator();
+        jLabel1 = new javax.swing.JLabel();
+        pixelSize = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        circularity = new javax.swing.JTextField();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -92,21 +101,25 @@ public class SegmentationConfigDialog extends javax.swing.JDialog {
 
         thresholdLabel.setText("Threshold");
 
-        thresholdSpinner.setModel(new javax.swing.SpinnerNumberModel(SegmentationConfiguration.getThresholdValue(), Integer.valueOf(0), null, Integer.valueOf(1)));
+        thresholdSpinner.setModel(new javax.swing.SpinnerNumberModel(afm.analyzer.segmentation.SegmentationConfiguration.getThresholdValue(), Integer.valueOf(0), null, Integer.valueOf(1)));
 
         excludeOnEdgesLabel.setText("Exclude on edges");
 
-        excludeOnEdgesCheckBox.setSelected(SegmentationConfiguration.isExcludeOnEdges());
-        excludeOnEdgesCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                excludeOnEdgesCheckBoxActionPerformed(evt);
-            }
-        });
+        excludeOnEdgesCheckBox.setSelected(afm.analyzer.segmentation.SegmentationConfiguration.isExcludeOnEdges());
+
+        jLabel1.setText("Size (pixel^2)");
+
+        pixelSize.setText(SegmentationConfiguration.getMinPixelSize()+"-"+SegmentationConfiguration.getMaxPixelSize());
+
+        jLabel2.setText("Circularity");
+
+        circularity.setText(SegmentationConfiguration.getMinCircularity()+"-"+SegmentationConfiguration.getMaxCircularity());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator1)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -116,15 +129,20 @@ public class SegmentationConfigDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(thresholdLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(thresholdSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(excludeOnEdgesLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(excludeOnEdgesCheckBox)))
+                        .addComponent(excludeOnEdgesCheckBox))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(thresholdLabel)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(pixelSize)
+                            .addComponent(thresholdSpinner)
+                            .addComponent(circularity))))
                 .addContainerGap())
-            .addComponent(jSeparator1)
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cancelButton, okButton});
@@ -141,8 +159,16 @@ public class SegmentationConfigDialog extends javax.swing.JDialog {
                     .addComponent(excludeOnEdgesLabel)
                     .addComponent(excludeOnEdgesCheckBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(pixelSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(circularity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 10, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
                     .addComponent(okButton))
@@ -159,6 +185,8 @@ public class SegmentationConfigDialog extends javax.swing.JDialog {
         excludeOnEdges = excludeOnEdgesCheckBox.isSelected();
         SegmentationConfiguration.setThresholdValue(threshold);
         SegmentationConfiguration.setExcludeOnEdges(excludeOnEdges);
+        parseAndSetPixelSize();
+        parseAndSetCircularity();
 
         doClose(RET_OK);
     }//GEN-LAST:event_okButtonActionPerformed
@@ -174,14 +202,46 @@ public class SegmentationConfigDialog extends javax.swing.JDialog {
         doClose(RET_CANCEL);
     }//GEN-LAST:event_closeDialog
 
-    private void excludeOnEdgesCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_excludeOnEdgesCheckBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_excludeOnEdgesCheckBoxActionPerformed
-
     private void doClose(int retStatus) {
         returnStatus = retStatus;
         setVisible(false);
         dispose();
+    }
+
+    private void parseAndSetPixelSize() {
+        String[] split = pixelSize.getText().split("-");
+        try {
+            minPixelSize = Double.parseDouble(split[0].trim());
+        } catch (Exception ex) {
+            minPixelSize = DEFAULT_MIN_SIZE;
+        }
+        if (split[1].equalsIgnoreCase("infinity")) {
+            maxPixelSize = DEFAULT_MAX_SIZE;
+        } else {
+            try {
+                maxPixelSize = Double.parseDouble(split[1].trim());
+            } catch (Exception ex) {
+                maxPixelSize = DEFAULT_MAX_SIZE;
+            }
+        }
+        SegmentationConfiguration.setMinPixelSize(minPixelSize);
+        SegmentationConfiguration.setMaxPixelSize(maxPixelSize);
+    }
+
+    private void parseAndSetCircularity() {
+        String[] split = circularity.getText().split("-");
+        try {
+            minCircularity = Double.parseDouble(split[0].trim());
+        } catch (Exception ex) {
+            minCircularity = 0.0;
+        }
+        try {
+            maxCircularity = Double.parseDouble(split[1].trim());
+        } catch (Exception ex) {
+            maxCircularity = 1.0;
+        }
+        SegmentationConfiguration.setMinCircularity(minCircularity);
+        SegmentationConfiguration.setMaxCircularity(maxCircularity);
     }
 
     /**
@@ -228,10 +288,14 @@ public class SegmentationConfigDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
+    private javax.swing.JTextField circularity;
     private javax.swing.JCheckBox excludeOnEdgesCheckBox;
     private javax.swing.JLabel excludeOnEdgesLabel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton okButton;
+    private javax.swing.JTextField pixelSize;
     private javax.swing.JLabel thresholdLabel;
     private javax.swing.JSpinner thresholdSpinner;
     // End of variables declaration//GEN-END:variables

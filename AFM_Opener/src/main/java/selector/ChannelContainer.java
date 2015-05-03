@@ -17,6 +17,8 @@ public class ChannelContainer {
     private final int channelIndex;
     private String IFD;
     private final String channelName;
+    private double gridULength;
+    private double gridVLength;
     private ChannelMetadata metadata;
 
     public ChannelContainer(File file, int channelIndex, ChannelMetadata metadata) {
@@ -54,6 +56,22 @@ public class ChannelContainer {
 
     public String getIFFD() {
         return IFD;
+    }
+
+    public double getGridULength() {
+        return gridULength;
+    }
+
+    public void setGridULength(double gridULength) {
+        this.gridULength = gridULength;
+    }
+
+    public double getGridVLength() {
+        return gridVLength;
+    }
+
+    public void setGridVLength(double gridVLength) {
+        this.gridVLength = gridVLength;
     }
 
     public void setIFFD(String IFFD) {

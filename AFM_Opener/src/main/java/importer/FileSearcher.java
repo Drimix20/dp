@@ -44,6 +44,8 @@ public class FileSearcher {
         List<ChannelContainer> container = new ArrayList<ChannelContainer>();
         for (int i = 0; i < metadata.size(); i++) {
             ChannelContainer channel = new ChannelContainer(file, i, metadata.get(i));
+            channel.setGridULength((Double) metadata.get(0).getTagValue(32834));
+            channel.setGridVLength((double) metadata.get(0).getTagValue(32835));
             container.add(channel);
         }
         return container;
@@ -57,6 +59,14 @@ public class FileSearcher {
         @Override
         public boolean accept(File pathname) {
             return pathname.getName().contains(".jpk");
+        }
+    }
+
+    private double parseStringToDouble(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException ex) {
+            return 1.0;
         }
     }
 }

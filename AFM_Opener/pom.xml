@@ -84,7 +84,24 @@
                 <directory>${project.build.testSourceDirectory}</directory>
             </testResource>
         </testResources>-->
+
         <plugins>
+<!--            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                     DO NOT include log4j.properties file in your Jar
+                    <excludes>
+                        <exclude>**/log4j.xml</exclude>
+                    </excludes>
+                    <archive>
+                        <manifest>
+                             Jar file entry point
+                            <mainClass>AFM_Opener</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

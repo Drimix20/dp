@@ -20,7 +20,8 @@ public class AFM_Opener implements PlugIn {
     private AfmOpenerRunnable afmOpenerRunnable;
 
     public AFM_Opener() {
-        super();
+        latch = new CountDownLatch(1);
+        disposeAfterOpen = false;
     }
 
     public AFM_Opener(CountDownLatch latch, boolean disposeAfterOpen) {
@@ -38,7 +39,7 @@ public class AFM_Opener implements PlugIn {
 
             @Override
             public void run() {
-                AfmOpenerFrame frame = new AfmOpenerFrame(new CountDownLatch(1), false);
+                AfmOpenerFrame frame = new AfmOpenerFrame();
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
             }
@@ -68,37 +69,5 @@ public class AFM_Opener implements PlugIn {
 
         // run the plugin
         IJ.runPlugIn(clazz.getName(), "");
-    }
-
-    class AfmOpenerRunnable implements Runnable {
-
-        private AfmOpenerFrame frame;
-        private CountDownLatch latch;
-        private boolean disposeAfterOpen;
-
-        public AfmOpenerRunnable(CountDownLatch latch, boolean disposeAfterOpen) {
-            this.latch = latch;
-            this.disposeAfterOpen = disposeAfterOpen;
-        }
-
-        public List<ChannelContainer> getSelectedChannels() {
-            return frame.getSelectedChannelContainer();
-        }
-
-        public CountDownLatch getLatch() {
-            return latch;
-        }
-
-        public boolean isDisposeAfterOpne() {
-            return disposeAfterOpen;
-        }
-
-        @Override
-        public void run() {
-            frame = new AfmOpenerFrame(latch, disposeAfterOpen);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        }
-
     }
 }

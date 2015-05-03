@@ -26,6 +26,10 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private boolean showLoadedImages;
     private boolean disposeAfterOpen;
 
+    public AfmOpenerFrame() {
+        this(new CountDownLatch(1), false);
+    }
+
     public AfmOpenerFrame(CountDownLatch latch, boolean disposeAfterOpen) {
         initComponents();
         selectedChannelContainer = new ArrayList<ChannelContainer>();
@@ -60,7 +64,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         selectAll = new javax.swing.JCheckBox();
         showInStack = new javax.swing.JCheckBox();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("AFM Opener");
         setIconImages(null);
         setResizable(false);

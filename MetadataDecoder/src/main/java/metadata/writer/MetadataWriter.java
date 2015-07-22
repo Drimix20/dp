@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import metadata.decoder.ChannelMetadata;
+import metadata.decoder.MetadataProperties;
 import org.apache.log4j.Logger;
 
 /**
@@ -42,8 +43,7 @@ public class MetadataWriter implements Writer {
     @Override
     public void writeData(List<ChannelMetadata> metadata) {
         logger.info("Writing metadata to file " + outputFile);
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(getTagHeaders(metadata));
+        StringBuilder stringBuilder = getTagHeaders(metadata);
 
         stringBuilder.append(NEW_LINE);
         java.io.Writer writer = null;
@@ -83,13 +83,23 @@ public class MetadataWriter implements Writer {
 
     }
 
-    private String getTagHeaders(List<ChannelMetadata> metadata) {
-        String output = "file";
+    protected StringBuilder getTagHeaders(List<ChannelMetadata> metadata) {
+        StringBuilder sb = new StringBuilder("general/channel").append(DELIMETR);
+
+        for (Integer tagKey : tagHeader) {
+            String generalName = MetadataProperties.getGeneralTagsName().get("" + tagKey);
+            generalName = generalName == null ? "--" : generalName;
+            String channelName = MetadataProperties.getChannelTagsName().get("" + tagKey);
+            channelName = channelName == null ? "--" : channelName;
+            sb.append(generalName).append("/").append(channelName).append(DELIMETR);
+        }
+
+        sb.append("\n").append("file");
         Set<Integer> headers = getAllTagKeys(metadata);
         for (Iterator<Integer> it = headers.iterator(); it.hasNext();) {
-            output += DELIMETR + it.next();
+            sb.append(DELIMETR).append(it.next());
         }
-        return output;
+        return sb;
     }
 
     private Set<Integer> getAllTagKeys(List<ChannelMetadata> metadata) {

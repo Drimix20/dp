@@ -8,6 +8,7 @@ import metadata.decoder.ChannelMetadata;
 import metadata.decoder.Decoder;
 import metadata.decoder.MetadataDecoder;
 import metadata.writer.MetadataWriter;
+import metadata.writer.PropertiesWriter;
 import metadata.writer.Writer;
 
 /**
@@ -18,7 +19,7 @@ public class Demo {
 
     public static void main(String[] args) {
         try {
-            File mainDirectory = new File("c:\\Users\\Drimal\\Downloads\\testData\\");
+            File mainDirectory = new File("c:\\Users\\Drimal\\Downloads\\allDpFiles\\");
 
             File[] listFiles = mainDirectory.listFiles(new JpkFilter());
             List<ChannelMetadata> metadata = new ArrayList<ChannelMetadata>();
@@ -45,10 +46,14 @@ public class Demo {
             generalTag.addAll(channelTag);
             System.out.println("TagHeader: " + generalTag.size());
 
-            Writer writer = new MetadataWriter(new File(mainDirectory.getAbsolutePath() + "\\tagSummary.txt"));
+            Writer writer = new MetadataWriter(new File(mainDirectory.getAbsolutePath() + "\\tagSummary2.txt"));
             writer.setTagHeader(generalTag);
             //writer.setTagExclusion(new TreeSet<Integer>(Arrays.asList(new Integer[]{32830, 32791, 32851})));
             writer.writeData(metadata);
+
+            Writer propertiesWriter = new PropertiesWriter(new File(mainDirectory.getAbsolutePath() + "\\tagExcluded.txt"));
+            propertiesWriter.setTagHeader(new TreeSet<Integer>(Arrays.asList(32791, 32830)));
+            propertiesWriter.writeData(metadata);
         } catch (Exception ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, null, ex);
         }

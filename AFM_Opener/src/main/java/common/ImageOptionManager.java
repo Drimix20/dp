@@ -46,7 +46,6 @@ public class ImageOptionManager extends Thread {
      */
     public void selectAllImages(boolean select) {
         selectAll = select;
-        createElementsForScrollPanel();
     }
 
     @Override
@@ -73,7 +72,7 @@ public class ImageOptionManager extends Thread {
             ChannelContainer channelContainer = originalChannels.get(i);
             File parentFile = channelContainer.getFile();
 
-            String channelName = (String) channelContainer.getMetadata().getTagValue(32848);
+            String channelName = (String) channelContainer.getMetadata().getTagValue(CHANNEL_NAME_TAG_DECIMAL);
             final ChannelListElement rowPanel = new ChannelListElement(channelContainer, selectedChannels, selectAll);
             columnpanel.add(rowPanel);
             if (rowIndex % 2 == 0) {
@@ -82,6 +81,7 @@ public class ImageOptionManager extends Thread {
             rowIndex++;
         }
     }
+    private static final int CHANNEL_NAME_TAG_DECIMAL = 32848;
 
     /**
      * Create column panel which will contains horizontal option panels for each image

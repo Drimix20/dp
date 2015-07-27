@@ -38,6 +38,15 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         showLoadedImages = true;
     }
 
+    private void resetButtons() {
+        selectAll.setSelected(false);
+        this.showInStack.setSelected(false);
+    }
+
+    private void resetDataStructures() {
+        selectedChannelContainer = new ArrayList<ChannelContainer>();
+    }
+
     public void showLoadedImages(boolean showLoadedImages) {
         this.showLoadedImages = showLoadedImages;
     }
@@ -177,11 +186,15 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
     private void SelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SelectButtonActionPerformed
         logger.info("Clicked on select button...");
+
         JFileChooser fileChooser = new JFileChooser(currentDirectory);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
         int returnVal = fileChooser.showOpenDialog(AfmOpenerFrame.this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
+            resetButtons();
+            resetDataStructures();
+
             File file = fileChooser.getSelectedFile();
 
             currentDirectory = file.getParentFile();

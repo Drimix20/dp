@@ -64,7 +64,7 @@ public class PropertiesWriter implements Writer {
                     if (tagExclusion.contains(tagKey)) {
                         stringBuilder.append(DELIMETR).append("");
                         continue;
-                    }//TODO fix ordering output
+                    }
                     Object tagValue = singleChannel.getTagValue(tagKey);
                     if (tagValue instanceof String) {
                         tagValue = ((String) tagValue).replace("\n", ";");

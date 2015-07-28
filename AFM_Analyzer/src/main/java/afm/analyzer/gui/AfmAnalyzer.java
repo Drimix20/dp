@@ -193,6 +193,7 @@ public class AfmAnalyzer extends javax.swing.JFrame {
     private void segmentationPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationPreviewButtonActionPerformed
         String labelBtn = evt.getActionCommand();
         if (checkThatThresholderIsNotSelected()) {
+            logger.warn("Thresholder was not selected.");
             return;
         }
 

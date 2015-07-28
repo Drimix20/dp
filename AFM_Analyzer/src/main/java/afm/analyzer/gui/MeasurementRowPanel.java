@@ -22,6 +22,7 @@ public class MeasurementRowPanel extends JPanel {
         jButton1.setEnabled(enableOptions);
         this.measurement = measurement;
         this.selectedMeasurements = selectedMeasurements;
+        this.nameLabel.setText(measurement.getLabel());
     }
 
     /**
@@ -70,7 +71,7 @@ public class MeasurementRowPanel extends JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(nameLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(checkBox)

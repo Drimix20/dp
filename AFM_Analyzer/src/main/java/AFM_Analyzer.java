@@ -22,7 +22,8 @@ public class AFM_Analyzer implements PlugIn {
         logger.info("Running plugin AFM_Analyzer");
         final CountDownLatch latch = new CountDownLatch(1);
         AFM_Opener openerPlugin = new AFM_Opener(latch, true);
-        openerPlugin.exec(true);
+        openerPlugin.showImages(false);
+        openerPlugin.execute();
 
         try {
             latch.await();

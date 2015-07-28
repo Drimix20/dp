@@ -27,20 +27,20 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private boolean disposeAfterOpen;
 
     public AfmOpenerFrame() {
-        this(new CountDownLatch(1), false);
+        this(new CountDownLatch(1), false, true);
     }
 
-    public AfmOpenerFrame(CountDownLatch latch, boolean disposeAfterOpen) {
+    public AfmOpenerFrame(CountDownLatch latch, boolean disposeAfterOpen, boolean showLoadedImages) {
         initComponents();
         selectedChannelContainer = new ArrayList<ChannelContainer>();
         this.latch = latch;
         this.disposeAfterOpen = disposeAfterOpen;
-        showLoadedImages = true;
+        this.showLoadedImages = showLoadedImages;
     }
 
     private void resetButtons() {
         selectAll.setSelected(false);
-        this.showInStack.setSelected(false);
+        this.showInStack.setSelected(true);
     }
 
     private void resetDataStructures() {
@@ -224,8 +224,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
         latchCountDown();
 
-        logger.info(
-                "Images were loaded");
+        logger.info("Images were loaded");
     }//GEN-LAST:event_OpenButtonActionPerformed
 
     private void showLoadedImages(List<ChannelContainer> loadedImages, boolean show) {

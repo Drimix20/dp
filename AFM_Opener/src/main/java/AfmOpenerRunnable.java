@@ -9,8 +9,9 @@ class AfmOpenerRunnable implements Runnable {
     private AfmOpenerFrame frame;
     private CountDownLatch latch;
     private boolean disposeAfterOpen;
+    private boolean showLoadedImages;
 
-    public AfmOpenerRunnable(CountDownLatch latch, boolean disposeAfterOpen) {
+    public AfmOpenerRunnable(CountDownLatch latch, boolean disposeAfterOpen, boolean showImages) {
         this.latch = latch;
         this.disposeAfterOpen = disposeAfterOpen;
     }
@@ -29,7 +30,7 @@ class AfmOpenerRunnable implements Runnable {
 
     @Override
     public void run() {
-        frame = new AfmOpenerFrame(latch, disposeAfterOpen);
+        frame = new AfmOpenerFrame(latch, disposeAfterOpen, showLoadedImages);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

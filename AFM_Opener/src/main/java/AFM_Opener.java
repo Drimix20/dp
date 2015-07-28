@@ -18,16 +18,23 @@ public class AFM_Opener implements PlugIn {
     private CountDownLatch latch;
     private boolean disposeAfterOpen;
     private AfmOpenerRunnable afmOpenerRunnable;
+    private boolean showImages;
 
     public AFM_Opener() {
         latch = new CountDownLatch(1);
         disposeAfterOpen = false;
+        showImages = true;
     }
 
     public AFM_Opener(CountDownLatch latch, boolean disposeAfterOpen) {
         super();
         this.latch = latch;
         this.disposeAfterOpen = disposeAfterOpen;
+        showImages = true;
+    }
+
+    public void showImages(boolean enabled) {
+        showImages = enabled;
     }
 
     public List<ChannelContainer> getSelectedContainer() {
@@ -52,8 +59,8 @@ public class AFM_Opener implements PlugIn {
      * @param disposeAfterOpen
      * @return
      */
-    public void exec(boolean disposeAfterOpen) {
-        afmOpenerRunnable = new AfmOpenerRunnable(latch, true);
+    public void execute() {
+        afmOpenerRunnable = new AfmOpenerRunnable(latch, disposeAfterOpen, showImages);
         SwingUtilities.invokeLater(afmOpenerRunnable);
     }
 

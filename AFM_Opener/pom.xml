@@ -10,13 +10,17 @@
 
 
     <parent>
-        <groupId>sc.fiji</groupId>
+        <!--        <groupId>sc.fiji</groupId>
         <version>2.0.0-beta-1-SNAPSHOT</version>
         <artifactId>fiji</artifactId>
+        <relativePath />-->
+        <groupId>net.imagej</groupId>
+        <artifactId>pom-imagej</artifactId>
+        <version>7.1.0</version>
         <relativePath />
     </parent>
     <repositories>
-        <!-- NB: for project parent -->
+        <!--         NB: for project parent-->
         <repository>
             <id>imagej.public</id>
             <url>http://maven.imagej.net/content/groups/public</url>
@@ -46,6 +50,16 @@
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.2.8-b01</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.2-promoted-b65</version>
+        </dependency>
         <!-- Metadata decoder -->
         <dependency>
             <groupId>DP</groupId>
@@ -53,55 +67,16 @@
             <version>1.0-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
-        <!-- Testind dependency -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
-        </dependency>
     </dependencies>
 
     <build>
-        <!--        <resources>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>${project.build.sourceDirectory}</directory>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>${basedir}/src/test/resources</directory>
-            </testResource>
-            <testResource>
-                <directory>${project.build.testSourceDirectory}</directory>
-            </testResource>
-        </testResources>-->
-
         <plugins>
-<!--            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                     DO NOT include log4j.properties file in your Jar
-                    <excludes>
-                        <exclude>**/log4j.xml</exclude>
-                    </excludes>
-                    <archive>
-                        <manifest>
-                             Jar file entry point
-                            <mainClass>AFM_Opener</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -124,6 +99,33 @@
                 <configuration>
                     <mainClass>AFM_Opener</mainClass>
                 </configuration>
+            </plugin>
+            <!-- Plugin for copy tags.xml from resources dir -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>tags.xml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

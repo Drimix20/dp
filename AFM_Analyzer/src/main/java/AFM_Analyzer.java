@@ -1,5 +1,7 @@
 
-import afm.analyzer.gui.AfmAnalyzer;
+import afm.analyzer.gui.AfmAnalyzerFrame;
+import afm.analyzer.presenter.AnalyzerImageWindow;
+import afm.analyzer.presenter.ImageWindowI;
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.PlugIn;
@@ -35,7 +37,11 @@ public class AFM_Analyzer implements PlugIn {
             @Override
             public void run() {
                 try {
-                    AfmAnalyzer analyzer = new AfmAnalyzer();
+                    ImageWindowI analyzerImageWindow = new AnalyzerImageWindow();
+                    analyzerImageWindow.setImagesToShow(selectedChannelContainer);
+                    analyzerImageWindow.setVisible(true);
+
+                    AfmAnalyzerFrame analyzer = new AfmAnalyzerFrame(analyzerImageWindow);
                     analyzer.setChannels(selectedChannelContainer);
                     analyzer.setLocationRelativeTo(null);
                     analyzer.setVisible(true);
@@ -48,7 +54,7 @@ public class AFM_Analyzer implements PlugIn {
 
     public static void main(String[] args) {
         // set the plugins.dir property to make the plugin appear in the Plugins menu
-        Class<?> clazz = AfmAnalyzer.class;
+        Class<?> clazz = AfmAnalyzerFrame.class;
         String url = clazz.getResource("/" + clazz.getName().replace('.', '/') + ".class").toString();
         String pluginsDir = url.substring(5, url.length() - clazz.getName().length() - 6);
         System.setProperty("plugins.dir", pluginsDir);

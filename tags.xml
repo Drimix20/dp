@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<tags>
+	<tag category="general">
+		<name>ProgramVersion</name>
+		<decimal>32768</decimal>
+		<hexadecimal>0x8000</hexadecimal>
+		<description>Version of JPKSPM software that created the file. This tag wasn't written before version 3.1.6</description>
+	</tag>
+</tags>

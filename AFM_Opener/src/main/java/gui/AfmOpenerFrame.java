@@ -1,7 +1,10 @@
 package gui;
 
 import common.ImageOptionManager;
-import common.ImagePresenter;
+import common.AfnOpenerImagePresenter;
+import writer.CsvImageTagsWriter;
+import exporter.ImageTagsExporter;
+import exporter.TagsExporter;
 import importer.FileSearcher;
 import importer.ImageLoader;
 import java.io.File;
@@ -23,17 +26,26 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
     private List<ChannelContainer> selectedChannelContainer;
     private ImageOptionManager imageOptionManager;
+    private TagsExporter tagsExporter;
     private boolean showLoadedImages;
     private boolean disposeAfterOpen;
 
     public AfmOpenerFrame() {
-        this(new CountDownLatch(1), false, true);
+        this(new CountDownLatch(1), new ImageTagsExporter(new CsvImageTagsWriter()), false, true);
     }
 
-    public AfmOpenerFrame(CountDownLatch latch, boolean disposeAfterOpen, boolean showLoadedImages) {
+    public AfmOpenerFrame(CountDownLatch latch, TagsExporter tagsExporter,
+            boolean disposeAfterOpen, boolean showLoadedImages) {
+        if (tagsExporter == null) {
+            throw new IllegalArgumentException("Image tags writer is null.");
+        }
+        if (latch == null) {
+            throw new IllegalArgumentException("Count down latch is null");
+        }
         initComponents();
         selectedChannelContainer = new ArrayList<ChannelContainer>();
         this.latch = latch;
+        this.tagsExporter = tagsExporter;
         this.disposeAfterOpen = disposeAfterOpen;
         this.showLoadedImages = showLoadedImages;
     }
@@ -72,6 +84,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         OpenButton = new javax.swing.JButton();
         selectAll = new javax.swing.JCheckBox();
         showInStack = new javax.swing.JCheckBox();
+        exportTagsCheckbox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("AFM Opener");
@@ -128,6 +141,12 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         showInStack.setMaximumSize(new java.awt.Dimension(198, 24));
         showInStack.setPreferredSize(new java.awt.Dimension(198, 24));
 
+        exportTagsCheckbox.setText("Export all tags:                             ");
+        exportTagsCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        exportTagsCheckbox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        exportTagsCheckbox.setMaximumSize(new java.awt.Dimension(198, 24));
+        exportTagsCheckbox.setPreferredSize(new java.awt.Dimension(198, 24));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -148,7 +167,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
                                         .addGap(41, 41, 41)
                                         .addComponent(OpenButton)
                                         .addGap(18, 18, 18)
-                                        .addComponent(cancelButton)))))
+                                        .addComponent(cancelButton))
+                                    .addComponent(exportTagsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 5, Short.MAX_VALUE))
                     .addComponent(selectAll, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -170,11 +190,13 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(selectAll, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(imageOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(11, 11, 11)
                 .addComponent(showInStack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(exportTagsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cancelButton)
                     .addComponent(OpenButton))
@@ -222,14 +244,19 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         showLoadedImages(loadedImages, showLoadedImages);
         disposeAfmOpener(disposeAfterOpen);
 
+        if (exportTagsCheckbox.isSelected()) {
+            tagsExporter.exportImageTags(loadedImages, currentDirectory);
+        }
+
         latchCountDown();
 
         logger.info("Images were loaded");
     }//GEN-LAST:event_OpenButtonActionPerformed
 
-    private void showLoadedImages(List<ChannelContainer> loadedImages, boolean show) {
+    private void showLoadedImages(List<ChannelContainer> loadedImages,
+            boolean show) {
         if (showLoadedImages) {
-            ImagePresenter presenter = new ImagePresenter();
+            AfnOpenerImagePresenter presenter = new AfnOpenerImagePresenter();
             presenter.showAsStack(showInStack.isSelected());
             presenter.show(loadedImages);
         }
@@ -266,6 +293,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private javax.swing.JButton OpenButton;
     private javax.swing.JButton SelectButton;
     private javax.swing.JButton cancelButton;
+    private javax.swing.JCheckBox exportTagsCheckbox;
     private javax.swing.JScrollPane imageOptionPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

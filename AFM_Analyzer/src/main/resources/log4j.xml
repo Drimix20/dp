@@ -7,6 +7,10 @@
             <param name="ConversionPattern" value="%d [%t] %-5p %c{1} - %m%n"/>
         </layout>
     </appender>
+
+    <logger name="exporter">
+  <level value="debug"/>
+</logger>
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>
         <priority value="all"/>

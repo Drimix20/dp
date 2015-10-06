@@ -24,7 +24,7 @@ public class PropertiesWriter implements Writer {
 
     Logger logger = Logger.getLogger(PropertiesWriter.class);
     private static final String NEW_LINE = "\n";
-    private static final String DELIMETR = "\t";
+    private String delimetr = "\t";
     private File outputFile;
     private Set<Integer> tagHeader;
     private Set<Integer> tagExclusion;
@@ -33,6 +33,11 @@ public class PropertiesWriter implements Writer {
         this.outputFile = outputFile;
         tagHeader = new TreeSet<Integer>();
         tagExclusion = new TreeSet<Integer>();
+    }
+
+    @Override
+    public void setDelimeter(String delimeter) {
+        this.delimetr = delimeter;
     }
 
     @Override
@@ -62,7 +67,7 @@ public class PropertiesWriter implements Writer {
 
                 for (Integer tagKey : tagHeader) {
                     if (tagExclusion.contains(tagKey)) {
-                        stringBuilder.append(DELIMETR).append("");
+                        stringBuilder.append(delimetr).append("");
                         continue;
                     }
                     Object tagValue = singleChannel.getTagValue(tagKey);
@@ -78,7 +83,7 @@ public class PropertiesWriter implements Writer {
                         }
 
                         for (Iterator<String> it = getTagHeader().iterator(); it.hasNext();) {
-                            stringBuilder.append(DELIMETR).append(map.get(it.next()));
+                            stringBuilder.append(delimetr).append(map.get(it.next()));
                         }
                     }
                     //stringBuilder.append(DELIMETR).append(tagValue);
@@ -103,19 +108,19 @@ public class PropertiesWriter implements Writer {
     }
 
     protected StringBuilder getTagHeaders(List<ChannelMetadata> metadata) {
-        StringBuilder sb = new StringBuilder("general/channel").append(DELIMETR);
+        StringBuilder sb = new StringBuilder("general/channel").append(delimetr);
 
         for (Integer tagKey : tagHeader) {
             String generalName = MetadataProperties.getGeneralTagsName().get("" + tagKey);
             generalName = generalName == null ? "--" : generalName;
             String channelName = MetadataProperties.getChannelTagsName().get("" + tagKey);
             channelName = channelName == null ? "--" : channelName;
-            sb.append(generalName).append("/").append(channelName).append(DELIMETR);
+            sb.append(generalName).append("/").append(channelName).append(delimetr);
         }
 
         sb.append("\n").append("file");
         for (Iterator<String> it = getTagHeader().iterator(); it.hasNext();) {
-            sb.append(DELIMETR).append(it.next());
+            sb.append(delimetr).append(it.next());
         }
         return sb;
     }

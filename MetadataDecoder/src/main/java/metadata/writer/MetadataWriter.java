@@ -17,7 +17,7 @@ public class MetadataWriter implements Writer {
 
     Logger logger = Logger.getLogger(MetadataWriter.class);
     private static final String NEW_LINE = "\n";
-    private static final String DELIMETR = "\t";
+    private String delimeter = "\t";
     private File outputFile;
     private Set<Integer> tagHeader;
     private Set<Integer> tagExclusion;
@@ -26,6 +26,10 @@ public class MetadataWriter implements Writer {
         this.outputFile = outputFile;
         tagHeader = new TreeSet<Integer>();
         tagExclusion = new TreeSet<Integer>();
+    }
+
+    public void setDelimeter(String delimeter) {
+        this.delimeter = delimeter;
     }
 
     @Override
@@ -48,25 +52,23 @@ public class MetadataWriter implements Writer {
         stringBuilder.append(NEW_LINE);
         java.io.Writer writer = null;
         try {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)));
-
             for (ChannelMetadata singleChannel : metadata) {
                 stringBuilder.append(singleChannel.getFilePath());
 
                 for (Integer tagKey : tagHeader) {
                     if (tagExclusion.contains(tagKey)) {
-                        stringBuilder.append(DELIMETR).append("");
+                        stringBuilder.append(delimeter).append("");
                         continue;
                     }
                     Object tagValue = singleChannel.getTagValue(tagKey);
                     if (tagValue instanceof String) {
                         tagValue = ((String) tagValue).replace("\n", ";");
                     }
-                    stringBuilder.append(DELIMETR).append(tagValue);
+                    stringBuilder.append(delimeter).append(tagValue);
                 }
                 stringBuilder.append(NEW_LINE);
             }
-
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)));
             writer.write(stringBuilder.toString());
         } catch (Exception ex) {
             logger.error("Error while writing to file", ex);
@@ -84,20 +86,20 @@ public class MetadataWriter implements Writer {
     }
 
     protected StringBuilder getTagHeaders(List<ChannelMetadata> metadata) {
-        StringBuilder sb = new StringBuilder("general/channel").append(DELIMETR);
+        StringBuilder sb = new StringBuilder("general/channel").append(delimeter);
 
         for (Integer tagKey : tagHeader) {
             String generalName = MetadataProperties.getGeneralTagsName().get("" + tagKey);
             generalName = generalName == null ? "--" : generalName;
             String channelName = MetadataProperties.getChannelTagsName().get("" + tagKey);
             channelName = channelName == null ? "--" : channelName;
-            sb.append(generalName).append("/").append(channelName).append(DELIMETR);
+            sb.append(generalName).append("/").append(channelName).append(delimeter);
         }
 
         sb.append("\n").append("file");
         Set<Integer> headers = getAllTagKeys(metadata);
         for (Iterator<Integer> it = headers.iterator(); it.hasNext();) {
-            sb.append(DELIMETR).append(it.next());
+            sb.append(delimeter).append(it.next());
         }
         return sb;
     }

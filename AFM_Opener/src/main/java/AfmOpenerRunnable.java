@@ -1,4 +1,6 @@
 
+import writer.CsvImageTagsWriter;
+import exporter.ImageTagsExporter;
 import gui.AfmOpenerFrame;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -11,7 +13,8 @@ class AfmOpenerRunnable implements Runnable {
     private boolean disposeAfterOpen;
     private boolean showLoadedImages;
 
-    public AfmOpenerRunnable(CountDownLatch latch, boolean disposeAfterOpen, boolean showImages) {
+    public AfmOpenerRunnable(CountDownLatch latch, boolean disposeAfterOpen,
+            boolean showImages) {
         this.latch = latch;
         this.disposeAfterOpen = disposeAfterOpen;
     }
@@ -30,7 +33,7 @@ class AfmOpenerRunnable implements Runnable {
 
     @Override
     public void run() {
-        frame = new AfmOpenerFrame(latch, disposeAfterOpen, showLoadedImages);
+        frame = new AfmOpenerFrame(latch, new ImageTagsExporter(new CsvImageTagsWriter()), disposeAfterOpen, showLoadedImages);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

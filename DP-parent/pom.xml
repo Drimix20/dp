@@ -6,15 +6,12 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
+        <module>../MetadataDecoder</module>
         <module>../AFM_Opener</module>
         <module>../AFM_Analyzer</module>
     </modules>
 
     <parent>
-<!--        <groupId>sc.fiji</groupId>
-        <version>2.0.0-beta-1-SNAPSHOT</version>
-        <artifactId>fiji</artifactId>
-        <relativePath />-->
         <groupId>net.imagej</groupId>
         <artifactId>pom-imagej</artifactId>
         <version>7.1.0</version>

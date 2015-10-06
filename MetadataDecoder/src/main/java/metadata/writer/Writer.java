@@ -16,4 +16,6 @@ public interface Writer {
 
     void writeData(List<ChannelMetadata> metadata);
 
+    void setDelimeter(String delimeter);
+
 }

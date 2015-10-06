@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<tags>
+	<tag category="channel">
+		<name>Channel</name>
+		<decimal>32848</decimal>
+		<hexadecimal>0x8050</hexadecimal>
+		<description>Name of the channel, e.g. height</description>
+	</tag>
+        <tag category="channel">
+		<name>Channel-retrace</name>
+		<decimal>32849</decimal>
+		<hexadecimal>0x8051</hexadecimal>
+		<description>Direction of measurement; 0 for trace, 1 for retrace</description>
+	</tag>
+</tags>

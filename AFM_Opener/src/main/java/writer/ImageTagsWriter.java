@@ -1,8 +1,9 @@
 package writer;
 
-import configuration.Tag;
+import configuration.xml.elements.Tag;
 import java.util.List;
 import selector.ChannelContainer;
+import writer.tags.sorter.TagsDescriptionSorter;
 
 /**
  *
@@ -14,4 +15,6 @@ public interface ImageTagsWriter {
             String filePath, String filename);
 
     public void setTagsDescription(List<Tag> tagsDescription);
+
+    public void setTagsDescriptionSorter(TagsDescriptionSorter comparator);
 }

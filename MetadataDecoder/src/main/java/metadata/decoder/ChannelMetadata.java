@@ -53,6 +53,11 @@ public class ChannelMetadata {
         tags.put(tag, value);
     }
 
+    /**
+
+     @param tag
+     @return return value of tag, null if no tag was found
+     */
     public Object getTagValue(int tag) {
         if (tag <= 0) {
             throw new IllegalArgumentException("Parameter tag is negative or zero");

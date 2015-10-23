@@ -1,5 +1,6 @@
 package configuration;
 
+import configuration.xml.elements.Tag;
 import java.util.List;
 
 /**

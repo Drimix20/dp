@@ -20,10 +20,10 @@ public class TagsDescriptionValidator {
 
     public boolean validateXmlBySchema(File xmlPath) {
         String xsdPath = getXsdFilePath();
-        return validateXMLSchema(xmlPath.getPath(), xsdPath);
+        return validateXMLBySchema(xmlPath.getPath(), xsdPath);
     }
 
-    public boolean validateXMLSchema(String xmlPath, String xsdPath) {
+    public boolean validateXMLBySchema(String xmlPath, String xsdPath) {
         logger.debug("Starts validate " + xmlPath + " file");
         try {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

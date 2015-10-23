@@ -1,10 +1,10 @@
 package exporter;
 
+import configuration.TagsDescriptionParser;
 import writer.ImageTagsWriter;
 import writer.CsvImageTagsWriter;
 import configuration.TagsXmlDescriptionParser;
-import configuration.Tag;
-import configuration.TagsDescriptionParser;
+import configuration.xml.elements.Tag;
 import configuration.TagsDescriptionValidator;
 import ij.IJ;
 import java.io.File;
@@ -23,11 +23,6 @@ import selector.ChannelContainer;
 public class ImageTagsExporter implements TagsExporter {
 
     private static Logger logger = Logger.getLogger(ImageTagsExporter.class);
-    private ImageTagsWriter imageTagsWriter;
-
-    public ImageTagsExporter(ImageTagsWriter imageTagsWriter) {
-        this.imageTagsWriter = imageTagsWriter;
-    }
 
     @Override
     public void exportImageTags(List<ChannelContainer> channels,

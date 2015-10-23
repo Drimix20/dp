@@ -2,7 +2,6 @@ package gui;
 
 import common.ImageOptionManager;
 import common.AfnOpenerImagePresenter;
-import writer.CsvImageTagsWriter;
 import exporter.ImageTagsExporter;
 import exporter.TagsExporter;
 import importer.FileSearcher;
@@ -26,26 +25,21 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
     private List<ChannelContainer> selectedChannelContainer;
     private ImageOptionManager imageOptionManager;
-    private TagsExporter tagsExporter;
     private boolean showLoadedImages;
     private boolean disposeAfterOpen;
 
     public AfmOpenerFrame() {
-        this(new CountDownLatch(1), new ImageTagsExporter(new CsvImageTagsWriter()), false, true);
+        this(new CountDownLatch(1), false, true);
     }
 
-    public AfmOpenerFrame(CountDownLatch latch, TagsExporter tagsExporter,
+    public AfmOpenerFrame(CountDownLatch latch,
             boolean disposeAfterOpen, boolean showLoadedImages) {
-        if (tagsExporter == null) {
-            throw new IllegalArgumentException("Image tags writer is null.");
-        }
         if (latch == null) {
             throw new IllegalArgumentException("Count down latch is null");
         }
         initComponents();
         selectedChannelContainer = new ArrayList<ChannelContainer>();
         this.latch = latch;
-        this.tagsExporter = tagsExporter;
         this.disposeAfterOpen = disposeAfterOpen;
         this.showLoadedImages = showLoadedImages;
     }
@@ -245,6 +239,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         disposeAfmOpener(disposeAfterOpen);
 
         if (exportTagsCheckbox.isSelected()) {
+            TagsExporter tagsExporter = new ImageTagsExporter();
             tagsExporter.exportImageTags(loadedImages, currentDirectory);
         }
 

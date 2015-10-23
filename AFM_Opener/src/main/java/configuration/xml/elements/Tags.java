@@ -1,4 +1,4 @@
-package configuration;
+package configuration.xml.elements;
 
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -11,12 +11,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Drimal
  */
 @XmlRootElement(name = "tags")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Tags {
 
-    @XmlElement(name = "tag")
     private List<Tag> tagList = null;
 
+    @XmlElement(name = "tag")
     public List<Tag> getTags() {
         return tagList;
     }

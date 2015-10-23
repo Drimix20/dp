@@ -1,5 +1,7 @@
 package configuration;
 
+import configuration.xml.elements.Tags;
+import configuration.xml.elements.Tag;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +19,7 @@ public class TagsXmlDescriptionParser implements TagsDescriptionParser {
     @Override
     public List<Tag> parseTagsDescriptions(String filePath) {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Tags.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(new Class[]{Tags.class, Tag.class});
             Unmarshaller jaxbUnmarshal = jaxbContext.createUnmarshaller();
             Tags tags = (Tags) jaxbUnmarshal.unmarshal(new File(filePath));
             return tags.getTags();

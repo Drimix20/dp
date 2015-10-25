@@ -15,8 +15,6 @@ import selector.ChannelContainer;
  */
 public class AFM_Opener implements PlugIn {
 
-    //TODO created commit need to be pushed
-
     private CountDownLatch latch;
     private boolean disposeAfterOpen;
     private AfmOpenerRunnable afmOpenerRunnable;

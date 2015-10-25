@@ -25,6 +25,21 @@ public class ImageTagsExporter implements TagsExporter {
 
     private static Logger logger = Logger.getLogger(ImageTagsExporter.class);
 
+    private enum SupportedFileTypes {
+
+        //TODO add new enum type for supported files
+        CSV_TYPE("File CSV (.csv)", "csv");
+
+        private String description;
+        private String extension;
+
+        private SupportedFileTypes(String description, String extension) {
+            this.description = description;
+            this.extension = extension;
+        }
+
+    }
+
     @Override
     public void exportImageTags(List<ChannelContainer> channels,
             File currentDirectory) {
@@ -79,12 +94,18 @@ public class ImageTagsExporter implements TagsExporter {
 
     private JFileChooser initializeFileSaver(File currentDirectory) {
         JFileChooser fileChooser = new JFileChooser(currentDirectory);
-        //TODO possible add new file filter
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("File CSV (.csv)", "csv"));
+        registerFileNameExtensionFilters(fileChooser, SupportedFileTypes.values());
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setFileFilter(fileChooser.getChoosableFileFilters()[0]);
         return fileChooser;
     }
 
+    private void registerFileNameExtensionFilters(JFileChooser fileChooser,
+            SupportedFileTypes[] types) {
+        for (int i = 0; i < types.length; i++) {
+            SupportedFileTypes type = types[i];
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(type.description, type.extension));
+        }
+    }
 }

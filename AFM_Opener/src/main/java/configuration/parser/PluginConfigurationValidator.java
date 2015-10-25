@@ -1,5 +1,6 @@
-package configuration;
+package configuration.parser;
 
+import configuration.PluginConfiguration;
 import java.io.File;
 import java.io.IOException;
 import javax.xml.XMLConstants;
@@ -14,13 +15,12 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class TagsDescriptionValidator {
+public class PluginConfigurationValidator {
 
-    private static Logger logger = Logger.getLogger(TagsDescriptionValidator.class);
+    private static Logger logger = Logger.getLogger(PluginConfigurationValidator.class);
 
-    public boolean validateXmlBySchema(File xmlPath) {
-        String xsdPath = getXsdFilePath();
-        return validateXMLBySchema(xmlPath.getPath(), xsdPath);
+    public boolean validateXml(File xmlPath) {
+        return validateXMLBySchema(xmlPath.getPath(), PluginConfiguration.getConfigurationXmlSchemaPath());
     }
 
     public boolean validateXMLBySchema(String xmlPath, String xsdPath) {
@@ -31,15 +31,11 @@ public class TagsDescriptionValidator {
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(new File(xmlPath)));
         } catch (IOException | SAXException e) {
-            logger.error("File " + xmlPath + " is not valid");
+            logger.error("File " + xmlPath + " is not valid: " + e.getMessage());
             return false;
         }
         logger.debug("File " + xmlPath + " is valid ");
         return true;
     }
 
-    private String getXsdFilePath() {
-        ClassLoader loader = getClass().getClassLoader();
-        return loader.getResource("tags.xsd").getFile();
-    }
 }

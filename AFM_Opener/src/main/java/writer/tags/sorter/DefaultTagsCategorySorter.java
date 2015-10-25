@@ -1,6 +1,6 @@
 package writer.tags.sorter;
 
-import configuration.xml.elements.Tag;
+import configuration.xml.elements.TagConfiguration;
 import static writer.tags.sorter.DefaultTagsCategorySorter.MultipleOptions.CATEGORY_SORT;
 import static writer.tags.sorter.DefaultTagsCategorySorter.MultipleOptions.DECIMAL_TAG_SORT;
 
@@ -11,7 +11,7 @@ import static writer.tags.sorter.DefaultTagsCategorySorter.MultipleOptions.DECIM
 public class DefaultTagsCategorySorter implements TagsDescriptionSorter {
 
     @Override
-    public int compare(Tag tag1, Tag tag2) {
+    public int compare(TagConfiguration tag1, TagConfiguration tag2) {
         MultipleOptions[] options = new MultipleOptions[]{CATEGORY_SORT, DECIMAL_TAG_SORT};
         for (MultipleOptions option : options) {
             int result = option.compare(tag1, tag2);
@@ -25,7 +25,7 @@ public class DefaultTagsCategorySorter implements TagsDescriptionSorter {
     enum MultipleOptions implements TagsDescriptionSorter {
 
         CATEGORY_SORT {
-                    public int compare(Tag tag1, Tag tag2) {
+                    public int compare(TagConfiguration tag1, TagConfiguration tag2) {
                         if (tag1.getCategory().equals("general") && tag2.getCategory().equals("channel")) {
                             return -1;
                         }
@@ -36,7 +36,7 @@ public class DefaultTagsCategorySorter implements TagsDescriptionSorter {
                     }
                 },
         DECIMAL_TAG_SORT {
-                    public int compare(Tag tag1, Tag tag2) {
+                    public int compare(TagConfiguration tag1, TagConfiguration tag2) {
                         return Integer.valueOf(tag1.getDecimalValue()).compareTo(tag2.getDecimalValue());
                     }
                 };

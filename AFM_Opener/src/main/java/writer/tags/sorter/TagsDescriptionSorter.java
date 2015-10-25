@@ -1,15 +1,15 @@
 package writer.tags.sorter;
 
-import configuration.xml.elements.Tag;
+import configuration.xml.elements.TagConfiguration;
 import java.util.Comparator;
 
 /**
  *
  * @author Drimal
  */
-public interface TagsDescriptionSorter extends Comparator<Tag> {
+public interface TagsDescriptionSorter extends Comparator<TagConfiguration> {
 
     @Override
-    public int compare(Tag tag1, Tag tag2);
+    public int compare(TagConfiguration tag1, TagConfiguration tag2);
 
 }

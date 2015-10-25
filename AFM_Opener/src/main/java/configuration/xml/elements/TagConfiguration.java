@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "tag")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Tag {
+public class TagConfiguration {
 
     private String category;
     private String name;
@@ -93,7 +93,7 @@ public class Tag {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Tag other = (Tag) obj;
+        final TagConfiguration other = (TagConfiguration) obj;
         if (!Objects.equals(this.category, other.category)) {
             return false;
         }

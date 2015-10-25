@@ -4,12 +4,38 @@
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
 
+    <xsd:element name="configuration" type="configurationType"/>
+
+    <xsd:complexType name="configurationType">
+        <xsd:sequence>
+            <xsd:element name="dimensionTags" type="dimensionTagsType" maxOccurs="1"/>
+            <xsd:element name="tags" type="tagsType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
     <xsd:element name="tags" type="tagsType"/>
+
     <xsd:complexType name="tagsType">
         <xsd:sequence>
             <xsd:element name="tag" type="tagType" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
+
+    <xsd:element name="dimensionTags" type="dimensionTagsType"/>
+
+    <xsd:complexType name="dimensionTagsType">
+        <xsd:sequence>
+            <xsd:element name="uLengthTag" type="lengthTagType"/>
+            <xsd:element name="vLengthTag" type="lengthTagType"/>
+            <xsd:element name="iLengthTag" type="lengthTagType"/>
+            <xsd:element name="jLengthTag" type="lengthTagType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="lengthTagType">
+        <xsd:restriction base="xsd:integer"/>
+    </xsd:simpleType>
+
     <xsd:complexType name="tagType">
         <xsd:sequence>
             <xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
@@ -27,6 +53,7 @@
             </xsd:simpleType>
         </xsd:attribute>
     </xsd:complexType>
+
     <xsd:simpleType name="hexadecimalValue">
         <xsd:restriction base="xsd:string">
             <xsd:pattern value="0x[0-9A-Fa-f]+"/>

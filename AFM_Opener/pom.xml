@@ -119,7 +119,7 @@
                                     <directory>src/main/resources</directory>
                                     <filtering>true</filtering>
                                     <includes>
-                                        <include>tagsDescription.xml</include>
+                                        <include>afmPluginConfiguration.xml</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -145,7 +145,7 @@
                                     <directory>src/main/resources</directory>
                                     <filtering>true</filtering>
                                     <includes>
-                                        <include>tagsDescription.xml</include>
+                                        <include>afmPluginConfiguration.xml</include>
                                     </includes>
                                 </resource>
                             </resources>

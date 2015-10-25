@@ -1,11 +1,12 @@
 package exporter;
 
-import configuration.TagsDescriptionParser;
+import configuration.PluginConfiguration;
+import configuration.parser.TagsDescriptionParser;
 import writer.ImageTagsWriter;
 import writer.CsvImageTagsWriter;
-import configuration.TagsXmlDescriptionParser;
-import configuration.xml.elements.Tag;
-import configuration.TagsDescriptionValidator;
+import configuration.parser.TagsXmlDescriptionParser;
+import configuration.xml.elements.TagConfiguration;
+import configuration.parser.PluginConfigurationValidator;
 import ij.IJ;
 import java.io.File;
 import java.util.Collections;
@@ -36,7 +37,7 @@ public class ImageTagsExporter implements TagsExporter {
             logger.debug("Selected file to save is " + file.getAbsolutePath());
 
             File tagsDescriptionFile = retrieveFilePathOfTagsDescriptionFile();
-            List<Tag> loadTagsDescription = loadTagsDescription(tagsDescriptionFile);
+            List<TagConfiguration> loadTagsDescription = loadTagsDescription(tagsDescriptionFile);
             logger.debug("Number of tags from xml: " + loadTagsDescription.size());
 
             FileFilter selectedFilter = fileChooser.getFileFilter();
@@ -56,24 +57,24 @@ public class ImageTagsExporter implements TagsExporter {
         return null;
     }
 
-    private List<Tag> loadTagsDescription(File tagsDescriptionFile) {
+    private List<TagConfiguration> loadTagsDescription(File tagsDescriptionFile) {
         if (!tagsDescriptionFile.exists()) {
             return Collections.EMPTY_LIST;
         }
-        TagsDescriptionValidator descriptionValidator = new TagsDescriptionValidator();
-        boolean isXmlValid = descriptionValidator.validateXmlBySchema(tagsDescriptionFile);
+        PluginConfigurationValidator descriptionValidator = new PluginConfigurationValidator();
+        boolean isXmlValid = descriptionValidator.validateXml(tagsDescriptionFile);
 
         if (!isXmlValid) {
             return Collections.EMPTY_LIST;
         }
         TagsDescriptionParser tagsParser = new TagsXmlDescriptionParser();
 
-        return tagsParser.parseTagsDescriptions(tagsDescriptionFile.getPath());
+        return tagsParser.parseConfigurationFile(tagsDescriptionFile.getPath()).getTagsList().getTags();
     }
 
     private File retrieveFilePathOfTagsDescriptionFile() {
         String directory = IJ.getDirectory("plugins");
-        return new File(directory + File.separator + "tagsDescription.xml");
+        return new File(directory + File.separator + PluginConfiguration.PLUGIN_CONFIGURATION_XML_NAME);
     }
 
     private JFileChooser initializeFileSaver(File currentDirectory) {

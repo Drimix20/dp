@@ -1,5 +1,6 @@
 package configuration.xml.elements;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,16 +13,24 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "tags")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Tags {
+public class TagListConfiguration {
 
-    private List<Tag> tagList = null;
+    private List<TagConfiguration> tagList;
 
+    public TagListConfiguration() {
+        tagList = new ArrayList<>();
+    }
+
+    /**
+
+     @return Return unmodifiable collection
+     */
     @XmlElement(name = "tag")
-    public List<Tag> getTags() {
+    public List<TagConfiguration> getTags() {
         return tagList;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(List<TagConfiguration> tags) {
         this.tagList = tags;
     }
 

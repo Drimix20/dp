@@ -16,6 +16,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.log4j.Logger;
 import selector.ChannelContainer;
+import writer.tags.sorter.CategoryTagsDescriptionSorter;
+import writer.tags.sorter.DecimalIDTagsDescriptionSorter;
 
 /**
  *
@@ -57,6 +59,8 @@ public class ImageTagsExporter implements TagsExporter {
 
             FileFilter selectedFilter = fileChooser.getFileFilter();
             ImageTagsWriter tagsWriter = getWriterInstance(selectedFilter);
+            tagsWriter.addTagsDescriptionSorter(new CategoryTagsDescriptionSorter());
+            tagsWriter.addTagsDescriptionSorter(new DecimalIDTagsDescriptionSorter());
             if (tagsWriter != null) {
                 tagsWriter.setTagsDescription(loadTagsDescription);
                 tagsWriter.dumpTagsIntoFile(channels, file.getParent(), file.getName());

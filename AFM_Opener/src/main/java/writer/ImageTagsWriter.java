@@ -16,5 +16,11 @@ public interface ImageTagsWriter {
 
     public void setTagsDescription(List<TagConfiguration> tagsDescription);
 
-    public void setTagsDescriptionSorter(TagsDescriptionSorter comparator);
+    public boolean addTagsDescriptionSorter(TagsDescriptionSorter sorter);
+
+    public List<TagsDescriptionSorter> listAllTagsSorters();
+
+    public boolean removeTagsDescriptionSorter(TagsDescriptionSorter sorter);
+
+    public void removeaAllTagsDescriptionSorters();
 }

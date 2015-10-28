@@ -41,7 +41,7 @@ public class TagConfiguration {
         this.name = name;
     }
 
-    public int getDecimalValue() {
+    public int getDecimalID() {
         return decimal;
     }
 
@@ -50,7 +50,7 @@ public class TagConfiguration {
         this.decimal = decimalValue;
     }
 
-    public String getHexadecimalValue() {
+    public String getHexadecimalID() {
         return hexadecimal;
     }
 

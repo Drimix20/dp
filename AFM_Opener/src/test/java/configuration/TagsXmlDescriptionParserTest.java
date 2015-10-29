@@ -1,6 +1,6 @@
 package configuration;
 
-import configuration.parser.TagsXmlDescriptionParser;
+import configuration.parser.XmlPluginConfigurationParser;
 import configuration.xml.elements.ConfigurationXmlRootElement;
 import configuration.xml.elements.DimensionTagsConfiguration;
 import ij.IJ;
@@ -28,7 +28,7 @@ public class TagsXmlDescriptionParserTest {
 
     @Test
     public void testParseTagsDescriptions() {
-        TagsXmlDescriptionParser instance = new TagsXmlDescriptionParser();
+        XmlPluginConfigurationParser instance = new XmlPluginConfigurationParser();
 
         ConfigurationXmlRootElement element = instance.parseConfigurationFile(filePath);
         DimensionTagsConfiguration dimensionTagsConfiguration = element.getDimensionTagsConfiguration();

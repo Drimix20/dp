@@ -1,7 +1,7 @@
 package gui;
 
 import common.ImageOptionManager;
-import common.AfnOpenerImagePresenter;
+import common.AfmOpenerImagePresenter;
 import exporter.ImageTagsExporter;
 import exporter.TagsExporter;
 import importer.FileSearcher;
@@ -251,7 +251,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private void showLoadedImages(List<ChannelContainer> loadedImages,
             boolean show) {
         if (showLoadedImages) {
-            AfnOpenerImagePresenter presenter = new AfnOpenerImagePresenter();
+            AfmOpenerImagePresenter presenter = new AfmOpenerImagePresenter();
             presenter.showAsStack(showInStack.isSelected());
             presenter.show(loadedImages);
         }

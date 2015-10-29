@@ -18,11 +18,9 @@ public class TagConfiguration {
     private String category;
     private String name;
     private int decimal;
-    private int offsetDecimal;
     private String hexadecimal;
-
     private String offsetHexadecimal = "";
-    private String description;
+    private String description = "";
 
     @XmlAttribute(name = "category")
     public String getCategory() {
@@ -108,7 +106,11 @@ public class TagConfiguration {
 
     @Override
     public String toString() {
-        return "Tag{" + "category=" + category + ", name=" + name + ", decimal=" + decimal + ", offsetDecimal=" + offsetDecimal + ", hexadecimal=" + hexadecimal + ", offsetHexadecimal=" + offsetHexadecimal + ", description=" + description + '}';
+        return "Tag{" + "category=" + category + ", name=" + name + ", decimal=" + decimal + ", hexadecimal=" + hexadecimal + ", offsetHexadecimal=" + offsetHexadecimal + ", description=" + description + '}';
+    }
+
+    public String toCsvString() {
+        return "\"" + category + "\",\"" + name + "\",\"" + decimal + "\",\"" + hexadecimal + "\",\"" + offsetHexadecimal + "\",\"" + description + "\"";
     }
 
 }

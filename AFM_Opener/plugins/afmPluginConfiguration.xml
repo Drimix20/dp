@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <configuration>
+    <channelNameTag>32848</channelNameTag>
+    <numberOfSlotsTag>32896</numberOfSlotsTag>
     <dimensionTags>
         <uLengthTag>32834</uLengthTag>
         <vLengthTag>32835</vLengthTag>
@@ -105,7 +107,7 @@
             <description>An identification string that is changed every time the stepper motors are moved</description>
         </tag>
         <tag category="general">
-            <name>FielFormatFeatures</name>
+            <name>FileFormatFeatures</name>
             <decimal>32790</decimal>
             <hexadecimal>0x8016</hexadecimal>
             <description>Bitmap describing file format features present in this file, as integer converted to a hexadecimal string.  See section `Version Numbers`</description>
@@ -134,12 +136,35 @@
             <hexadecimal>0x8033</hexadecimal>
             <description>The setpoint in V</description>
         </tag>
-        <!-- TOTO check feedback_var in image -->
         <tag category="general">
-            <name>Feedback_Var[1;5]</name>
-            <decimal>32819</decimal>
+            <name>Feedback_Approach AdjustBaseline/Feedback_Adjust ReferenceAmplitude</name>
+            <decimal>32820</decimal>
             <hexadecimal>0x8034</hexadecimal>
-            <description>Parameters describing the feedback mode</description>
+            <description>Parameters describing the feedback mode contact/intermittent</description>
+        </tag>
+        <tag category="general">
+            <name>Feedback_Baseline/Feedback ReferenceAmplitute</name>
+            <decimal>32821</decimal>
+            <hexadecimal>0x8035</hexadecimal>
+            <description>Parameters describing the feedback mode contact/intermittent</description>
+        </tag>
+        <tag category="general">
+            <name>Feedback_Amplitute</name>
+            <decimal>32822</decimal>
+            <hexadecimal>0x8036</hexadecimal>
+            <description>Parameters describing the feedback mode intermittent</description>
+        </tag>
+        <tag category="general">
+            <name>Feedback_Frequency</name>
+            <decimal>32823</decimal>
+            <hexadecimal>0x8037</hexadecimal>
+            <description>Parameters describing the feedback mode intermittent</description>
+        </tag>
+        <tag category="general">
+            <name>Feedback_Phaseshift</name>
+            <decimal>32824</decimal>
+            <hexadecimal>0x8038</hexadecimal>
+            <description>Parameters describing the feedback mode intermittent</description>
         </tag>
         <tag category="general">
             <name>Approach_IGain</name>
@@ -211,7 +236,7 @@
             <name>Grid-Reflect</name>
             <decimal>32837</decimal>
             <hexadecimal>0x8045</hexadecimal>
-            <description>Is the grid "mirror reflected", making (u,v) a left-handed coordinate system? (If so, the v axis points in direction opposite to normal)</description>
+            <description>Is the grid mirror reflected, making (u,v) a left-handed coordinate system? (If so, the v axis points in direction opposite to normal)</description>
         </tag>
         <tag category="general">
             <name>Grid-iLength</name>
@@ -489,7 +514,7 @@
             <name>Calibration_operator</name>
             <decimal>32865</decimal>
             <hexadecimal>0x8061</hexadecimal>
-            <description>Is given in days since the selected calibration.</description>
+            <description>It is an element for later extensions (e.g. comments to own calibration standards).</description>
         </tag>
         <tag category="channel">
             <name>NrOfSlots</name>
@@ -556,14 +581,12 @@
             <name>Scaling-Multiply</name>
             <decimal>32932</decimal>
             <hexadecimal>0x80A4</hexadecimal>
-            <offset_hexadecimal>0x30</offset_hexadecimal>
             <description>If the Encoder is 'LinearScaling', this defines the factor by which the imagedata has to be multiplied.</description>
         </tag>
         <tag category="channel">
             <name>Scaling-Offset</name>
             <decimal>32933</decimal>
             <hexadecimal>0x80A5</hexadecimal>
-            <offset_hexadecimal>0x30</offset_hexadecimal>
             <description>If the Encoder is 'LinearScaling', this defines an offset you have to add to the data after multiplication.</description>
         </tag>
         <tag category="channel">

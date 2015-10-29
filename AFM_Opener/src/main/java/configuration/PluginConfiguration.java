@@ -1,14 +1,13 @@
 package configuration;
 
-import configuration.parser.TagsDescriptionParser;
+import configuration.parser.PluginConfigurationParser;
 import configuration.parser.PluginConfigurationValidator;
-import configuration.parser.TagsXmlDescriptionParser;
+import configuration.parser.XmlPluginConfigurationParser;
 import configuration.xml.elements.ConfigurationXmlRootElement;
 import configuration.xml.elements.TagConfiguration;
 import ij.IJ;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,9 +23,12 @@ public class PluginConfiguration {
     private static int imagePhysicalHeightTag;
     private static int imageWidthTag;
     private static int imageHeightTag;
+    private static int numberOfSlotsTag;
+    private static int channelNameTag;
     private static List<TagConfiguration> tagConfigList;
     private static String configurationXmlSchemaPath;
 
+    //TODO add configuration for image/channel name; Look into gui maker
     public static int getImagePhysicalWidthTag() {
         return imagePhysicalWidthTag;
     }
@@ -43,8 +45,16 @@ public class PluginConfiguration {
         return imageHeightTag;
     }
 
+    public static int getNumberOfSlotsTag() {
+        return numberOfSlotsTag;
+    }
+
+    public static int getChannelNameTag() {
+        return channelNameTag;
+    }
+
     public static List<TagConfiguration> getTagConfigurationList() {
-        return Collections.unmodifiableList(tagConfigList);
+        return tagConfigList;
     }
 
     public static String getConfigurationXmlSchemaPath() {
@@ -59,12 +69,14 @@ public class PluginConfiguration {
             boolean isXmlValid = descriptionValidator.validateXml(configurtionFile);
 
             if (isXmlValid) {
-                TagsDescriptionParser tagsParser = new TagsXmlDescriptionParser();
-                ConfigurationXmlRootElement element = tagsParser.parseConfigurationFile(configurtionFile.getPath());
+                PluginConfigurationParser pluginConfiguration = new XmlPluginConfigurationParser();
+                ConfigurationXmlRootElement element = pluginConfiguration.parseConfigurationFile(configurtionFile.getPath());
                 imagePhysicalWidthTag = element.getDimensionTagsConfiguration().getImagePhysicalSizeXTag();
                 imagePhysicalHeightTag = element.getDimensionTagsConfiguration().getImagePhysicalSizeYTag();
                 imageWidthTag = element.getDimensionTagsConfiguration().getImageWidthTag();
                 imageHeightTag = element.getDimensionTagsConfiguration().getImageHeightTag();
+                numberOfSlotsTag = element.getNumberOfSlotsTag();
+                channelNameTag = element.getChannelNameTag();
                 tagConfigList = element.getTagsList().getTags();
             }
         }
@@ -76,6 +88,8 @@ public class PluginConfiguration {
         imageWidthTag = 32838;
         imageHeightTag = 32839;
         tagConfigList = new ArrayList<>();
+        numberOfSlotsTag = 32896;
+        channelNameTag = 32848;
 
         ClassLoader cl = PluginConfiguration.class.getClassLoader();
         configurationXmlSchemaPath = cl.getResource(PLUGIN_CONFIGURATION_SCHEMA_XSD_NAME).getPath();

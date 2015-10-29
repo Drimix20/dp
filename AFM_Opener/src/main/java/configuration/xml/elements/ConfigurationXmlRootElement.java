@@ -10,9 +10,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Drimal
  */
 @XmlRootElement(name = "configuration")
-@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlAccessorType(XmlAccessType.PROPERTY)//TODO use field instead of property and delete setters
 public class ConfigurationXmlRootElement {
 
+    private int numberOfSlotsTag;
+    private int channelNameTag;
     //@XmlElement(name = "dimensionTags")
     private DimensionTagsConfiguration dimensionTagsConfiguration;
     private TagListConfiguration tags;
@@ -28,6 +30,32 @@ public class ConfigurationXmlRootElement {
     }
 
     public void setTagsList(TagListConfiguration tags) {
+        this.tags = tags;
+    }
+
+    @XmlElement(name = "numberOfSlotsTag")
+    public int getNumberOfSlotsTag() {
+        return numberOfSlotsTag;
+    }
+
+    public void setNumberOfSlotsTag(int numberOfSlotsTag) {
+        this.numberOfSlotsTag = numberOfSlotsTag;
+    }
+
+    @XmlElement(name = "channelNameTag")
+    public int getChannelNameTag() {
+        return channelNameTag;
+    }
+
+    public void setChannelNameTag(int channelNameTag) {
+        this.channelNameTag = channelNameTag;
+    }
+
+    public TagListConfiguration getTags() {
+        return tags;
+    }
+
+    public void setTags(TagListConfiguration tags) {
         this.tags = tags;
     }
 

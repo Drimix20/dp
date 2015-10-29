@@ -9,7 +9,7 @@ import selector.ChannelContainer;
  *
  * @author Drimal
  */
-public class AfnOpenerImagePresenter implements ImagePresenter {
+public class AfmOpenerImagePresenter implements ImagePresenter {
 
     private boolean showAsStack;
 

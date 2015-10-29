@@ -6,7 +6,7 @@ import configuration.xml.elements.ConfigurationXmlRootElement;
  *
  * @author Drimal
  */
-public interface TagsDescriptionParser {
+public interface PluginConfigurationParser {
 
     ConfigurationXmlRootElement parseConfigurationFile(String filePath);
 

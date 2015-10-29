@@ -14,7 +14,7 @@ import javax.xml.bind.Unmarshaller;
  *
  * @author Drimal
  */
-public class TagsXmlDescriptionParser implements TagsDescriptionParser {
+public class XmlPluginConfigurationParser implements PluginConfigurationParser {
 
     @Override
     public ConfigurationXmlRootElement parseConfigurationFile(String filePath) {
@@ -23,7 +23,7 @@ public class TagsXmlDescriptionParser implements TagsDescriptionParser {
             Unmarshaller jaxbUnmarshal = jaxbContext.createUnmarshaller();
             return (ConfigurationXmlRootElement) jaxbUnmarshal.unmarshal(new File(filePath));
         } catch (Exception ex) {
-            Logger.getLogger(TagsXmlDescriptionParser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(XmlPluginConfigurationParser.class.getName()).log(Level.SEVERE, null, ex);
         }
         return new ConfigurationXmlRootElement();
     }

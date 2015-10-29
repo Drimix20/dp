@@ -8,6 +8,8 @@
 
     <xsd:complexType name="configurationType">
         <xsd:sequence>
+            <xsd:element name="channelNameTag" type="tagConfigType" maxOccurs="1"/>
+            <xsd:element name="numberOfSlotsTag" type="tagConfigType" maxOccurs="1"/>
             <xsd:element name="dimensionTags" type="dimensionTagsType" maxOccurs="1"/>
             <xsd:element name="tags" type="tagsType" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
@@ -25,14 +27,14 @@
 
     <xsd:complexType name="dimensionTagsType">
         <xsd:sequence>
-            <xsd:element name="uLengthTag" type="lengthTagType"/>
-            <xsd:element name="vLengthTag" type="lengthTagType"/>
-            <xsd:element name="iLengthTag" type="lengthTagType"/>
-            <xsd:element name="jLengthTag" type="lengthTagType"/>
+            <xsd:element name="uLengthTag" type="tagConfigType"/>
+            <xsd:element name="vLengthTag" type="tagConfigType"/>
+            <xsd:element name="iLengthTag" type="tagConfigType"/>
+            <xsd:element name="jLengthTag" type="tagConfigType"/>
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:simpleType name="lengthTagType">
+    <xsd:simpleType name="tagConfigType">
         <xsd:restriction base="xsd:integer"/>
     </xsd:simpleType>
 

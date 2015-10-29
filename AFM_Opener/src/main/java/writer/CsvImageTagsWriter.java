@@ -1,5 +1,6 @@
 package writer;
 
+import configuration.PluginConfiguration;
 import configuration.xml.elements.TagConfiguration;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,13 +30,13 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
     private static final String NEW_LINE = "\n";
     private String DELIMETR = ",";
     private Set<Integer> tagsInImage;
-    private List<TagConfiguration> tagsDescription = new ArrayList<>();
+    private List<TagConfiguration> tagConfigList = new ArrayList<>();
 
-    //TODO export tags due to tags in image. If possible add more info from tagsDescription file
-    private List<TagsDescriptionSorter> tagDescriptionSorter;
+    //TODO export tags due to tags in image. If possible add more info from tagConfigList file
+    private List<TagsDescriptionSorter> tagDescriptionSorterList;
 
     public CsvImageTagsWriter() {
-        tagDescriptionSorter = new ArrayList<>();
+        tagDescriptionSorterList = new ArrayList<>();
         tagsInImage = new TreeSet<Integer>(Arrays.asList(new Integer[]{
             256, 257, 258, 259, 262, 273, 277, 278, 279, 320, 339, 32768, 32769, 32770, 32771, 32772, 32773, 32774,
             32775, 32776, 32777, 32784, 32785, 32786, 32787, 32788, 32789, 32790, 32791, 32816, 32817, 32818, 32819,
@@ -48,34 +49,34 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
     }
 
     public void setTagsDescription(List<TagConfiguration> tagsDescription) {
-        this.tagsDescription = tagsDescription;
+        this.tagConfigList = tagsDescription;
     }
 
     @Override
     public boolean addTagsDescriptionSorter(TagsDescriptionSorter comparator) {
-        return this.tagDescriptionSorter.add(comparator);
+        return this.tagDescriptionSorterList.add(comparator);
     }
 
     @Override
     public List<TagsDescriptionSorter> listAllTagsSorters() {
-        return Collections.unmodifiableList(tagDescriptionSorter);
+        return Collections.unmodifiableList(tagDescriptionSorterList);
     }
 
     @Override
     public boolean removeTagsDescriptionSorter(TagsDescriptionSorter sorter) {
-        return this.tagDescriptionSorter.remove(sorter);
+        return this.tagDescriptionSorterList.remove(sorter);
     }
 
     @Override
     public void removeaAllTagsDescriptionSorters() {
-        this.tagDescriptionSorter.clear();
+        this.tagDescriptionSorterList.clear();
     }
 
     @Override
     public void dumpTagsIntoFile(List<ChannelContainer> channels,
             String filePath, String filename) {
 
-        if (!isCsvFile(filename)) {
+        if (!hasCsvFileExtension(filename)) {
             filename += ".csv";
         }
         File outputFile = new File(filePath + File.separator + filename);
@@ -90,7 +91,7 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
 
         sortTagsDescriptionByConfiguredSorter();
 
-        if (tagsDescription.isEmpty()) {
+        if (tagConfigList.isEmpty()) {
             exportTagsInBasicFormat(channels, outputFile);
         } else {
             exportTagsInExtendedFormat(channels, outputFile);
@@ -98,9 +99,9 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
     }
 
     private void sortTagsDescriptionByConfiguredSorter() {
-        if (tagDescriptionSorter != null && !tagsDescription.isEmpty()) {
-            MultipleComparator comparator = new MultipleComparator(tagDescriptionSorter);
-            comparator.sort(tagsDescription, tagDescriptionSorter);
+        if (tagDescriptionSorterList != null && !tagConfigList.isEmpty()) {
+            MultipleComparator comparator = new MultipleComparator(tagDescriptionSorterList);
+            comparator.sort(tagConfigList, tagDescriptionSorterList);
         }
     }
 
@@ -122,27 +123,32 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
             File outputFile) {
         logger.debug("Write extended header");
         StringBuilder stringBuilder = new StringBuilder("");//TODO cannot take index 0. Completely change tagsWriter
-        if (channels.size() > 0) {
-            Set<Integer> tagsHeader = channels.get(0).getMetadata().getTags();
+
+        if (channels.size() == 0) {
+            logger.error("No tags to export");
+            return;
         }
         prepareHeaderFromTagsDescription(stringBuilder, channels.get(0).getMetadata(), tagsInImage);
 
+        //TODO sometimes is empty string instead of null value when tag does not exist
         for (ChannelContainer container : channels) {
             ChannelMetadata metadata = container.getMetadata();
             stringBuilder.append("\"").append(metadata.getFilePath()).append("\"").append(DELIMETR);
-            for (TagConfiguration tag : tagsDescription) {
-                Object tagValue = metadata.getTagValue(tag.getDecimalID());
+            int numberOfSlots = (int) metadata.getTagValue(PluginConfiguration.getNumberOfSlotsTag());
+            //iterate all tags from image
+            for (TagConfiguration tag : tagConfigList) {
+                int tagId = tag.getDecimalID();
+                Object tagValue = metadata.getTagValue(tagId);
                 stringBuilder.append("\"").append(substituteNewLineBySemicolon(tagValue)).append("\"").append(DELIMETR);
                 if (!tag.getOffsetHexadecimal().isEmpty()) {
-                    List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()));
-                    for (Integer tagDecimal : lookingForOffsetTags) {
-                        stringBuilder.append("\"").append(substituteNewLineBySemicolon(metadata.getTagValue(tagDecimal))).append("\"").append(DELIMETR);
+                    List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tagId, Integer.decode(tag.getOffsetHexadecimal()), numberOfSlots);
+                    for (Integer offsetTagId : lookingForOffsetTags) {
+                        stringBuilder.append("\"").append(substituteNewLineBySemicolon(metadata.getTagValue(offsetTagId))).append("\"").append(DELIMETR);
                     }
                 }
             }
             stringBuilder.append(NEW_LINE);
         }
-
         try (java.io.Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)))) {
             writer.write(stringBuilder.toString());
         } catch (Exception ex) {
@@ -159,43 +165,39 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
 
     private List<Integer> lookingForOffsetTags(ChannelMetadata metadata,
             int decimalTag,
-            int offset) {
+            int offset, int numberOfSlots) {
         List<Integer> tags = new ArrayList<>();
-        int n = 1;
         logger.debug("OriginalTag: " + decimalTag);
-        int nextDecimalTag = decimalTag + n * offset;
-        while (metadata.getTagValue(nextDecimalTag) != null) {
-            logger.debug("NextDecimalTag found: " + nextDecimalTag);
-            Object tagValue = metadata.getTagValue(nextDecimalTag);
-            logger.debug("NextDecimalTag value: " + tagValue);
-            tags.add(nextDecimalTag);
-            n++;
-            nextDecimalTag = decimalTag + n * offset;
+        for (int i = 1; i < numberOfSlots; i++) {
+            int nextTagId = decimalTag + i * offset;
+            logger.debug("NextDecimalTag found: " + nextTagId);
+            tags.add(nextTagId);
         }
         return tags;
     }
 
     private void prepareHeaderFromTagsDescription(StringBuilder stringBuilder,
             ChannelMetadata metadata, Set<Integer> tagsInImage) {
-        appendTagNameLine(stringBuilder, tagsDescription, metadata).append(NEW_LINE);
-        apppendTagDecimalValueLine(stringBuilder, tagsDescription, metadata).append(NEW_LINE);
-        appendTagHexadecimalValueLine(stringBuilder, tagsDescription, metadata).append(NEW_LINE);
-        appendTagCategoryLine(stringBuilder, tagsDescription, metadata).append(NEW_LINE);
-        appendTagDescriptionLine(stringBuilder, tagsDescription, metadata).append(NEW_LINE);
-        appendFilenameLine(stringBuilder, tagsDescription, metadata).append(NEW_LINE);
+        appendTagNameLine(stringBuilder, tagConfigList, metadata).append(NEW_LINE);
+        apppendTagDecimalValueLine(stringBuilder, tagConfigList, metadata).append(NEW_LINE);
+        appendTagHexadecimalValueLine(stringBuilder, tagConfigList, metadata).append(NEW_LINE);
+        appendTagCategoryLine(stringBuilder, tagConfigList, metadata).append(NEW_LINE);
+        appendTagDescriptionLine(stringBuilder, tagConfigList, metadata).append(NEW_LINE);
+        appendFilenameLine(stringBuilder, tagConfigList, metadata).append(NEW_LINE);
     }
 
-    private boolean isCsvFile(String fileName) {
+    private boolean hasCsvFileExtension(String fileName) {
         return fileName.contains(".csv") || fileName.contains(".CSV");
     }
 
     private StringBuilder appendTagNameLine(StringBuilder sb,
             List<TagConfiguration> tagsDescription, ChannelMetadata metadata) {
         sb.append("\"").append("name").append("\"");
+        int numberOfSlots = (int) metadata.getTagValue(PluginConfiguration.getNumberOfSlotsTag());
         for (TagConfiguration tag : tagsDescription) {
             sb.append(DELIMETR).append("\"").append(tag.getName()).append("\"");
             if (!tag.getOffsetHexadecimal().isEmpty()) {
-                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()));
+                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()), numberOfSlots);
                 for (Integer tagDecimal : lookingForOffsetTags) {
                     sb.append(DELIMETR).append("\"").append(tag.getName()).append("\"");
                 }
@@ -207,10 +209,11 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
     private StringBuilder apppendTagDecimalValueLine(StringBuilder sb,
             List<TagConfiguration> tagsDescription, ChannelMetadata metadata) {
         sb.append("tag");
+        int numberOfSlots = (int) metadata.getTagValue(PluginConfiguration.getNumberOfSlotsTag());
         for (TagConfiguration tag : tagsDescription) {
             sb.append(DELIMETR).append(tag.getDecimalID());
             if (!tag.getOffsetHexadecimal().isEmpty()) {
-                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()));
+                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()), numberOfSlots);
                 for (Integer tagDecimal : lookingForOffsetTags) {
                     sb.append(DELIMETR).append("\"").append(tagDecimal).append("\"");
                 }
@@ -221,11 +224,12 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
 
     private StringBuilder appendTagHexadecimalValueLine(StringBuilder sb,
             List<TagConfiguration> tagsDescription, ChannelMetadata metadata) {
+        int numberOfSlots = (int) metadata.getTagValue(PluginConfiguration.getNumberOfSlotsTag());
         sb.append("\"").append("hexadecimal").append("\"");
         for (TagConfiguration tag : tagsDescription) {
             sb.append(DELIMETR).append("\"").append(tag.getHexadecimalID()).append("\"");
             if (!tag.getOffsetHexadecimal().isEmpty()) {
-                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()));
+                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()), numberOfSlots);
                 for (Integer tagDecimal : lookingForOffsetTags) {
                     sb.append(DELIMETR).append("\"").append("0x" + Integer.toHexString(tagDecimal)).append("\"");
                 }
@@ -236,11 +240,12 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
 
     private StringBuilder appendTagDescriptionLine(StringBuilder sb,
             List<TagConfiguration> tagsDescription, ChannelMetadata metadata) {
+        int numberOfSlots = (int) metadata.getTagValue(PluginConfiguration.getNumberOfSlotsTag());
         sb.append("\"").append("description").append("\"");
         for (TagConfiguration tag : tagsDescription) {
             sb.append(DELIMETR).append("\"").append(tag.getDescription()).append("\"");
             if (!tag.getOffsetHexadecimal().isEmpty()) {
-                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()));
+                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()), numberOfSlots);
                 for (Integer tagDecimal : lookingForOffsetTags) {
                     sb.append(DELIMETR).append("\"").append(tag.getDescription()).append("\"");
                 }
@@ -251,11 +256,12 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
 
     private StringBuilder appendTagCategoryLine(StringBuilder sb,
             List<TagConfiguration> tagsDescription, ChannelMetadata metadata) {
+        int numberOfSlots = (int) metadata.getTagValue(PluginConfiguration.getNumberOfSlotsTag());
         sb.append("\"").append("category").append("\"");
         for (TagConfiguration tag : tagsDescription) {
             sb.append(DELIMETR).append("\"").append(tag.getCategory()).append("\"");
             if (!tag.getOffsetHexadecimal().isEmpty()) {
-                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()));
+                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()), numberOfSlots);
                 for (Integer tagDecimal : lookingForOffsetTags) {
                     sb.append(DELIMETR).append("\"").append(tag.getCategory()).append("\"");
                 }
@@ -266,11 +272,12 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
 
     private StringBuilder appendFilenameLine(StringBuilder sb,
             List<TagConfiguration> tagsDescription, ChannelMetadata metadata) {
+        int numberOfSlots = (int) metadata.getTagValue(PluginConfiguration.getNumberOfSlotsTag());
         sb.append("\"").append("filename").append("\"");
         for (TagConfiguration tag : tagsDescription) {
             sb.append(DELIMETR).append("\"").append("#").append("\"");
             if (!tag.getOffsetHexadecimal().isEmpty()) {
-                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()));
+                List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()), numberOfSlots);
                 for (Integer tagDecimal : lookingForOffsetTags) {
                     sb.append(DELIMETR).append("\"").append("#").append("\"");
                 }

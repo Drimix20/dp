@@ -4,7 +4,6 @@ import configuration.PluginConfiguration;
 import writer.ImageTagsWriter;
 import writer.CsvImageTagsWriter;
 import configuration.xml.elements.TagConfiguration;
-import ij.IJ;
 import java.io.File;
 import java.util.List;
 import javax.swing.JFileChooser;
@@ -33,7 +32,7 @@ public class ImageTagsExporter implements TagsExporter {
             File file = fileChooser.getSelectedFile();
             logger.debug("Selected file to save is " + file.getAbsolutePath());
 
-            File tagsDescriptionFile = retrieveFilePathOfTagsDescriptionFile();
+            File tagsDescriptionFile = new File(PluginConfiguration.getPluginConfigurationXmlPath());
             List<TagConfiguration> tagsConfig = PluginConfiguration.getTagConfigurationList();
             logger.debug("Number of tags from xml: " + tagsConfig.size());
 
@@ -54,12 +53,6 @@ public class ImageTagsExporter implements TagsExporter {
         }
 
         return null;
-    }
-
-    //TODO move into PluginConfiguration class
-    private File retrieveFilePathOfTagsDescriptionFile() {
-        String directory = IJ.getDirectory("plugins");
-        return new File(directory + File.separator + PluginConfiguration.PLUGIN_CONFIGURATION_XML_NAME);
     }
 
 }

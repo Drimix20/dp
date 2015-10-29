@@ -25,10 +25,10 @@ public class PluginConfiguration {
     private static int imageHeightTag;
     private static int numberOfSlotsTag;
     private static int channelNameTag;
+    private static String pluginConfigurationXmlPath;
     private static List<TagConfiguration> tagConfigList;
     private static String configurationXmlSchemaPath;
 
-    //TODO add configuration for image/channel name; Look into gui maker
     public static int getImagePhysicalWidthTag() {
         return imagePhysicalWidthTag;
     }
@@ -55,6 +55,10 @@ public class PluginConfiguration {
 
     public static List<TagConfiguration> getTagConfigurationList() {
         return tagConfigList;
+    }
+
+    public static String getPluginConfigurationXmlPath() {
+        return pluginConfigurationXmlPath;
     }
 
     public static String getConfigurationXmlSchemaPath() {
@@ -93,6 +97,7 @@ public class PluginConfiguration {
 
         ClassLoader cl = PluginConfiguration.class.getClassLoader();
         configurationXmlSchemaPath = cl.getResource(PLUGIN_CONFIGURATION_SCHEMA_XSD_NAME).getPath();
+        pluginConfigurationXmlPath = IJ.getDirectory("plugins") + File.separator + PluginConfiguration.PLUGIN_CONFIGURATION_XML_NAME;
     }
 
     private static File retrieveConfigurationFile() {

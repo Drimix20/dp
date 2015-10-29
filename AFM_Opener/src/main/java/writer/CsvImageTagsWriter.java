@@ -122,7 +122,7 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
     private void exportTagsInExtendedFormat(List<ChannelContainer> channels,
             File outputFile) {
         logger.debug("Write extended header");
-        StringBuilder stringBuilder = new StringBuilder("");//TODO cannot take index 0. Completely change tagsWriter
+        StringBuilder stringBuilder = new StringBuilder("");
 
         if (channels.size() == 0) {
             logger.error("No tags to export");

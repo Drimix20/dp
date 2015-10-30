@@ -9,11 +9,8 @@ import ij.plugin.filter.PlugInFilter;
 import ij.plugin.frame.RoiManager;
 import ij.process.ImageProcessor;
 import java.awt.Frame;
-import javax.measure.converter.UnitConverter;
-import javax.measure.quantity.Length;
-import static javax.measure.unit.SI.METRE;
-import static javax.measure.unit.SI.MetricPrefix.NANO;
-import javax.measure.unit.Unit;
+import results.table.ExtendedResultsTable;
+import results.table.ExtendedTextPanel;
 
 /**
  *
@@ -21,6 +18,7 @@ import javax.measure.unit.Unit;
  */
 public class Test_Plugin implements PlugInFilter {
 
+    private ExtendedTextPanel etp;
     private ImagePlus imp;
 
     public static void main(String[] args) {
@@ -56,7 +54,7 @@ public class Test_Plugin implements PlugInFilter {
         stack.addSlice("Cell_colony", imp3.getProcessor());
         new ImagePlus("stack", stack).show();
 
-        ResultsTable resultsTable = new ResultsTable();
+        ResultsTable resultsTable = new ExtendedResultsTable();
         //create new instance of my roiManager and set to don't show window
         RoiManager roiManager = new RoiManager(true);
         ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE, Measurements.ADD_TO_OVERLAY | Measurements.RECT, resultsTable,
@@ -65,7 +63,7 @@ public class Test_Plugin implements PlugInFilter {
         ParticleAnalyzer.setLineWidth(1);
         analyzer.analyze(imp, ip);
 
-        resultsTable.show("Results");
+        resultsTable.show("Results2");
         int numberOfRows = resultsTable.size();
         String[] headings = resultsTable.getHeadings();
         int bxIndex = resultsTable.getColumnIndex(headings[0]);
@@ -101,16 +99,6 @@ public class Test_Plugin implements PlugInFilter {
 //        roiManager.select(0);
 //        roiManager.runCommand("Delete");
 //        roiManager.addRoi(extRoi);
-        Unit<Length> unit = METRE;
-        Unit<Length> target = NANO(METRE);
-        UnitConverter converter = unit.getConverterTo(target);
-        double result = converter.convert(1.0);
-        System.out.println("From 1 meter to nanometer:" + result);
-
-        converter = target.getConverterTo(unit);
-        result = converter.convert(1.0);
-        System.out.println("From 1 nanometer to meter:" + result);
-
     }
 
     private RoiManager instantiateRoiManager() {

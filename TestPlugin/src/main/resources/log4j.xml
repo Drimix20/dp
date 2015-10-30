@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+    <!-- appender určuje, kam se bude logovat, v tomto případě na konzolu -->
+    <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%t] %-5p %c{1} - %m%n"/>
+        </layout>
+    </appender>
+    <!-- tento appender loguje do denně rotovaného souboru  v adresáři určeném obsahem systémové property catalina.base-->
+    <appender name="FILE" class="org.apache.log4j.FileAppender">
+
+        <param name="file" value="c:\\Users\\Drimal\\log.out"/>
+        <param name="immediateFlush" value="true"/>
+        <param name="threshold" value="debug"/>
+        <param name="append" value="false"/>
+
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="conversionPattern" value="%m%n"/>
+        </layout>
+    </appender>
+    <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
+    <root>
+        <priority value="all"/>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</log4j:configuration>

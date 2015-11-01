@@ -1,5 +1,6 @@
 package importer;
 
+import configuration.PluginConfiguration;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -20,7 +21,8 @@ public class FileSearcher {
         return preprocessToChannelContainer(parent, fileFilter);
     }
 
-    private List<ChannelContainer> preprocessToChannelContainer(File file, FileFilter filter) {
+    private List<ChannelContainer> preprocessToChannelContainer(File file,
+            FileFilter filter) {
         List<ChannelContainer> container = new ArrayList<ChannelContainer>();
 
         File[] filesToPreprocess = null;
@@ -40,12 +42,15 @@ public class FileSearcher {
         return container;
     }
 
-    private List<ChannelContainer> mapMetadataToChannelContainerList(File file, List<ChannelMetadata> metadata) {
+    private List<ChannelContainer> mapMetadataToChannelContainerList(File file,
+            List<ChannelMetadata> metadata) {
         List<ChannelContainer> container = new ArrayList<ChannelContainer>();
         for (int i = 0; i < metadata.size(); i++) {
             ChannelContainer channel = new ChannelContainer(file, i, metadata.get(i));
-            channel.setGridULength((Double) metadata.get(0).getTagValue(32834));
-            channel.setGridVLength((double) metadata.get(0).getTagValue(32835));
+            channel.setGridULength((double) metadata.get(0).getTagValue(PluginConfiguration.getImagePhysicalWidthTag()));
+            channel.setGridVLength((double) metadata.get(0).getTagValue(PluginConfiguration.getImagePhysicalHeightTag()));
+//            channel.setScalingMultiplier(double) metadata.get(0).getTagValue());
+//            channel.setScalingOffset(i);
             container.add(channel);
         }
         return container;

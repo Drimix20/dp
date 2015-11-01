@@ -18,7 +18,11 @@ public class PluginConfiguration {
 
     public static final String PLUGIN_CONFIGURATION_SCHEMA_XSD_NAME = "pluginConfigurationSchema.xsd";
     public static final String PLUGIN_CONFIGURATION_XML_NAME = "afmPluginConfiguration.xml";
+    public static final int TAG_OFFSET_DECIMAL_VALUE = 48;
+    //TODO just temporary solution; should be substitute by automatic logic
+    public static final int SLOT_INDEX = 3;
 
+    //image resolution
     private static int imagePhysicalWidthTag;
     private static int imagePhysicalHeightTag;
     private static int imageWidthTag;
@@ -29,10 +33,23 @@ public class PluginConfiguration {
     private static List<TagConfiguration> tagConfigList;
     private static String configurationXmlSchemaPath;
 
+    //parameters for scalings
+    private static int scalingTypeTag;
+    private static int scalingMultiplierTag;
+    private static int scalingOffsetTag;
+
+    /**
+     Retrieve tag id for Grid-uLength. Default value is 32834.
+     @return tag id
+     */
     public static int getImagePhysicalWidthTag() {
         return imagePhysicalWidthTag;
     }
 
+    /**
+     Retrieve tag id for Grid-uLength. Default value is 32835.
+     @return tag id
+     */
     public static int getImagePhysicalHeightTag() {
         return imagePhysicalHeightTag;
     }
@@ -65,6 +82,18 @@ public class PluginConfiguration {
         return configurationXmlSchemaPath;
     }
 
+    public static int getScalingTypeTag() {
+        return scalingTypeTag;
+    }
+
+    public static int getScalingMultiplierTag() {
+        return scalingMultiplierTag;
+    }
+
+    public static int getScalingOffsetTag() {
+        return scalingOffsetTag;
+    }
+
     static {
         defaultConfiguration();
         File configurtionFile = retrieveConfigurationFile();
@@ -94,6 +123,9 @@ public class PluginConfiguration {
         tagConfigList = new ArrayList<>();
         numberOfSlotsTag = 32896;
         channelNameTag = 32848;
+        scalingTypeTag = 32931;
+        scalingMultiplierTag = 32932;
+        scalingOffsetTag = 32933;
 
         ClassLoader cl = PluginConfiguration.class.getClassLoader();
         configurationXmlSchemaPath = cl.getResource(PLUGIN_CONFIGURATION_SCHEMA_XSD_NAME).getPath();

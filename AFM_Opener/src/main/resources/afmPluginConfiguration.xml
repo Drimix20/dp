@@ -479,7 +479,6 @@
             <hexadecimal>0x80A5</hexadecimal>
             <description>Only for LinearScaling: The data in this slot are given by a inear scaling from the raw data using ''value = Scaling-Offset + Scaling-Multiply * raw''</description>
         </tag>
-        <!-- TODO implement functionality for check definition depending on tags value, FeedbackVar-->
         <tag category="channel">
             <name>Channel</name>
             <decimal>32848</decimal>
@@ -581,12 +580,14 @@
             <name>Scaling-Multiply</name>
             <decimal>32932</decimal>
             <hexadecimal>0x80A4</hexadecimal>
+            <offset_hexadecimal>0x30</offset_hexadecimal>
             <description>If the Encoder is 'LinearScaling', this defines the factor by which the imagedata has to be multiplied.</description>
         </tag>
         <tag category="channel">
             <name>Scaling-Offset</name>
             <decimal>32933</decimal>
             <hexadecimal>0x80A5</hexadecimal>
+            <offset_hexadecimal>0x30</offset_hexadecimal>
             <description>If the Encoder is 'LinearScaling', this defines an offset you have to add to the data after multiplication.</description>
         </tag>
         <tag category="channel">

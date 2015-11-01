@@ -19,9 +19,12 @@ public class ChannelContainer {
     private final String channelName;
     private double gridULength;
     private double gridVLength;
+    private double scalingMultiplier;
+    private double scalingOffset;
     private ChannelMetadata metadata;
 
-    public ChannelContainer(File file, int channelIndex, ChannelMetadata metadata) {
+    public ChannelContainer(File file, int channelIndex,
+            ChannelMetadata metadata) {
         this.file = file;
         this.channelIndex = channelIndex;
         IFD = metadata.getIFD();
@@ -72,6 +75,22 @@ public class ChannelContainer {
 
     public void setGridVLength(double gridVLength) {
         this.gridVLength = gridVLength;
+    }
+
+    public double getScalingMultiplier() {
+        return scalingMultiplier;
+    }
+
+    public void setScalingMultiplier(double scalingMultiplier) {
+        this.scalingMultiplier = scalingMultiplier;
+    }
+
+    public double getScalingOffset() {
+        return scalingOffset;
+    }
+
+    public void setScalingOffset(double scalingOffset) {
+        this.scalingOffset = scalingOffset;
     }
 
     public void setIFFD(String IFFD) {

@@ -14,8 +14,9 @@ public class MeasurementComputation {
 
     private static final Logger logger = Logger.getLogger(MeasurementComputation.class);
 
-    public void compute(ChannelContainer container, SegmentedImage segmentedImage, AbstractMeasurement measure) {
-        ImageProcessor thresholded = segmentedImage.getThresholdedIp();
+    public void compute(ChannelContainer container,
+            SegmentedImage segmentedImage, AbstractMeasurement measure) {
+        ImageProcessor thresholded = segmentedImage.getThresholdedImageProcessor();
         logger.info("Grid uLength: " + container.getGridULength() + "\n vLength: " + container.getGridVLength());
         logger.info("count; averageIntensity; volume");
         for (Roi roi : segmentedImage.getRois()) {

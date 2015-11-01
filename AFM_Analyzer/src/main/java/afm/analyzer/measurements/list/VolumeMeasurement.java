@@ -1,27 +1,27 @@
-package afm.analyzer.measurements;
+package afm.analyzer.measurements.list;
 
+import afm.analyzer.measurements.AbstractMeasurement;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import java.awt.Rectangle;
-import java.util.Objects;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author Drimal
  */
-public class VolumeMeasurement implements AbstractMeasurement {
+public class VolumeMeasurement extends AbstractMeasurement {
 
     private static final Logger logger = Logger.getLogger(VolumeMeasurement.class);
-    private String label;
 
-    public VolumeMeasurement(String label) {
-        this.label = label;
+    public VolumeMeasurement() {
+        label = "Volume measure";
+        description = "Compute volume of protein";
     }
 
     @Override
-    public void compute(Roi roi, ImagePlus origImage, ImageProcessor binary) {
+    public double compute(Roi roi, ImagePlus origImage, ImageProcessor binary) {
         double intensitySum = 0;
         double count = 0;
 
@@ -39,33 +39,8 @@ public class VolumeMeasurement implements AbstractMeasurement {
         double volume = count * averageIntensity;
         //logger.info(segment.getLabel() + " area: <" + count + ">, mean: <" + averageIntensity + ">, volume:<" + result + ">");
         System.out.println(count + ";" + averageIntensity + ";" + volume);
-    }
-
-    @Override
-    public String getLabel() {
-        return label;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 73 * hash + Objects.hashCode(this.label);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final VolumeMeasurement other = (VolumeMeasurement) obj;
-        if (!Objects.equals(this.label, other.label)) {
-            return false;
-        }
-        return true;
+        //TODO just temporary solution
+        return 1;
     }
 
 }

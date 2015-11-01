@@ -80,6 +80,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         segmentationOptionButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("AFM Analyzer");
         setMinimumSize(new java.awt.Dimension(290, 655));
 
         prefilteringLabel.setText("Prefiltering");

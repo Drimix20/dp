@@ -1,7 +1,8 @@
 package afm.analyzer.gui;
 
+import afm.analyzer.utils.ClassFinder;
+import afm.analyzer.utils.ClassInstantiater;
 import afm.analyzer.measurements.AbstractMeasurement;
-import afm.analyzer.measurements.VolumeMeasurement;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -28,7 +29,8 @@ public class MeasurementsElementManager extends Thread {
         this.scrollPane = scrollPane;
     }
 
-    public void setSelectedMeasurements(List<AbstractMeasurement> selectedMeasurements) {
+    public void setSelectedMeasurements(
+            List<AbstractMeasurement> selectedMeasurements) {
         this.selectedMeasurements = selectedMeasurements;
     }
 
@@ -50,11 +52,13 @@ public class MeasurementsElementManager extends Thread {
             }
         });
 
+        //TODO automaticaly adds instances of measurements in package afm.analyzer.measurements.list
         JPanel columnpanel = createColumnPanelForOptionElements(backgroundPanel);
-
+        List<Class<?>> result = ClassFinder.find("afm.analyzer.measurements.list");
+        List<Object> instantiatedClasses = ClassInstantiater.instantiateClassesWithoutArgument(result);
         int rowIndex = 1;
-        for (int i = 0; i < 1; i++) {
-            final MeasurementRowPanel rowPanel = new MeasurementRowPanel(new VolumeMeasurement("Volume Measure"), selectedMeasurements, false);
+        for (int i = 0; i < result.size(); i++) {
+            final MeasurementRowPanel rowPanel = new MeasurementRowPanel((AbstractMeasurement) instantiatedClasses.get(i), selectedMeasurements, false);
             columnpanel.add(rowPanel);
             if (rowIndex % 2 == 0) {
                 rowPanel.setBackground(SystemColor.inactiveCaptionBorder);

@@ -33,6 +33,7 @@ public class AFM_Analyzer implements PlugIn {
         } catch (Exception ex) {
             logger.error(ex);
         }
+
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -54,7 +55,7 @@ public class AFM_Analyzer implements PlugIn {
 
     public static void main(String[] args) {
         // set the plugins.dir property to make the plugin appear in the Plugins menu
-        Class<?> clazz = AfmAnalyzerFrame.class;
+        Class<?> clazz = AFM_Analyzer.class;
         String url = clazz.getResource("/" + clazz.getName().replace('.', '/') + ".class").toString();
         String pluginsDir = url.substring(5, url.length() - clazz.getName().length() - 6);
         System.setProperty("plugins.dir", pluginsDir);
@@ -62,6 +63,8 @@ public class AFM_Analyzer implements PlugIn {
         // start ImageJ
         new ImageJ();
 
+//        ScalerModuleDemo.main(new String[]{""});
+//        IJ.setDebugMode(true);
         // run the plugin
         IJ.runPlugIn(clazz.getName(), "");
     }

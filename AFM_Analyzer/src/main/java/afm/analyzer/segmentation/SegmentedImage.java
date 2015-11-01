@@ -14,7 +14,7 @@ public class SegmentedImage {
     List<Segment> segments;
     List<Roi> rois;
 
-    public ImageProcessor getThresholdedIp() {
+    public ImageProcessor getThresholdedImageProcessor() {
         return thresholdedIp;
     }
 

@@ -3,14 +3,44 @@ package afm.analyzer.measurements;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
+import java.util.Objects;
 
 /**
  *
  * @author Drimal
  */
-public interface AbstractMeasurement {
+public abstract class AbstractMeasurement {
 
-    public String getLabel();
+    protected String label;
+    protected String description;
 
-    public void compute(Roi roi, ImagePlus origImage, ImageProcessor binary);
+    public String getLabel() {
+        return label;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public abstract double compute(Roi roi, ImagePlus origImage,
+            ImageProcessor binary);
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 73 * hash + Objects.hashCode(this.label);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractMeasurement other = (AbstractMeasurement) obj;
+        return this.label.equals(other.getLabel());
+    }
 }

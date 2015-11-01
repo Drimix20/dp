@@ -9,6 +9,8 @@ import ij.process.ImageProcessor;
  */
 public interface ImageThresholdStrategy {
 
+    //TODO in normal threshold show size of thresholded molekul in nm
+
     double getUpperThreshold();
 
     double getLowerThreshold();

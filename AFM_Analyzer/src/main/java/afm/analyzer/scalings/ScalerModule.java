@@ -16,33 +16,43 @@ public class ScalerModule {
 
     private double multiplierValueInMeter;
     private double offsetValueInMeter;
-    private ChannelMetadata currentChannelMetadata;
+    private double pixelXSize;
+    private double pixelYSize;
     private ImageDataScaler dataScaler;
 
-    public ScalerModule(ChannelMetadata metadata) {
-        currentChannelMetadata = metadata;
-
+    public ScalerModule(ChannelMetadata generalMetadata,
+            ChannelMetadata channelMetadata) {
         //get scaling parameters from metadata
         int multiplierTagId = PluginConfiguration.getScalingMultiplierTag() + PluginConfiguration.SLOT_INDEX * PluginConfiguration.TAG_OFFSET_DECIMAL_VALUE;
-        multiplierValueInMeter = (double) metadata.getTagValue(multiplierTagId);
+        multiplierValueInMeter = (double) channelMetadata.getTagValue(multiplierTagId);
         int offsetTagId = PluginConfiguration.getScalingOffsetTag() + PluginConfiguration.SLOT_INDEX * PluginConfiguration.TAG_OFFSET_DECIMAL_VALUE;
-        offsetValueInMeter = (double) metadata.getTagValue(offsetTagId);
+        offsetValueInMeter = (double) channelMetadata.getTagValue(offsetTagId);
 
         int scalingMethodTagId = PluginConfiguration.getScalingTypeTag() + PluginConfiguration.SLOT_INDEX * PluginConfiguration.TAG_OFFSET_DECIMAL_VALUE;
-        String scalingTypeValue = (String) metadata.getTagValue(scalingMethodTagId);
-        setImageDataScalerInstance(scalingTypeValue.trim(), multiplierValueInMeter, offsetValueInMeter);
+        String scalingTypeValue = (String) channelMetadata.getTagValue(scalingMethodTagId);
+        configurePixelSize(generalMetadata);
+        configureImageDataScalerInstance(scalingTypeValue.trim(), multiplierValueInMeter, offsetValueInMeter);
     }
 
     public ScalerModule(ChannelMetadata metadata, long multiplierInMeter,
             long offsetInMeter, String scalingType) {
-        this.currentChannelMetadata = metadata;
         multiplierValueInMeter = multiplierInMeter;
         offsetValueInMeter = offsetInMeter;
 
-        setImageDataScalerInstance(scalingType, multiplierInMeter, offsetInMeter);
+        configurePixelSize(metadata);
+        configureImageDataScalerInstance(scalingType, multiplierInMeter, offsetInMeter);
     }
 
-    private void setImageDataScalerInstance(String scalingType,
+    private void configurePixelSize(ChannelMetadata metadata) {
+        double physicalImageWidthInMeter = (double) metadata.getTagValue(PluginConfiguration.getImagePhysicalWidthTag());
+        double physicalImageHeightInMeter = (double) metadata.getTagValue(PluginConfiguration.getImagePhysicalHeightTag());
+        int imageWidth = (int) metadata.getTagValue(PluginConfiguration.getImageWidthTag());
+        int imageHeight = (int) metadata.getTagValue(PluginConfiguration.getImageHeightTag());
+        pixelXSize = physicalImageWidthInMeter / imageWidth;
+        pixelYSize = physicalImageHeightInMeter / imageHeight;
+    }
+
+    private void configureImageDataScalerInstance(String scalingType,
             double multiplierInMeter,
             double offsetInMeter) {
         try {
@@ -55,11 +65,12 @@ public class ScalerModule {
     }
 
     /**
-     Scale pixel intensity value to obtain real physical value of pixel intensity
+     Scale pixel intensity value to obtain real physical value of pixel intensity in nanometer unit
      @param pixelIntensityValue
      @return scaled pixel value in meter
      */
-    public double scaleToObtainPhysicalValue(long pixelIntensityValue) {
+    public double scalePixelIntensityToObtainReailHeight(
+            long pixelIntensityValue) {
         return dataScaler.scaleValue(pixelIntensityValue);
     }
 
@@ -68,11 +79,21 @@ public class ScalerModule {
      @param pixelIntensityValue
      @return scaled pixel value in meter
      */
-    public double scaleToObtainPhysicalValue(double pixelIntensityValue) {
+    public double scalePixelIntensityToObtainRealHeight(
+            double pixelIntensityValue) {
         return dataScaler.scaleValue(pixelIntensityValue);
     }
 
-//    public double scaleToObtainPhysicalValue(long pixelValue, Unit.NANOMETER) {
+    public double getPixelXSizeInMeter() {
+        return pixelXSize;
+    }
+
+    public double getPixelYSizeInMeter() {
+        return pixelYSize;
+    }
+
+    //TODO implement method with unit converter as argument
+//    public double scalePixelIntensityToObtainRealHeight(long pixelValue, Unit.NANOMETER) {
 //        return dataScaler.scaleValue(pixelValue);
 //    }
 }

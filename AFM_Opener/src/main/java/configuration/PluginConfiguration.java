@@ -47,7 +47,7 @@ public class PluginConfiguration {
     }
 
     /**
-     Retrieve tag id for Grid-uLength. Default value is 32835.
+     Retrieve tag id for Grid-vLength. Default value is 32835.
      @return tag id
      */
     public static int getImagePhysicalHeightTag() {

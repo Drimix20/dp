@@ -1,6 +1,5 @@
 package importer;
 
-import configuration.PluginConfiguration;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -46,11 +45,8 @@ public class FileSearcher {
             List<ChannelMetadata> metadata) {
         List<ChannelContainer> container = new ArrayList<ChannelContainer>();
         for (int i = 0; i < metadata.size(); i++) {
-            ChannelContainer channel = new ChannelContainer(file, i, metadata.get(i));
-            channel.setGridULength((double) metadata.get(0).getTagValue(PluginConfiguration.getImagePhysicalWidthTag()));
-            channel.setGridVLength((double) metadata.get(0).getTagValue(PluginConfiguration.getImagePhysicalHeightTag()));
-//            channel.setScalingMultiplier(double) metadata.get(0).getTagValue());
-//            channel.setScalingOffset(i);
+            //                                              file, index, general tags, channel tags
+            ChannelContainer channel = new ChannelContainer(file, i, metadata.get(0), metadata.get(i));
             container.add(channel);
         }
         return container;

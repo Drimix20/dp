@@ -1,6 +1,7 @@
 package afm.analyzer.measurements.list;
 
 import afm.analyzer.measurements.AbstractMeasurement;
+import afm.analyzer.scalings.ScalerModule;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
@@ -14,11 +15,12 @@ public class AreaMeasurement extends AbstractMeasurement {
 
     public AreaMeasurement() {
         label = "Area measurement";
-        description = "Compute protein area in number of pixels.";
+        description = "Compute structure area in nanometer";
     }
 
     @Override
-    public double compute(Roi roi, ImagePlus origImage, ImageProcessor binary) {
+    public double compute(Roi roi, ImagePlus origImage, ImageProcessor binary,
+            ScalerModule scalerModule) {
         int count = 0;
 
         Rectangle bounds = roi.getBounds();
@@ -31,7 +33,8 @@ public class AreaMeasurement extends AbstractMeasurement {
             }
         }
 
-        return count;
+        //TODO nanometer unit hardcoded
+        return count * scalerModule.getPixelXSizeInMeter() * scalerModule.getPixelYSizeInMeter() * Math.pow(10, 9);
     }
 
 }

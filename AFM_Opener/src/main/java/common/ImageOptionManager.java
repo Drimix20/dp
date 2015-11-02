@@ -75,7 +75,7 @@ public class ImageOptionManager extends Thread {
             ChannelContainer channelContainer = originalChannels.get(i);
             File parentFile = channelContainer.getFile();
 
-            String channelName = (String) channelContainer.getMetadata().getTagValue(PluginConfiguration.getChannelNameTag());
+            String channelName = (String) channelContainer.getChannelMetadata().getTagValue(PluginConfiguration.getChannelNameTag());
             final ChannelListElement rowPanel = new ChannelListElement(channelContainer, selectedChannels, selectAll);
             columnpanel.add(rowPanel);
             if (rowIndex % 2 == 0) {

@@ -1,5 +1,6 @@
 package afm.analyzer.measurements;
 
+import afm.analyzer.scalings.ScalerModule;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
@@ -23,7 +24,7 @@ public abstract class AbstractMeasurement {
     }
 
     public abstract double compute(Roi roi, ImagePlus origImage,
-            ImageProcessor binary);
+            ImageProcessor binary, ScalerModule scalerModule);
 
     @Override
     public int hashCode() {

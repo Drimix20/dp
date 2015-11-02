@@ -22,7 +22,7 @@ public class ChannelListElement extends javax.swing.JPanel {
         this.selectedChannels = selectedChannels;
         this.container = channelContainer;
         File file = channelContainer.getFile();
-        String labelText = file.getName().substring(0, 14) + "/" + channelContainer.getMetadata().getTagValue(32848);
+        String labelText = file.getName().substring(0, 14) + "/" + channelContainer.getChannelMetadata().getTagValue(32848);
         imageElemLabel.setText(labelText);
         imageElemLabel.setToolTipText(file.getName());
 

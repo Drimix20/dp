@@ -111,7 +111,7 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
 
         List<ChannelMetadata> channelMetadata = new ArrayList<>();
         for (ChannelContainer channelContainer : channels) {
-            channelMetadata.add(channelContainer.getMetadata());
+            channelMetadata.add(channelContainer.getChannelMetadata());
         }
         MetadataWriter metadataWriter = new MetadataWriter(outputFile);
         metadataWriter.setDelimeter(DELIMETR);
@@ -128,11 +128,11 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
             logger.error("No tags to export");
             return;
         }
-        prepareHeaderFromTagsDescription(stringBuilder, channels.get(0).getMetadata(), tagsInImage);
+        prepareHeaderFromTagsDescription(stringBuilder, channels.get(0).getChannelMetadata(), tagsInImage);
 
         //TODO sometimes is empty string instead of null value when tag does not exist
         for (ChannelContainer container : channels) {
-            ChannelMetadata metadata = container.getMetadata();
+            ChannelMetadata metadata = container.getChannelMetadata();
             stringBuilder.append("\"").append(metadata.getFilePath()).append("\"").append(DELIMETR);
             int numberOfSlots = (int) metadata.getTagValue(PluginConfiguration.getNumberOfSlotsTag());
             //iterate all tags from image

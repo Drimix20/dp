@@ -17,19 +17,22 @@ public class ChannelContainer {
     private final int channelIndex;
     private String IFD;
     private final String channelName;
-    private double gridULength;
-    private double gridVLength;
-    private double scalingMultiplier;
-    private double scalingOffset;
-    private ChannelMetadata metadata;
+//    private double gridULength;
+//    private double gridVLength;
+//    private double scalingMultiplier;
+//    private double scalingOffset;
+    private ChannelMetadata generalMetadata;
+    private ChannelMetadata channelmetadata;
 
     public ChannelContainer(File file, int channelIndex,
-            ChannelMetadata metadata) {
+            ChannelMetadata generalMetadata,
+            ChannelMetadata channelMetadata) {
         this.file = file;
+        this.generalMetadata = generalMetadata;
         this.channelIndex = channelIndex;
-        IFD = metadata.getIFD();
-        this.metadata = metadata;
-        channelName = (String) metadata.getTagValue(CHANNEL_NAME_TAG);
+        IFD = channelMetadata.getIFD();
+        this.channelmetadata = channelMetadata;
+        channelName = (String) channelMetadata.getTagValue(CHANNEL_NAME_TAG);
     }
 
     public int getChannelIndex() {
@@ -44,13 +47,17 @@ public class ChannelContainer {
         this.imagePlus = imagePlus;
     }
 
-    public ChannelMetadata getMetadata() {
-        return metadata;
+    public ChannelMetadata getChannelMetadata() {
+        return channelmetadata;
+    }
+
+    public ChannelMetadata getGeneralMetadata() {
+        return generalMetadata;
     }
 
     public void setMetadata(ChannelMetadata metadata) {
         IFD = metadata.getIFD();
-        this.metadata = metadata;
+        this.channelmetadata = metadata;
     }
 
     public File getFile() {
@@ -59,38 +66,6 @@ public class ChannelContainer {
 
     public String getIFFD() {
         return IFD;
-    }
-
-    public double getGridULength() {
-        return gridULength;
-    }
-
-    public void setGridULength(double gridULength) {
-        this.gridULength = gridULength;
-    }
-
-    public double getGridVLength() {
-        return gridVLength;
-    }
-
-    public void setGridVLength(double gridVLength) {
-        this.gridVLength = gridVLength;
-    }
-
-    public double getScalingMultiplier() {
-        return scalingMultiplier;
-    }
-
-    public void setScalingMultiplier(double scalingMultiplier) {
-        this.scalingMultiplier = scalingMultiplier;
-    }
-
-    public double getScalingOffset() {
-        return scalingOffset;
-    }
-
-    public void setScalingOffset(double scalingOffset) {
-        this.scalingOffset = scalingOffset;
     }
 
     public void setIFFD(String IFFD) {

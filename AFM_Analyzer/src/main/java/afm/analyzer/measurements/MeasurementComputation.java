@@ -1,5 +1,6 @@
 package afm.analyzer.measurements;
 
+import afm.analyzer.scalings.ScalerModule;
 import afm.analyzer.segmentation.SegmentedImage;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
@@ -14,13 +15,21 @@ public class MeasurementComputation {
 
     private static final Logger logger = Logger.getLogger(MeasurementComputation.class);
 
-    public void compute(ChannelContainer container,
+    public MeasurementResults compute(ChannelContainer container,
             SegmentedImage segmentedImage, AbstractMeasurement measure) {
         ImageProcessor thresholded = segmentedImage.getThresholdedImageProcessor();
-        logger.info("Grid uLength: " + container.getGridULength() + "\n vLength: " + container.getGridVLength());
-        logger.info("count; averageIntensity; volume");
+
+        //Module for scaling
+        ScalerModule scalerModule = new ScalerModule(container.getGeneralMetadata(), container.getChannelMetadata());
+        MeasurementResults results = new MeasurementResults();
+        //TODO roi nahradit RoiWithLabel
+        int labelIndex = 1;
         for (Roi roi : segmentedImage.getRois()) {
-            measure.compute(roi, container.getImagePlus(), thresholded);
+            double computedResult = measure.compute(roi, container.getImagePlus(), thresholded, scalerModule);
+            results.addResult(labelIndex, computedResult);
+            labelIndex++;
         }
+
+        return results;
     }
 }

@@ -2,6 +2,7 @@ package afm.analyzer.gui;
 
 import afm.analyzer.measurements.AbstractMeasurement;
 import afm.analyzer.measurements.MeasurementComputation;
+import afm.analyzer.measurements.MeasurementResults;
 import afm.analyzer.presenter.AnalyzerImageWindow;
 import afm.analyzer.presenter.ImageWindowI;
 import afm.analyzer.segmentation.Segmentation;
@@ -13,7 +14,9 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import selector.ChannelContainer;
@@ -241,14 +244,20 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         Segmentation segmentation = new Segmentation();
         List<SegmentedImage> segmentImages = segmentation.segmentImages(selectedChannelContainer, thresholder);
         MeasurementComputation measComputation = new MeasurementComputation();
+        Map<String, List<MeasurementResults>> afmAnalyzerResult = new HashMap<String, List<MeasurementResults>>();
         //for (SegmentedImage segmImage : segmentImages) {
         for (int i = 0; i < selectedChannelContainer.size(); i++) {
-            ImagePlus imagePlus = selectedChannelContainer.get(i).getImagePlus();
-            imagePlus.unlock();
-            System.out.println("Compute volume for " + imagePlus.getTitle());
+            ChannelContainer channelContainer = selectedChannelContainer.get(i);
+            ImagePlus imagePlus = channelContainer.getImagePlus();
+
             SegmentedImage segmentImage = segmentImages.get(i);
             //TODO implement multiple measurements
-            measComputation.compute(selectedChannelContainer.get(i), segmentImage, selectedMeasurements.get(0));
+            List<MeasurementResults> measurementResultsForImage = new ArrayList<>();
+            for (AbstractMeasurement am : selectedMeasurements) {
+                MeasurementResults computedResult = measComputation.compute(selectedChannelContainer.get(i), segmentImage, am);
+                measurementResultsForImage.add(computedResult);
+            }
+            afmAnalyzerResult.put(channelContainer.getFile().getName(), measurementResultsForImage);
         }
     }//GEN-LAST:event_measureButtonActionPerformed
 

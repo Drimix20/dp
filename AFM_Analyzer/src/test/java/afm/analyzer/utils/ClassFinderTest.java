@@ -1,6 +1,7 @@
 package afm.analyzer.utils;
 
 import afm.analyzer.measurements.list.AreaMeasurement;
+import afm.analyzer.measurements.list.AverageIntensityMeasurement;
 import afm.analyzer.measurements.list.VolumeMeasurement;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,7 @@ public class ClassFinderTest {
     @Test
     public void testFindMeasurements() {
         List<Class<?>> result = ClassFinder.find("afm.analyzer.measurements.list");
-        assertEquals(Arrays.asList(AreaMeasurement.class, VolumeMeasurement.class), result);
+        assertEquals(Arrays.asList(AreaMeasurement.class, AverageIntensityMeasurement.class, VolumeMeasurement.class), result);
     }
 
 }

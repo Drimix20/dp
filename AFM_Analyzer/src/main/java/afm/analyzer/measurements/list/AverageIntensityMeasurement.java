@@ -11,18 +11,18 @@ import java.awt.Rectangle;
  *
  * @author Drimal
  */
-public class VolumeMeasurement extends AbstractMeasurement {
+public class AverageIntensityMeasurement extends AbstractMeasurement {
 
-    public VolumeMeasurement() {
-        label = "Volume measure";
-        description = "Compute volume of protein in nanometer^3";
+    public AverageIntensityMeasurement() {
+        label = "Average Intensity Measurement";
+        description = "Compute average intensity of structure area in nanometer.";
     }
 
     @Override
     public double compute(Roi roi, ImagePlus origImage, ImageProcessor binary,
             ScalerModule scalerModule) {
         double intensitySum = 0;
-        double count = 0;
+        int count = 0;
 
         Rectangle bounds = roi.getBounds();
         ImageProcessor ip = origImage.getProcessor();
@@ -34,10 +34,9 @@ public class VolumeMeasurement extends AbstractMeasurement {
                 }
             }
         }
-        //TODO nanometer is hardcoded
-        double averageIntensityInNanometer = scalerModule.scalePixelIntensityToObtainRealHeight(intensitySum / count) * Math.pow(10, 9);
-        double areaInNanometer = count * scalerModule.getPixelXSizeInMeter() * scalerModule.getPixelYSizeInMeter() * Math.pow(10, 9);
-        return areaInNanometer * averageIntensityInNanometer;
-    }
 
+        //TODO nanometer unit hardcoded
+        double averageIntensityInNanoMeter = ((double) intensitySum / count) * Math.pow(10, 9);
+        return averageIntensityInNanoMeter;
+    }
 }

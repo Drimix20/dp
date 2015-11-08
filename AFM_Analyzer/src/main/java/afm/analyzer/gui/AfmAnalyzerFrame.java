@@ -2,9 +2,9 @@ package afm.analyzer.gui;
 
 import afm.analyzer.measurements.AbstractMeasurement;
 import afm.analyzer.measurements.MeasurementComputation;
-import afm.analyzer.measurements.MeasurementResults;
 import afm.analyzer.presenter.AnalyzerImageWindow;
 import afm.analyzer.presenter.ImageWindowI;
+import afm.analyzer.result.module.AbstractMeasurementResult;
 import afm.analyzer.segmentation.Segmentation;
 import afm.analyzer.segmentation.SegmentedImage;
 import afm.analyzer.threshold.ImageThresholdStrategy;
@@ -14,6 +14,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -239,12 +240,22 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void measureButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_measureButtonActionPerformed
+        if (thresholder == null) {
+            //TODO validate all parameters
+            IJ.showMessage("Segmentation is not selected");
+            return;
+        }
+
         logger.info("Start computing");
 
         Segmentation segmentation = new Segmentation();
         List<SegmentedImage> segmentImages = segmentation.segmentImages(selectedChannelContainer, thresholder);
         MeasurementComputation measComputation = new MeasurementComputation();
-        Map<String, List<MeasurementResults>> afmAnalyzerResult = new HashMap<String, List<MeasurementResults>>();
+        //TODO create abstract class as AnalyzerResult and its implementation (because of usage in AfmAnalyzerFrame)
+        Map<String, List<AbstractMeasurementResult>> afmAnalyzerResult = new HashMap<String, List<AbstractMeasurementResult>>();
+
+        List<String> resultTableHeader = new ArrayList<>();
+        resultTableHeader.add("id");
         //for (SegmentedImage segmImage : segmentImages) {
         for (int i = 0; i < selectedChannelContainer.size(); i++) {
             ChannelContainer channelContainer = selectedChannelContainer.get(i);
@@ -252,13 +263,18 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
             SegmentedImage segmentImage = segmentImages.get(i);
             //TODO implement multiple measurements
-            List<MeasurementResults> measurementResultsForImage = new ArrayList<>();
+            List<AbstractMeasurementResult> measurementResultsForImage = new ArrayList<>();
             for (AbstractMeasurement am : selectedMeasurements) {
-                MeasurementResults computedResult = measComputation.compute(selectedChannelContainer.get(i), segmentImage, am);
+                AbstractMeasurementResult computedResult = measComputation.compute(selectedChannelContainer.get(i), segmentImage, am);
                 measurementResultsForImage.add(computedResult);
+                resultTableHeader.add(am.getLabel() + " [nm]");
             }
             afmAnalyzerResult.put(channelContainer.getFile().getName(), measurementResultsForImage);
         }
+        AfmAnalyzerResultFrame resultFrame = new AfmAnalyzerResultFrame(resultTableHeader, Collections.EMPTY_LIST);
+        resultFrame.setAnalyzerValues(afmAnalyzerResult);
+        resultFrame.setVisible(true);
+
     }//GEN-LAST:event_measureButtonActionPerformed
 
     private void segmentationOptionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationOptionButtonActionPerformed

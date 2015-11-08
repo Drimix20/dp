@@ -6,12 +6,15 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import java.awt.Rectangle;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Drimal
  */
 public class AreaMeasurement extends AbstractMeasurement {
+
+    private static Logger logger = Logger.getLogger(AreaMeasurement.class);
 
     public AreaMeasurement() {
         label = "Area measurement";
@@ -32,9 +35,9 @@ public class AreaMeasurement extends AbstractMeasurement {
                 }
             }
         }
-
+        logger.trace("Count: " + count + " * pixelYsize=" + scalerModule.getPixelXSizeInMeter() + " * pixelYsize=" + scalerModule.getPixelYSizeInMeter() + "* " + Math.pow(10, 9));
         //TODO nanometer unit hardcoded
-        return count * scalerModule.getPixelXSizeInMeter() * scalerModule.getPixelYSizeInMeter() * Math.pow(10, 9);
+        return count * scalerModule.getPixelXSizeInMeter() * scalerModule.getPixelYSizeInMeter() * Math.pow(10, 9) * Math.pow(10, 9);
     }
 
 }

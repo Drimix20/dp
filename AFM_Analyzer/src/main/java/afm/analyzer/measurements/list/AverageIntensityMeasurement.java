@@ -6,12 +6,15 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import java.awt.Rectangle;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Drimal
  */
 public class AverageIntensityMeasurement extends AbstractMeasurement {
+
+    private static Logger logger = Logger.getLogger(AverageIntensityMeasurement.class);
 
     public AverageIntensityMeasurement() {
         label = "Average Intensity Measurement";
@@ -36,7 +39,10 @@ public class AverageIntensityMeasurement extends AbstractMeasurement {
         }
 
         //TODO nanometer unit hardcoded
-        double averageIntensityInNanoMeter = ((double) intensitySum / count) * Math.pow(10, 9);
-        return averageIntensityInNanoMeter;
+        double averageIntensity = intensitySum / count;
+        double scaledAverageIntensity = scalerModule.scalePixelIntensityToObtainRealHeight(averageIntensity);
+        double scaledAverageIntensityInNanoMeter = scaledAverageIntensity * Math.pow(10, 9);
+        logger.trace("count: " + count + ", intensitySum: " + intensitySum + ", averageIntensity: " + averageIntensity + ", scaledAverageIntensity: " + scaledAverageIntensity + ", scaledAverageIntensityInNanometer: " + scaledAverageIntensityInNanoMeter);
+        return scaledAverageIntensityInNanoMeter;
     }
 }

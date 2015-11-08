@@ -6,12 +6,15 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import java.awt.Rectangle;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Drimal
  */
 public class VolumeMeasurement extends AbstractMeasurement {
+
+    private static Logger logger = Logger.getLogger(VolumeMeasurement.class);
 
     public VolumeMeasurement() {
         label = "Volume measure";
@@ -35,9 +38,11 @@ public class VolumeMeasurement extends AbstractMeasurement {
             }
         }
         //TODO nanometer is hardcoded
-        double averageIntensityInNanometer = scalerModule.scalePixelIntensityToObtainRealHeight(intensitySum / count) * Math.pow(10, 9);
-        double areaInNanometer = count * scalerModule.getPixelXSizeInMeter() * scalerModule.getPixelYSizeInMeter() * Math.pow(10, 9);
-        return areaInNanometer * averageIntensityInNanometer;
+        double scaledAverageIntensityInNanometer = scalerModule.scalePixelIntensityToObtainRealHeight(intensitySum / count) * Math.pow(10, 9);
+        double scaledAreaInNanometer = count * scalerModule.getPixelXSizeInMeter() * scalerModule.getPixelYSizeInMeter() * Math.pow(10, 9) * Math.pow(10, 9);
+        double volumeInNanometer = scaledAreaInNanometer * scaledAverageIntensityInNanometer;
+        logger.trace("saceldAverageInensityInMeter: " + scaledAverageIntensityInNanometer + ", areaInMeter: " + scaledAreaInNanometer + ", volumeInNanometer: " + volumeInNanometer);
+        return volumeInNanometer;
     }
 
 }

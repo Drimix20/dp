@@ -38,7 +38,7 @@ public class ScalerModuleDemo {
             for (int i = 0; i < 1024; i++) {
                 for (int j = 0; j < 1024; j++) {
                     long pixelValue = imageProcessor.get(i, j);
-                    double scaledPixelValueInMeter = sm.scalePixelIntensityToObtainReailHeight(pixelValue) * Math.pow(10, 9);
+                    double scaledPixelValueInMeter = sm.scalePixelIntensityToObtainRealHeight(pixelValue) * Math.pow(10, 9);
                     fp.putPixelValue(i, j, scaledPixelValueInMeter);
                 }
             }

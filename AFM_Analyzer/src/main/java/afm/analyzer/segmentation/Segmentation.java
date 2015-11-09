@@ -24,7 +24,9 @@ public class Segmentation {
 
     private static Logger logger = Logger.getLogger(Segmentation.class);
 
-    public List<SegmentedImage> segmentImages(List<ChannelContainer> channelContainers, ImageThresholdStrategy thresholdStrategy) {
+    public List<SegmentedImage> segmentImages(
+            List<ChannelContainer> channelContainers,
+            ImageThresholdStrategy thresholdStrategy) {
         logger.info("Segment images " + channelContainers.size());
         IJ.showStatus("Image segmentation");
 
@@ -50,6 +52,15 @@ public class Segmentation {
             segmentedImage.setSegments(segmentImage(resultsTable, roiManager));
             segmentedImage.setRois(computeRoiOfSegments(roiManager));
 
+            //TODO creation of segmented image with rois and showing it
+            ImagePlus segmentedImgWithRois = new ImagePlus("Segmented image", segmentedImage.getThresholdedImageProcessor());
+            for (Roi roi : segmentedImage.getRois()) {
+                //draw roi at fixed location and not resizable
+                roi.setNonScalable(true);
+                roiManager.add(segmentedImgWithRois, roi, ((ExtendedRoi) roi).getLabel());
+            }
+            segmentedImgWithRois.show();
+
             resultsTable.reset();
             roiManager.reset();
             segmentedImages.add(segmentedImage);
@@ -61,7 +72,9 @@ public class Segmentation {
         return segmentedImages;
     }
 
-    public List<ImageProcessor> makeBinaryImages(List<ChannelContainer> channelContainers, ImageThresholdStrategy thresholdStrategy) {
+    public List<ImageProcessor> makeBinaryImages(
+            List<ChannelContainer> channelContainers,
+            ImageThresholdStrategy thresholdStrategy) {
         logger.info("Make binary images " + channelContainers.size());
         List<ImageProcessor> binaryProcessors = new ArrayList<>();
         for (ChannelContainer channel : channelContainers) {
@@ -71,13 +84,15 @@ public class Segmentation {
         return binaryProcessors;
     }
 
-    public ImageProcessor makeBinary(ImagePlus imp, ImageThresholdStrategy thresholdStrategy) {
+    public ImageProcessor makeBinary(ImagePlus imp,
+            ImageThresholdStrategy thresholdStrategy) {
         logger.info("Make binary image " + imp.getTitle());
         return thresholdStrategy.makeBinary(imp.duplicate());
     }
 
     @Deprecated
-    public List<Segment> segmentImage(ResultsTable resultsTable, RoiManager roiManager) {
+    public List<Segment> segmentImage(ResultsTable resultsTable,
+            RoiManager roiManager) {
         List<Segment> segments = new ArrayList<Segment>();
 
         String[] headings = resultsTable.getHeadings();

@@ -4,19 +4,26 @@ import afm.analyzer.result.module.AbstractAfmTableModel;
 import afm.analyzer.result.module.AbstractMeasurementResult;
 import afm.analyzer.result.module.AfmAnalyzerResultTable;
 import afm.analyzer.result.module.AfmAnalyzerTableModel;
+import afm.analyzer.selection.module.RoiSelectedListener;
+import afm.analyzer.selection.module.RowSelectedListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Drimal
  */
-public class AfmAnalyzerResultFrame extends JFrame {
+public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListener {
+
+    private static Logger logger = Logger.getLogger(AfmAnalyzerResultFrame.class);
 
     //TODO not show other window after recomputation is performed
     //TODO implement export - save as (csv), show as ImageJ's ResultsTable
@@ -26,6 +33,7 @@ public class AfmAnalyzerResultFrame extends JFrame {
     private List<String> tableHeaderTooltips;
     private List<String> tableColumnNames;
     private Map<String, List<AbstractMeasurementResult>> analyzerValues;
+    private List<RowSelectedListener> rowSelectedListeners = new ArrayList<>();
 
     /**
      * Base constructor. TableModel is automatically set up in initComponents to default
@@ -54,9 +62,6 @@ public class AfmAnalyzerResultFrame extends JFrame {
         this.tableHeaderTooltips = tableHeaderTooltips;
         this.tableModel = tableModel;
         initComponents();
-        //ColumnsAutoSizer.sizeColumnsToFit(jTable1, tableModel.getColumnCount());
-
-        //((AfmAnalyzerResultTable) jTable1).setCellRenderers();
     }
 
     /**
@@ -66,11 +71,20 @@ public class AfmAnalyzerResultFrame extends JFrame {
      */
     public AfmAnalyzerResultFrame(JTable table, AbstractAfmTableModel tableModel) {
         this.jTable1 = table;
-        this.tableModel = tableModel;//TODO try this constructor
+        this.tableModel = tableModel;
         initComponents();
-        //ColumnsAutoSizer.sizeColumnsToFit(jTable1, tableModel.getColumnCount());
+    }
 
-        //((AfmAnalyzerResultTable) jTable1).setCellRenderers();
+    public boolean addRowSelectedListener(RowSelectedListener listener) {
+        return rowSelectedListeners.add(listener);
+    }
+
+    public boolean removeRowSelecredListener(RowSelectedListener listener) {
+        return rowSelectedListeners.remove(listener);
+    }
+
+    public void removeAllRowSelectedListeners() {
+        rowSelectedListeners.clear();
     }
 
     /**
@@ -82,9 +96,34 @@ public class AfmAnalyzerResultFrame extends JFrame {
             jTable1 = new AfmAnalyzerResultTable();
             jTable1.setColumnSelectionAllowed(false);
             jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+            jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    if (e.getValueIsAdjusting()) {
+                        //changes are being still made
+                        return;
+                    }
+                    String rows = "";
+                    for (RowSelectedListener listener : rowSelectedListeners) {
+                        listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex());
+                    }
+                    for (int r : jTable1.getSelectedRows()) {
+                        rows += "" + r;
+                    }
+                    logger.trace("Lead: " + jTable1.getSelectionModel().getLeadSelectionIndex() + ", Rows: " + rows);
+                }
+
+            });
             ((AfmAnalyzerResultTable) jTable1).setHeaderTooltips(this.tableHeaderTooltips);
         }
         return jTable1;
+    }
+
+    @Override
+    public void notifySelectedRoi(int roiLabel) {
+        logger.debug("Selection notification received from roi " + roiLabel);
+        jTable1.getSelectionModel().setSelectionInterval(roiLabel - 1, roiLabel - 1);
     }
 
     /**

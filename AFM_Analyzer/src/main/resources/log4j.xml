@@ -8,7 +8,9 @@
         </layout>
     </appender>
 
-    <!--<logger name="afm.analyzer.measurements.list"><level value="debug"/></logger>-->
+    <logger name="afm.analyzer.gui.AfmAnalyzerResultFrame"><level value="trace"/></logger>
+    <logger name="afm.analyzer.presenter"><level value="debug"/></logger>
+    <logger name="afm.analyzer.segmentation"><level value="debug"/></logger>
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>
         <priority value="info"/>

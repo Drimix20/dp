@@ -1,5 +1,6 @@
 package afm.analyzer.presenter;
 
+import afm.analyzer.selection.module.RoiSelectedListener;
 import ij.ImagePlus;
 import java.util.List;
 import selector.ChannelContainer;
@@ -14,7 +15,7 @@ public interface ImageWindowI {
      * Set images which will be shown saved in special object for AFM analyzer
      * @param channelContainer container contains images to show
      */
-    void setImagesToShow(List<ChannelContainer> channelContainer);
+    public void setImagesToShow(List<ChannelContainer> channelContainer);
 
     /**
      * Set images which will be shown in image window
@@ -29,5 +30,11 @@ public interface ImageWindowI {
     void setTitle(String title);
 
     void setVisible(boolean visible);
+
+    public boolean addRoiSelectedListener(RoiSelectedListener listener);
+
+    public boolean removeRoiSelectedListener(RoiSelectedListener listener);
+
+    public void removeAllRoiSelectedListeners();
 
 }

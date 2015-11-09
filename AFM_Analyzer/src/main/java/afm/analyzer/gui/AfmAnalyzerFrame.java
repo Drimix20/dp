@@ -7,6 +7,8 @@ import afm.analyzer.presenter.ImageWindowI;
 import afm.analyzer.result.module.AbstractMeasurementResult;
 import afm.analyzer.segmentation.Segmentation;
 import afm.analyzer.segmentation.SegmentedImage;
+import afm.analyzer.selection.module.RoiSelectedListener;
+import afm.analyzer.selection.module.RowSelectedListener;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import afm.analyzer.threshold.ThresholderExecutor;
 import afm.analyzer.threshold.ThresholderExecutor.Strategies;
@@ -273,6 +275,8 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         }
         AfmAnalyzerResultFrame resultFrame = new AfmAnalyzerResultFrame(resultTableHeader, Collections.EMPTY_LIST);
         resultFrame.setAnalyzerValues(afmAnalyzerResult);
+        resultFrame.addRowSelectedListener((RowSelectedListener) this.analyzerImageWindow);
+        analyzerImageWindow.addRoiSelectedListener((RoiSelectedListener) resultFrame);
         resultFrame.setVisible(true);
 
     }//GEN-LAST:event_measureButtonActionPerformed

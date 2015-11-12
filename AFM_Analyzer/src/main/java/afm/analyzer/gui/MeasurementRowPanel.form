@@ -59,7 +59,7 @@
           <Component id="checkBox" alignment="0" min="-2" max="-2" attributes="0"/>
           <Group type="103" alignment="0" groupAlignment="3" attributes="0">
               <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
-              <Component id="nameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Component id="nameLabel" alignment="3" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -69,6 +69,12 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Default_Name"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[120, 14]"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[65, 14]"/>
+        </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="checkBox">

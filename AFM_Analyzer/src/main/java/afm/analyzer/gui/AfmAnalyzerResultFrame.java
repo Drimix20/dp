@@ -6,6 +6,7 @@ import afm.analyzer.result.module.AfmAnalyzerResultTable;
 import afm.analyzer.result.module.AfmAnalyzerTableModel;
 import afm.analyzer.selection.module.RoiSelectedListener;
 import afm.analyzer.selection.module.RowSelectedListener;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +26,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
 
     private static Logger logger = Logger.getLogger(AfmAnalyzerResultFrame.class);
 
+    //jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(i, 0, true)));
     //TODO not show other window after recomputation is performed
     //TODO implement export - save as (csv), show as ImageJ's ResultsTable
     //TODO implement as new thread
@@ -121,6 +123,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
     public void notifySelectedRoi(int roiLabel) {
         logger.trace("Selection notification received from roi " + roiLabel);
         jTable1.getSelectionModel().setSelectionInterval(roiLabel - 1, roiLabel - 1);
+        jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(roiLabel, 0, true)));
     }
 
     /**

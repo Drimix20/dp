@@ -2,6 +2,7 @@ package afm.analyzer.presenter;
 
 import afm.analyzer.presenter.listeners.StackSliceChangedListener;
 import afm.analyzer.segmentation.SegmentedImage;
+import afm.analyzer.selection.ExtendedRoi;
 import afm.analyzer.selection.module.RoiSelectedListener;
 import afm.analyzer.selection.module.RowSelectedListener;
 import ij.ImagePlus;
@@ -27,6 +28,7 @@ public class AnalyzerImageWindow implements ImageWindowI, RowSelectedListener, S
     private ExtendedImageStackWindow imageStackWindow;
     private List<SegmentedImage> imagesSegments;
     private static List<RoiSelectedListener> roiSelectedListeners;
+    private ImagePlus showingImg;
     private static RoiManager roiManager;
 
     public AnalyzerImageWindow() {
@@ -34,13 +36,26 @@ public class AnalyzerImageWindow implements ImageWindowI, RowSelectedListener, S
         imageStackWindow.setVisible(false);
         imagesSegments = new ArrayList<>();
         roiSelectedListeners = new ArrayList<>();
-        roiManager = new RoiManager(true);
+        roiManager = RoiManager.getInstance();
+        if (roiManager == null) {
+            roiManager = new RoiManager(true);
+        }
         registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
     }
 
     @Override
     public void setImagesSegments(List<SegmentedImage> imagesSegments) {
         this.imagesSegments = imagesSegments;
+        //TODO functionality just for one image in window
+        if (showingImg != null) {
+            int currentSlice = showingImg.getCurrentSlice();
+            SegmentedImage segments = imagesSegments.get(currentSlice - 1);
+            for (Roi roi : segments.getRois()) {
+                roiManager.addRoi(roi);
+                //roiManager.add(showingImg, roi, ((ExtendedRoi) roi).getLabel());
+            }
+            showingImg.updateImage();
+        }
     }
 
     @Override
@@ -75,11 +90,12 @@ public class AnalyzerImageWindow implements ImageWindowI, RowSelectedListener, S
     public void setImagesToShow(List<ChannelContainer> channelContainer) {
         ImagePlus tmp = channelContainer.get(0).getImagePlus();
         ImageStack imgStack = new ImageStack(tmp.getWidth(), tmp.getHeight());
-        for (int i = 0; i < channelContainer.size(); i++) {
-            imgStack.addSlice(channelContainer.get(i).getImagePlus().getProcessor());
+        for (ChannelContainer channelContainer1 : channelContainer) {
+            imgStack.addSlice(channelContainer1.getImagePlus().getProcessor());
         }
 
-        imageStackWindow = new ExtendedImageStackWindow(new ImagePlus(stackTitle, imgStack));
+        showingImg = new ImagePlus(stackTitle, imgStack);
+        imageStackWindow = new ExtendedImageStackWindow(showingImg);
         imageStackWindow.addStackSliceChangedListener(this);
         registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
         imageStackWindow.setTitle(stackTitle);
@@ -91,9 +107,10 @@ public class AnalyzerImageWindow implements ImageWindowI, RowSelectedListener, S
      */
     @Override //TODO need Segmented image for show rois
     public void setImagesToShow(ImagePlus images) {
-        imageStackWindow = new ExtendedImageStackWindow(images);
-        registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
-        imageStackWindow.setTitle(stackTitle);
+        throw new UnsupportedOperationException();
+//        imageStackWindow = new ExtendedImageStackWindow(images);
+//        registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
+//        imageStackWindow.setTitle(stackTitle);
     }
 
     private void registerMouseListenerToImageCanvas(ImageCanvas canvas) {
@@ -158,7 +175,21 @@ public class AnalyzerImageWindow implements ImageWindowI, RowSelectedListener, S
     @Override
     public void selectedRowIndexIsChanged(int rowIndex) {
         logger.trace("Event processed: selected row is " + rowIndex);
-        roiManager.select(rowIndex + 1);
+        int labelToSelect = rowIndex + 1;
+        Roi selectedRoi = showingImg.getRoi();
+        if (selectedRoi != null) {
+            logger.debug("Selected roi is " + selectedRoi.getName());
+        }
+
+        List<Roi> getRois = imagesSegments.get(0).getRois();
+        for (Roi roiToSelect : getRois) {
+            if (((ExtendedRoi) roiToSelect).getLabel() == labelToSelect) {
+                String lbl = roiToSelect instanceof ExtendedRoi ? ((ExtendedRoi) roiToSelect).getLabel() + "" : roiToSelect.getName();
+                logger.debug("Selecting new roi: " + lbl + "with index in manager " + rowIndex);
+                //TODO Rois are indexing from zero, so index of roi with id is id-1;
+                roiManager.selectAndMakeVisible(showingImg, rowIndex);
+            }
+        }
     }
 
     // StackSliceChangedListener implementation

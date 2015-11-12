@@ -54,14 +54,15 @@ public class Segmentation {
 
             //TODO creation of segmented image without rois and showing it
             ImagePlus segmentedImgWithRois = new ImagePlus("Segmented image", segmentedImage.getThresholdedImageProcessor().duplicate());
-            for (Roi roi : segmentedImage.getRois()) {
-                //draw roi at fixed location and not resizable
-                roi.setNonScalable(true);
-                roiManager.add(segmentedImgWithRois, roi, ((ExtendedRoi) roi).getLabel());
-            }
+//            for (Roi roi : segmentedImage.getRois()) {
+//                //draw roi at fixed location and not resizable
+//                roi.setNonScalable(true);
+//                roiManager.add(segmentedImgWithRois, roi, ((ExtendedRoi) roi).getLabel());
+//            }
             segmentedImgWithRois.show();
             resultsTable.reset();
             roiManager.reset();
+
             segmentedImages.add(segmentedImage);
 
             IJ.showProgress(currentIndex, channelContainers.size());

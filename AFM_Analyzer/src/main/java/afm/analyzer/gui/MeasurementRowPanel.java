@@ -16,7 +16,8 @@ public class MeasurementRowPanel extends JPanel {
     /**
      * Creates new form MeasurementJPanel
      */
-    public MeasurementRowPanel(AbstractMeasurement measurement, List<AbstractMeasurement> selectedMeasurements,
+    public MeasurementRowPanel(AbstractMeasurement measurement,
+            List<AbstractMeasurement> selectedMeasurements,
             boolean enableOptions) {
         initComponents();
         jButton1.setEnabled(enableOptions);
@@ -54,6 +55,8 @@ public class MeasurementRowPanel extends JPanel {
 
         nameLabel.setText("Default_Name");
         nameLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        nameLabel.setMaximumSize(new java.awt.Dimension(120, 14));
+        nameLabel.setMinimumSize(new java.awt.Dimension(65, 14));
 
         checkBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         checkBox.addActionListener(new java.awt.event.ActionListener() {
@@ -70,7 +73,7 @@ public class MeasurementRowPanel extends JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(nameLabel)
+                .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -82,7 +85,7 @@ public class MeasurementRowPanel extends JPanel {
             .addComponent(checkBox)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jButton1)
-                .addComponent(nameLabel))
+                .addComponent(nameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

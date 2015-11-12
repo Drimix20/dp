@@ -149,7 +149,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(measurementsPanel, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 114, Short.MAX_VALUE)
+                        .addGap(0, 155, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(prefilteringOptionButton, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(segmentationComboBox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -297,8 +297,9 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     private void segmentationComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationComboBoxActionPerformed
         logger.info("SegmentationComboBox");
 
-        segmentationOptionButton.setEnabled(true);
-        segmentationPreviewButton.setEnabled(true);
+        //TODO repair preview
+        segmentationOptionButton.setEnabled(false);
+        segmentationPreviewButton.setEnabled(false);
         thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
         segmentationConfDialog = ThresholderExecutor.getSegmentationConfigDialog(getSelectedThresholdStrategy());
     }//GEN-LAST:event_segmentationComboBoxActionPerformed

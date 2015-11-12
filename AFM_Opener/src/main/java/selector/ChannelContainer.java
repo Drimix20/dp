@@ -17,10 +17,6 @@ public class ChannelContainer {
     private final int channelIndex;
     private String IFD;
     private final String channelName;
-//    private double gridULength;
-//    private double gridVLength;
-//    private double scalingMultiplier;
-//    private double scalingOffset;
     private ChannelMetadata generalMetadata;
     private ChannelMetadata channelmetadata;
 

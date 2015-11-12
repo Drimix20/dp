@@ -8,10 +8,11 @@ import java.util.List;
  *
  * @author Drimal
  */
+//TODO object Segment is not needed
 public class SegmentedImage {
 
     private ImageProcessor thresholdedIp;
-    List<Segment> segments;
+    //List<Segment> segments;
     List<Roi> rois;
 
     public ImageProcessor getThresholdedImageProcessor() {
@@ -22,15 +23,12 @@ public class SegmentedImage {
         this.thresholdedIp = thresholdedIp;
     }
 
-    @Deprecated
-    public List<Segment> getSegments() {
-        return segments;
-    }
-
-    public void setSegments(List<Segment> segments) {
-        this.segments = segments;
-    }
-
+//    public List<Segment> getSegments() {
+//        return segments;
+//    }
+//    public void setSegments(List<Segment> segments) {
+//        this.segments = segments;
+//    }
     public List<Roi> getRois() {
         return rois;
     }

@@ -1,16 +1,18 @@
 package afm.analyzer.presenter.listeners;
 
 /**
+ * Listener notified that stack slice was changed
  *
  * @author Drimal
  */
 public interface StackSliceChangedListener {
 
     //TODO zvazit posilani obrazku kvuli ROIs
+    public void movingSliceAboutAmount(int amount);
 
-    public boolean movingSliceAboutAmount(int amount);
+    public void moveToSpecificPosition(int currentPosition);
 
-    public boolean moveToSpecificPosition(int currentPosition);
+    public void sliceAtPositionDeleted(int position);
 
-    public boolean sliceAtPositionDeleted(int position);
+    public void currentStackIndex(int index);
 }

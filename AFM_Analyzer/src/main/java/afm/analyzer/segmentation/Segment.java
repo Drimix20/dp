@@ -4,6 +4,7 @@ package afm.analyzer.segmentation;
  *
  * @author Drimal
  */
+//TODO class is not needed
 public class Segment {
 
     private int label;

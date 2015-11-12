@@ -55,7 +55,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         selectedChannelContainer = new ArrayList<ChannelContainer>();
         segmentationOptionButton.setEnabled(false);
         segmentationPreviewButton.setEnabled(false);
-        analyzerImageWindow = new AnalyzerImageWindow();
+        analyzerImageWindow = imageWindow;
 
         MeasurementsElementManager elementManager = new MeasurementsElementManager(measurementsPanel);
         elementManager.setSelectedMeasurements(selectedMeasurements);
@@ -275,6 +275,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         }
         AfmAnalyzerResultFrame resultFrame = new AfmAnalyzerResultFrame(resultTableHeader, Collections.EMPTY_LIST);
         resultFrame.setAnalyzerValues(afmAnalyzerResult);
+        analyzerImageWindow.setImagesSegments(segmentImages);
         resultFrame.addRowSelectedListener((RowSelectedListener) this.analyzerImageWindow);
         analyzerImageWindow.addRoiSelectedListener((RoiSelectedListener) resultFrame);
         resultFrame.setVisible(true);

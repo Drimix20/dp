@@ -47,9 +47,6 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         this.tableColumnNames = tableColumnNames;
         this.tableHeaderTooltips = tableHeaderTooltips;
         initComponents();
-        //ColumnsAutoSizer.sizeColumnsToFit(jTable1, tableModel.getColumnCount());
-
-        //((AfmAnalyzerResultTable) jTable1).setCellRenderers();
     }
 
     /**
@@ -109,7 +106,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
                         listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex());
                     }
                     for (int r : jTable1.getSelectedRows()) {
-                        rows += "" + r;
+                        rows += ", " + r;
                     }
                     logger.trace("Lead: " + jTable1.getSelectionModel().getLeadSelectionIndex() + ", Rows: " + rows);
                 }
@@ -122,7 +119,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
 
     @Override
     public void notifySelectedRoi(int roiLabel) {
-        logger.debug("Selection notification received from roi " + roiLabel);
+        logger.trace("Selection notification received from roi " + roiLabel);
         jTable1.getSelectionModel().setSelectionInterval(roiLabel - 1, roiLabel - 1);
     }
 

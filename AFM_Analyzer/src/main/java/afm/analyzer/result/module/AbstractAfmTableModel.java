@@ -46,6 +46,13 @@ public abstract class AbstractAfmTableModel extends AbstractTableModel {
     public abstract void setValues(List<AbstractMeasurementResult> values);
 
     /**
+     Method for setting values to table. This method is also used to changing values in table.
+     For notify that table values was changed method fireTableDataChange must be called.
+     @param values values visible in table
+     */
+    public abstract void setValues(Object[][] values);
+
+    /**
      Method which can edit specific table cell
      @param value value to set
      @param row row index

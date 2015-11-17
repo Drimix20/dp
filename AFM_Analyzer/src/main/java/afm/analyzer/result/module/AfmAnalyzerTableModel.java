@@ -1,6 +1,5 @@
 package afm.analyzer.result.module;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -11,67 +10,107 @@ import org.apache.log4j.Logger;
 public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
 
     private Logger logger = Logger.getLogger(AfmAnalyzerTableModel.class);
-    private List<String> columnNames;
-    private List<AbstractMeasurementResult> data = new ArrayList<>();
-    private int currentNumberOfRows;
+    private String[] columnNames;
+    private Object[][] data = {{1, 2, 3, 4}, {2, 3, 4, 5}};
 
     public AfmAnalyzerTableModel(List<String> columnNames) {
+        this.columnNames = columnNames.toArray(new String[columnNames.size()]);
+    }
+
+    public AfmAnalyzerTableModel(String[] columnNames) {
         this.columnNames = columnNames;
     }
 
     public AfmAnalyzerTableModel() {
-        columnNames = new ArrayList<>();
+        columnNames = new String[0];
     }
 
     @Override
-    public String getColumnName(int col) {
-        return columnNames.get(col);
+    public String getColumnName(int col) throws IllegalArgumentException {
+        logger.debug("Get column name from " + col + " index.");
+        if (col < 0 || col > columnNames.length - 1) {
+            throw new IllegalArgumentException("Column index is out of range.");
+        }
+        return columnNames[col];
     }
 
+    /**
+     * List item is equal to measurement.
+     * AbstractmeasurementResult contains measurement's result for each region of interest
+     * @param values values to set into table
+     */
     @Override
     public void setValues(List<AbstractMeasurementResult> values) {
-        if (values.size() > 0) {
-            this.data = values;
-            currentNumberOfRows = values.get(0).getRoiKeys().size();
-            fireTableDataChanged();
-        } else {
-            logger.debug("No data to insert into table");
+        logger.debug("Set " + values.size() + " of rows");
+        if (values.isEmpty()) {
+            logger.trace("Data to set are empty");
+            data = new Object[0][0];
+            return;
         }
+
+        //number of results per measurement + 1 for id column
+        int columnNumber = values.size() + 1;
+        List<Integer> roiKeys = values.get(0).getRoiKeys();
+        int rowNumber = roiKeys.size();
+
+        Object[][] dataTmp = new Object[rowNumber][columnNumber];
+        for (int row = 0; row < rowNumber; row++) {
+            Integer roiKey = roiKeys.get(row);
+            for (int col = 0; col < columnNumber; col++) {
+                logger.trace("Set value to " + row + " row index and " + col + " column index for " + roiKey + " roi key");
+                if (col == 0) {
+                    //set roi id
+                    dataTmp[row][col] = roiKey;
+                } else {
+                    //set measurement's result
+                    dataTmp[row][col] = values.get(col - 1).getResultForRoiKey(roiKey);
+                }
+            }
+        }
+
+        data = dataTmp;
+        fireTableDataChanged();
+    }
+
+    @Override
+    public void setValues(Object[][] values) {
+        logger.debug("Set table values with rows " + values.length);
+        this.data = values;
+        fireTableDataChanged();
     }
 
     @Override
     public int getRowCount() {
-        logger.trace("Row count " + currentNumberOfRows);
-        return currentNumberOfRows;
+        logger.debug("Row count " + data.length);
+        return data.length;
     }
 
     @Override
     public int getColumnCount() {
-        logger.trace("Column count " + columnNames.size());
-        return columnNames.size();
+        logger.debug("Column count " + columnNames.length);
+        return columnNames.length;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         logger.trace("Get value from row " + rowIndex + " and column " + columnIndex);
-        //TODO check bounds
-        if (columnIndex == 0) {
-            //row id
-            return data.get(columnIndex).getRoiKeys().get(rowIndex);
+
+        if (rowIndex < 0 || rowIndex > data.length || columnIndex < 0 || columnIndex > columnNames.length) {
+            throw new IllegalArgumentException("Row index or column index is out of range.");
         }
-        return data.get(columnIndex - 1).getResultForRoiKey(rowIndex + 1);
+
+        return data[rowIndex][columnIndex];
     }
 
     @Override
-    public void setValueAt(Object value, int row, int col) {
-        logger.trace("Set value " + value + " to row " + row + " and col " + col);
-        //TODO check bounds
-        if (col == 0) {
-            logger.trace("Value of row id cannot be changed");
-            return;
+    public void setValueAt(Object value, int row, int column) {
+        logger.trace("Set value " + value + " to row " + row + " and col " + column);
+
+        if (row < 0 || row > data.length || column < 0 || column > columnNames.length) {
+            throw new IllegalArgumentException("Row index or column index is out of range.");
         }
-        data.get(col).addResult(row, (double) value);
-        fireTableCellUpdated(row, col);
+        data[row][column] = value;
+        fireTableCellUpdated(row, column);
     }
 
 }

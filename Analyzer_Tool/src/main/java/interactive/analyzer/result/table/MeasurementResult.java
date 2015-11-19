@@ -1,4 +1,4 @@
-package afm.analyzer.result.module;
+package interactive.analyzer.result.table;
 
 import java.util.ArrayList;
 import java.util.List;

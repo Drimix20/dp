@@ -1,10 +1,11 @@
 package afm.analyzer.gui;
 
+import interactive.analyzer.gui.AfmAnalyzerResultFrame;
 import afm.analyzer.measurements.AbstractMeasurement;
 import afm.analyzer.measurements.MeasurementComputation;
-import interactive.analyzer.presenter.AnalyzerImageWindow;
+import interactive.analyzer.presenter.InteractiveImageWindow;
 import interactive.analyzer.presenter.ImageWindowI;
-import afm.analyzer.result.module.AbstractMeasurementResult;
+import interactive.analyzer.result.table.AbstractMeasurementResult;
 import afm.analyzer.segmentation.Segmentation;
 import interactive.analyzer.selection.ImageSegments;
 import interactive.analyzer.listeners.RoiSelectedListener;
@@ -15,6 +16,7 @@ import afm.analyzer.threshold.ThresholderExecutor.Strategies;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import interactive.analyzer.InteractiveAnalyzer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,7 +43,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     private ImageWindowI analyzerImageWindow;
 
     public AfmAnalyzerFrame() {
-        this(new AnalyzerImageWindow());
+        this(new InteractiveImageWindow());
     }
 
     /**
@@ -323,8 +325,9 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         analyzerImageWindow.setImagesSegments(segmentImages);
         resultFrame.addRowSelectedListener((RowSelectedListener) this.analyzerImageWindow);
         analyzerImageWindow.addRoiSelectedListener((RoiSelectedListener) resultFrame);
-        resultFrame.setVisible(true);
 
+        InteractiveAnalyzer analyzer = new InteractiveAnalyzer(resultFrame, analyzerImageWindow);
+        analyzer.run();
     }//GEN-LAST:event_measureButtonActionPerformed
 
     private void segmentationOptionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationOptionButtonActionPerformed
@@ -394,7 +397,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new AfmAnalyzerFrame(new AnalyzerImageWindow()).setVisible(true);
+                    new AfmAnalyzerFrame(new InteractiveImageWindow()).setVisible(true);
                 } catch (Exception ex) {
                     logger.info(ex.getMessage(), ex);
                 }

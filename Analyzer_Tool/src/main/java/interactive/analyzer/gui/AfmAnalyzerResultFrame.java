@@ -1,9 +1,9 @@
-package afm.analyzer.gui;
+package interactive.analyzer.gui;
 
-import afm.analyzer.result.module.AbstractAfmTableModel;
-import afm.analyzer.result.module.AbstractMeasurementResult;
-import afm.analyzer.result.module.AfmAnalyzerResultTable;
-import afm.analyzer.result.module.AfmAnalyzerTableModel;
+import interactive.analyzer.result.table.AbstractAfmTableModel;
+import interactive.analyzer.result.table.AbstractMeasurementResult;
+import interactive.analyzer.result.table.AfmAnalyzerResultTable;
+import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.listeners.RoiSelectedListener;
 import interactive.analyzer.listeners.RowSelectedListener;
 import java.awt.Rectangle;

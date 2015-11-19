@@ -21,17 +21,17 @@ import selector.ChannelContainer;
  * Extended implementation of StackWindow for AFM analyzer.
  * @author Drimal
  */
-public class AnalyzerImageWindow implements ImageWindowI, RowSelectedListener, StackSliceChangedListener {
+public class InteractiveImageWindow implements ImageWindowI, RowSelectedListener, StackSliceChangedListener {
 
     private String stackTitle = "AFM Analyzer Images";
-    private static Logger logger = Logger.getLogger(AnalyzerImageWindow.class);
+    private static Logger logger = Logger.getLogger(InteractiveImageWindow.class);
     private ExtendedImageStackWindow imageStackWindow;
     private List<ImageSegments> imagesSegments;
     private static List<RoiSelectedListener> roiSelectedListeners;
     private ImagePlus showingImg;
     private static RoiManager roiManager;
 
-    public AnalyzerImageWindow() {
+    public InteractiveImageWindow() {
         imageStackWindow = new ExtendedImageStackWindow(new ImagePlus());
         imageStackWindow.setVisible(false);
         imagesSegments = new ArrayList<>();
@@ -80,6 +80,10 @@ public class AnalyzerImageWindow implements ImageWindowI, RowSelectedListener, S
     @Override
     public void setTitle(String title) {
         stackTitle = title;
+    }
+
+    public boolean isVisible() {
+        return imageStackWindow.isVisible();
     }
 
     /**

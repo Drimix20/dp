@@ -1,4 +1,4 @@
-package afm.analyzer.result.module;
+package interactive.analyzer.result.table;
 
 import java.math.RoundingMode;
 import java.text.NumberFormat;

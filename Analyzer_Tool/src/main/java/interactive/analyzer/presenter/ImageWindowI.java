@@ -44,6 +44,12 @@ public interface ImageWindowI {
     void setVisible(boolean visible);
 
     /**
+     * Check if image window is visible
+     * @return
+     */
+    boolean isVisible();
+
+    /**
      * Register roi selection listener
      * @param listener
      * @return

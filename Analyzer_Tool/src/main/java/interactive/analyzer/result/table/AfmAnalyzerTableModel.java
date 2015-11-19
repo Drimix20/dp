@@ -1,4 +1,4 @@
-package afm.analyzer.result.module;
+package interactive.analyzer.result.table;
 
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -11,18 +11,21 @@ public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
 
     private Logger logger = Logger.getLogger(AfmAnalyzerTableModel.class);
     private String[] columnNames;
-    private Object[][] data = {{1, 2, 3, 4}, {2, 3, 4, 5}};
+    private Object[][] data;
 
     public AfmAnalyzerTableModel(List<String> columnNames) {
         this.columnNames = columnNames.toArray(new String[columnNames.size()]);
+        data = new Object[0][0];
     }
 
     public AfmAnalyzerTableModel(String[] columnNames) {
         this.columnNames = columnNames;
+        data = new Object[0][0];
     }
 
     public AfmAnalyzerTableModel() {
         columnNames = new String[0];
+        data = new Object[0][0];
     }
 
     @Override

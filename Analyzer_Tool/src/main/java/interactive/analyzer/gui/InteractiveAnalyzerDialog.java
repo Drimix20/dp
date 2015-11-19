@@ -37,6 +37,8 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
 
     /**
      * Creates new form AnalyzerToolFrame
+     * @param parent
+     * @param modal
      */
     public InteractiveAnalyzerDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -143,6 +145,11 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
         });
 
         okButton.setText("OK");
+        okButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                okButtonActionPerformed(evt);
+            }
+        });
 
         resultsTableTextField.setEditable(false);
 
@@ -211,6 +218,10 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
         ActionEvent event = new ActionEvent(evt.getSource(), evt.getID(), "Open...");
         roiManager.actionPerformed(event);
     }//GEN-LAST:event_openRoisButtonActionPerformed
+
+    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+
+    }//GEN-LAST:event_okButtonActionPerformed
 
     /**
      * @param args the command line arguments

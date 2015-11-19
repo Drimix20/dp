@@ -1,10 +1,10 @@
-package afm.analyzer.presenter;
+package interactive.analyzer.presenter;
 
-import afm.analyzer.presenter.listeners.StackSliceChangedListener;
 import ij.IJ;
 import ij.ImageListener;
 import ij.ImagePlus;
 import ij.gui.StackWindow;
+import interactive.analyzer.listeners.StackSliceChangedListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;

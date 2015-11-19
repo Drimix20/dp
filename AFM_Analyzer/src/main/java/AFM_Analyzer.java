@@ -1,7 +1,7 @@
 
 import afm.analyzer.gui.AfmAnalyzerFrame;
-import afm.analyzer.presenter.AnalyzerImageWindow;
-import afm.analyzer.presenter.ImageWindowI;
+import interactive.analyzer.presenter.AnalyzerImageWindow;
+import interactive.analyzer.presenter.ImageWindowI;
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.PlugIn;

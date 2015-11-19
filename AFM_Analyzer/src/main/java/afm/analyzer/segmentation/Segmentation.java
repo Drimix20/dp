@@ -1,7 +1,8 @@
 package afm.analyzer.segmentation;
 
+import interactive.analyzer.selection.ImageSegments;
 import static afm.analyzer.segmentation.SegmentationConfiguration.*;
-import afm.analyzer.selection.ExtendedRoi;
+import interactive.analyzer.selection.ExtendedRoi;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import ij.IJ;
 import ij.ImagePlus;
@@ -24,13 +25,13 @@ public class Segmentation {
 
     private static Logger logger = Logger.getLogger(Segmentation.class);
 
-    public List<SegmentedImage> segmentImages(
+    public List<ImageSegments> segmentImages(
             List<ChannelContainer> channelContainers,
             ImageThresholdStrategy thresholdStrategy) {
         logger.info("Segment images " + channelContainers.size());
         IJ.showStatus("Image segmentation");
 
-        List<SegmentedImage> segmentedImages = new ArrayList<>();
+        List<ImageSegments> segmentedImages = new ArrayList<>();
         ResultsTable resultsTable = new ResultsTable();
         RoiManager roiManager = new RoiManager(true);
 
@@ -45,7 +46,7 @@ public class Segmentation {
         for (ChannelContainer channel : channelContainers) {
             ImagePlus img = channel.getImagePlus();
             logger.info("Make segments of image " + img.getTitle());
-            SegmentedImage segmentedImage = new SegmentedImage();
+            ImageSegments segmentedImage = new ImageSegments();
             ImageProcessor binaryIp = makeBinary(img, thresholdStrategy);
             segmentedImage.setThresholdedIp(binaryIp);
             analyzer.analyze(new ImagePlus("", binaryIp));

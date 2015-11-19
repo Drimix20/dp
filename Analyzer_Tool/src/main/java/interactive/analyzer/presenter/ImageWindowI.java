@@ -1,8 +1,8 @@
-package afm.analyzer.presenter;
+package interactive.analyzer.presenter;
 
-import afm.analyzer.segmentation.SegmentedImage;
-import afm.analyzer.selection.module.RoiSelectedListener;
 import ij.ImagePlus;
+import interactive.analyzer.listeners.RoiSelectedListener;
+import interactive.analyzer.selection.ImageSegments;
 import java.util.List;
 import selector.ChannelContainer;
 
@@ -23,7 +23,7 @@ public interface ImageWindowI {
      * Set for each image segment with rois for compute measurements
      * @param imagesSegments
      */
-    public void setImagesSegments(List<SegmentedImage> imagesSegments);
+    public void setImagesSegments(List<ImageSegments> imagesSegments);
 
     /**
      * Set images which will be shown in image window

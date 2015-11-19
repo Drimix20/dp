@@ -15,7 +15,7 @@
         <relativePath />
     </parent>
     <repositories>
-         <!--NB: for project parent-->
+        <!--NB: for project parent-->
         <repository>
             <id>imagej.public</id>
             <url>http://maven.imagej.net/content/groups/public/</url>
@@ -41,10 +41,16 @@
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>DP</groupId>
+            <artifactId>AFM_Opener</artifactId>
+            <version>1.0.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
-        <build>
-<!--        <resources>
+    <build>
+        <!--        <resources>
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
             </resource>

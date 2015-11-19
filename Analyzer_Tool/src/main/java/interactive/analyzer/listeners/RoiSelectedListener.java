@@ -1,4 +1,4 @@
-package afm.analyzer.selection.module;
+package interactive.analyzer.listeners;
 
 /**
  *

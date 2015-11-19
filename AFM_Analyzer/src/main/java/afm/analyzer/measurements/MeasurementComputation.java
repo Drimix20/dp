@@ -3,8 +3,8 @@ package afm.analyzer.measurements;
 import afm.analyzer.result.module.AbstractMeasurementResult;
 import afm.analyzer.result.module.MeasurementResult;
 import afm.analyzer.scalings.ScalerModule;
-import afm.analyzer.segmentation.SegmentedImage;
-import afm.analyzer.selection.ExtendedRoi;
+import interactive.analyzer.selection.ImageSegments;
+import interactive.analyzer.selection.ExtendedRoi;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import selector.ChannelContainer;
@@ -17,7 +17,7 @@ public class MeasurementComputation {
 
     //TODO instance of MeasurementResult is there hardcoded
     public AbstractMeasurementResult compute(ChannelContainer container,
-            SegmentedImage segmentedImage, AbstractMeasurement measure) {
+            ImageSegments segmentedImage, AbstractMeasurement measure) {
         ImageProcessor thresholded = segmentedImage.getThresholdedImageProcessor();
 
         //Module for scaling

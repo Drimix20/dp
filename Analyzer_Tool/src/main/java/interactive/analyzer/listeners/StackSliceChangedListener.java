@@ -1,4 +1,4 @@
-package afm.analyzer.presenter.listeners;
+package interactive.analyzer.listeners;
 
 /**
  * Listener notified that stack slice was changed

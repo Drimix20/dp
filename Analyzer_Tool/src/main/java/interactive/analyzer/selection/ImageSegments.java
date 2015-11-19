@@ -1,4 +1,4 @@
-package afm.analyzer.segmentation;
+package interactive.analyzer.selection;
 
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
@@ -8,8 +8,7 @@ import java.util.List;
  *
  * @author Drimal
  */
-//TODO object Segment is not needed
-public class SegmentedImage {
+public class ImageSegments {
 
     private ImageProcessor thresholdedIp;
     //List<Segment> segments;
@@ -23,12 +22,6 @@ public class SegmentedImage {
         this.thresholdedIp = thresholdedIp;
     }
 
-//    public List<Segment> getSegments() {
-//        return segments;
-//    }
-//    public void setSegments(List<Segment> segments) {
-//        this.segments = segments;
-//    }
     public List<Roi> getRois() {
         return rois;
     }

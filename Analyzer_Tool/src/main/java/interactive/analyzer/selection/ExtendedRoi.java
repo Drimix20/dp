@@ -1,4 +1,4 @@
-package afm.analyzer.selection;
+package interactive.analyzer.selection;
 
 
 import ij.gui.PolygonRoi;

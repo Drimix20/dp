@@ -1,15 +1,15 @@
-package afm.analyzer.presenter;
+package interactive.analyzer.presenter;
 
-import afm.analyzer.presenter.listeners.StackSliceChangedListener;
-import afm.analyzer.segmentation.SegmentedImage;
-import afm.analyzer.selection.ExtendedRoi;
-import afm.analyzer.selection.module.RoiSelectedListener;
-import afm.analyzer.selection.module.RowSelectedListener;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
+import interactive.analyzer.listeners.RoiSelectedListener;
+import interactive.analyzer.listeners.RowSelectedListener;
+import interactive.analyzer.listeners.StackSliceChangedListener;
+import interactive.analyzer.selection.ExtendedRoi;
+import interactive.analyzer.selection.ImageSegments;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class AnalyzerImageWindow implements ImageWindowI, RowSelectedListener, S
     private String stackTitle = "AFM Analyzer Images";
     private static Logger logger = Logger.getLogger(AnalyzerImageWindow.class);
     private ExtendedImageStackWindow imageStackWindow;
-    private List<SegmentedImage> imagesSegments;
+    private List<ImageSegments> imagesSegments;
     private static List<RoiSelectedListener> roiSelectedListeners;
     private ImagePlus showingImg;
     private static RoiManager roiManager;
@@ -44,12 +44,12 @@ public class AnalyzerImageWindow implements ImageWindowI, RowSelectedListener, S
     }
 
     @Override
-    public void setImagesSegments(List<SegmentedImage> imagesSegments) {
+    public void setImagesSegments(List<ImageSegments> imagesSegments) {
         this.imagesSegments = imagesSegments;
         //TODO functionality just for one image in window
         if (showingImg != null) {
             int currentSlice = showingImg.getCurrentSlice();
-            SegmentedImage segments = imagesSegments.get(currentSlice - 1);
+            ImageSegments segments = imagesSegments.get(currentSlice - 1);
             for (Roi roi : segments.getRois()) {
                 roiManager.addRoi(roi);
                 //roiManager.add(showingImg, roi, ((ExtendedRoi) roi).getLabel());

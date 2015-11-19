@@ -1,4 +1,4 @@
-package analyzer.tool.gui;
+package interactive.analyzer.gui;
 
 import ij.IJ;
 import ij.ImagePlus;

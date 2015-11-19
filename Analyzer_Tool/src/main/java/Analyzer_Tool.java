@@ -1,5 +1,5 @@
 
-import analyzer.tool.gui.InteractiveAnalyzerDialog;
+import interactive.analyzer.gui.InteractiveAnalyzerDialog;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;

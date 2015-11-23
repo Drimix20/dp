@@ -99,22 +99,24 @@ public class InteractiveImageWindow implements ImageWindowI, RowSelectedListener
         }
 
         showingImg = new ImagePlus(stackTitle, imgStack);
-        imageStackWindow = new ExtendedImageStackWindow(showingImg);
-        imageStackWindow.addStackSliceChangedListener(this);
-        registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
-        imageStackWindow.setTitle(stackTitle);
+        configureImageStackWindow();
     }
 
     /**
      * Set images which will be shown in image window
      * @param images one image or stack of images to show
      */
-    @Override //TODO need Segmented image for show rois
+    @Override
     public void setImagesToShow(ImagePlus images) {
-        throw new UnsupportedOperationException();
-//        imageStackWindow = new ExtendedImageStackWindow(images);
-//        registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
-//        imageStackWindow.setTitle(stackTitle);
+        showingImg = images;
+        configureImageStackWindow();
+    }
+
+    private void configureImageStackWindow() {
+        imageStackWindow = new ExtendedImageStackWindow(showingImg);
+        imageStackWindow.addStackSliceChangedListener(this);
+        registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
+        imageStackWindow.setTitle(stackTitle);
     }
 
     private void registerMouseListenerToImageCanvas(ImageCanvas canvas) {
@@ -141,7 +143,6 @@ public class InteractiveImageWindow implements ImageWindowI, RowSelectedListener
             //TODO implement multiple roi selection
             @Override
             public void mouseClicked(MouseEvent e) {
-//                logger.debug("Clicked on image: " + e.getX() + ", " + e.getY());
                 super.mousePressed(e);
                 Roi roi = imageStackWindow.getImagePlus().getRoi();
                 if (roi != null) {
@@ -182,15 +183,14 @@ public class InteractiveImageWindow implements ImageWindowI, RowSelectedListener
         int labelToSelect = rowIndex + 1;
         Roi selectedRoi = showingImg.getRoi();
         if (selectedRoi != null) {
-            logger.debug("Selected roi is " + selectedRoi.getName());
+            logger.debug("Old selected roi is " + selectedRoi.getName());
         }
 
-        List<Roi> getRois = imagesSegments.get(0).getRois();
-        for (Roi roiToSelect : getRois) {
-            if (((ExtendedRoi) roiToSelect).getLabel() == labelToSelect) {
+        Roi[] roisAsArray = roiManager.getRoisAsArray();
+        for (Roi roiToSelect : roisAsArray) {
+            if (parseRoiLabel(roiToSelect.getName()) == labelToSelect) {
                 String lbl = roiToSelect instanceof ExtendedRoi ? ((ExtendedRoi) roiToSelect).getLabel() + "" : roiToSelect.getName();
                 logger.debug("Selecting new roi: " + lbl + "with index in manager " + rowIndex);
-                //TODO Rois are indexing from zero, so index of roi with id is id-1;
                 roiManager.selectAndMakeVisible(showingImg, rowIndex);
             }
         }

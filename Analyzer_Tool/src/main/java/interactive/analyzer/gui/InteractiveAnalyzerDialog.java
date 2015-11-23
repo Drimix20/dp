@@ -4,8 +4,9 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
-import ij.plugin.filter.Analyzer;
 import ij.plugin.frame.RoiManager;
+import ij.text.TextWindow;
+import interactive.analyzer.InteractiveAnalyzer;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
@@ -20,9 +21,7 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
     private static Logger logger = Logger.getLogger(InteractiveAnalyzerDialog.class);
 
     private static final String INTERACTIVE__ANALYZER_NAME = "Interactive Analyzer";
-    private static final String RESULTS_TABLE_NAME = "Results";
     private String[] imageTitles;
-    private ResultsTable resultsTable = null;
     private RoiManager roiManager;
 
     /**
@@ -33,6 +32,7 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
         initComponents();
 
         constructImageTitles();
+        constructResultTableTitles();
     }
 
     /**
@@ -45,6 +45,7 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
         initComponents();
 
         constructImageTitles();
+        constructResultTableTitles();
     }
 
     private void constructImageTitles() {
@@ -63,39 +64,66 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
             imageWindowChoice.add(imageTitles[i]);
         }
 
-        logger.trace(Arrays.toString(imageTitles));
+        logger.trace("Image titles: " + Arrays.toString(imageTitles));
+    }
+
+    /**
+     * Construct choice list for results table choicer consist of window which contains ResultsTable
+     */
+    private void constructResultTableTitles() {
+        String[] nonImageTitles = WindowManager.getNonImageTitles();
+        resultTableChoice.add("NONE");
+
+        for (int i = 0; i < nonImageTitles.length; i++) {
+            ResultsTable rt = getResultsTableFromWindow(nonImageTitles[i]);
+            if (rt != null) {
+                resultTableChoice.add(nonImageTitles[i]);
+            }
+        }
+        logger.trace("Non image titles: " + Arrays.toString(nonImageTitles));
+    }
+
+    /**
+     * Get ResultsTable from specified window
+     * @param windowTitle
+     * @return results table or null if specified window doesn't contains ResultsTable
+     */
+    private ResultsTable getResultsTableFromWindow(String windowTitle) {
+        Window window = WindowManager.getWindow(windowTitle);
+        if (window != null && (window instanceof TextWindow)) {
+            TextWindow tw = (TextWindow) window;
+            return tw.getTextPanel().getResultsTable();
+        }
+        return null;
     }
 
     @Override
     public void setVisible(boolean b) {
-        if (isValidToRunPlugin()) {
+        if (isEnvironmentValidToRunPlugin()) {
             super.setVisible(b);
+        } else {
+            logger.debug("Enviroment is not prepared for run plugin.");
         }
     }
 
-    private boolean isValidToRunPlugin() {
+    private boolean isEnvironmentValidToRunPlugin() {
         boolean returnVal = true;
         //Check if any image window is visible
         if (imageTitles.length == 1 && imageTitles[0].equals("NONE")) {
-            IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "No images are open");
+            IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "No images are open.");
             returnVal = false;
         }
 
-        //Check if results table is visible
-        Window window = WindowManager.getWindow(RESULTS_TABLE_NAME);
-        resultsTable = Analyzer.getResultsTable();
-        if (window == null) {
-            IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "No Results table is open");
+        //Check if any results table window is visible
+        if (resultTableChoice.getItemCount() == 1) {
+            IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "No results table is visible.");
             returnVal = false;
-        } else {
-            resultsTableTextField.setText(RESULTS_TABLE_NAME);
-            resultsTableTextField.setEditable(false);
         }
 
         //Retrieve RoiManager
         roiManager = RoiManager.getInstance();
         if (roiManager == null) {
-            IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "No RoiManager is open, please import rois by dialog");
+            IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "No RoiManager is open, please import rois by dialog.");
             this.openRoisButton.setEnabled(true);
             roiManager = new RoiManager(false);
         }
@@ -118,7 +146,7 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
         openRoisButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
-        resultsTableTextField = new javax.swing.JTextField();
+        resultTableChoice = new java.awt.Choice();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Interactive Analyzer");
@@ -151,8 +179,6 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
             }
         });
 
-        resultsTableTextField.setEditable(false);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -166,8 +192,8 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
                             .addComponent(jLabel2))
                         .addGap(52, 52, 52)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(imageWindowChoice, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(resultsTableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(imageWindowChoice, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
+                            .addComponent(resultTableChoice, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
@@ -189,10 +215,8 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
                     .addComponent(jLabel1))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(6, 6, 6))
-                    .addComponent(resultsTableTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel2)
+                    .addComponent(resultTableChoice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(17, 17, 17)
@@ -220,8 +244,35 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_openRoisButtonActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+        checkSelectedChoices();
+        if (roiManager == null) {
+            IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "Roi manager is not opened.");
+            return;
+        }
 
+        ImagePlus seectedImageWindow = WindowManager.getImage(imageWindowChoice.getSelectedItem());
+        ResultsTable selectedRT = getResultsTableFromWindow(resultTableChoice.getSelectedItem());
+
+        InteractiveAnalyzer analyzer = new InteractiveAnalyzer(selectedRT, roiManager, seectedImageWindow);
+        analyzer.run();
     }//GEN-LAST:event_okButtonActionPerformed
+
+    private void checkSelectedChoices() {
+        logger.debug("Check selected choices");
+        //TODO parse selected window to ResultTable due to line 475 in IJ.java (renameResults)
+        boolean cancel = false;
+        if (resultTableChoice.getSelectedItem().equals("NONE")) {
+            IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "Select results table.");
+            cancel = true;
+        }
+        if (imageWindowChoice.getSelectedItem().equals("NONE")) {
+            IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "Select image window.");
+            cancel = true;
+        }
+        if (cancel) {
+            return;
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -274,6 +325,6 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JButton okButton;
     private javax.swing.JButton openRoisButton;
-    private javax.swing.JTextField resultsTableTextField;
+    private java.awt.Choice resultTableChoice;
     // End of variables declaration//GEN-END:variables
 }

@@ -8,8 +8,8 @@
         </layout>
     </appender>
 
-    <logger name="analyzer.tool.gui.InteractiveAnalyzerDialog"><level value="trace"/></logger>
-    <!--<logger name="afm.analyzer.segmentation"><level value="debug"/></logger>-->
+    <logger name="interactive.analyzer"><level value="trace"/></logger>
+    <!--<logger name="interactive.analyzer.presenter"><level value="trace"/></logger>-->
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>
         <priority value="info"/>

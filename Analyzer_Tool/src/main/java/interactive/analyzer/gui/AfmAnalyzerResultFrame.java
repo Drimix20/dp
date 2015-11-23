@@ -26,7 +26,6 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
 
     private static Logger logger = Logger.getLogger(AfmAnalyzerResultFrame.class);
 
-    //jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(i, 0, true)));
     //TODO not show other window after recomputation is performed
     //TODO implement export - save as (csv), show as ImageJ's ResultsTable
     //TODO implement as new thread

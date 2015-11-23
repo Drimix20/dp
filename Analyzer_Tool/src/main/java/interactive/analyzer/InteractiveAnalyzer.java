@@ -4,10 +4,14 @@ import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
 import interactive.analyzer.gui.AfmAnalyzerResultFrame;
+import interactive.analyzer.listeners.RoiSelectedListener;
+import interactive.analyzer.listeners.RowSelectedListener;
 import interactive.analyzer.presenter.ImageWindowI;
+import interactive.analyzer.presenter.InteractiveImageWindow;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.result.table.TableUtils;
+import java.util.Collections;
 
 /**
  *
@@ -18,18 +22,39 @@ public class InteractiveAnalyzer {
     private RoiManager roiManager;
     private AfmAnalyzerResultTable resultTable;
     private ImageWindowI imageWindow;
-    private AfmAnalyzerTableModel tableModel;
     private AfmAnalyzerResultFrame resultFrame;
-    private ImagePlus img;
 
     public InteractiveAnalyzer(ResultsTable ijResultTable, RoiManager roiManager,
             ImagePlus img) {
+        if (ijResultTable == null) {
+            throw new IllegalArgumentException("Results table can't be null");
+        }
+        if (roiManager == null) {
+            throw new IllegalArgumentException("RoiManager can't be null");
+        }
+        if (img == null) {
+            throw new IllegalArgumentException("Image can't be null");
+        }
         AfmAnalyzerTableModel tableModel = TableUtils.convertResultTableToInteractiveResultTable(ijResultTable);
-        this.img = img;
+        resultFrame = new AfmAnalyzerResultFrame(Collections.EMPTY_LIST, tableModel);
+
+        imageWindow = new InteractiveImageWindow();
+        imageWindow.setImagesToShow(img);
+        resultFrame.addRowSelectedListener((RowSelectedListener) imageWindow);
+        imageWindow.addRoiSelectedListener((RoiSelectedListener) resultFrame);
+        //TODO bind roiManager with imageWindow
+
+        this.roiManager = roiManager;
     }
 
     public InteractiveAnalyzer(AfmAnalyzerResultFrame resultFrame,
             ImageWindowI imageWindow) {
+        if (resultFrame == null) {
+            throw new IllegalArgumentException("Result frame is null");
+        }
+        if (imageWindow == null) {
+            throw new IllegalArgumentException("ImageWindow is null");
+        }
         this.resultFrame = resultFrame;
         this.imageWindow = imageWindow;
     }
@@ -41,6 +66,7 @@ public class InteractiveAnalyzer {
         if (!resultFrame.isVisible()) {
             resultFrame.setVisible(true);
         }
+        //TODO show rois with label in created imageWindow
     }
 
 }

@@ -16,6 +16,7 @@ public class DataStatisticsTest {
     @Test
     public void testComputeDataSetFromTable() {
         DataSet dataset = DataStatistics.computeDataSetFromTable(testData);
+        dataset.sortPairsData();
         assertEquals((double) 5, dataset.getMinValue(), 0);
         assertEquals((double) 50, dataset.getMaxValue(), 0);
         List<Pair> pairs = dataset.getPairs();

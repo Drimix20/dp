@@ -12,13 +12,13 @@ public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
     private Logger logger = Logger.getLogger(AfmAnalyzerTableModel.class);
 
     public AfmAnalyzerTableModel(List<String> columnNames) {
+        super();
         this.columnNames = columnNames.toArray(new String[columnNames.size()]);
-        data = new Object[0][0];
     }
 
     public AfmAnalyzerTableModel(String[] columnNames) {
+        super();
         this.columnNames = columnNames;
-        data = new Object[0][0];
     }
 
     public AfmAnalyzerTableModel() {
@@ -35,11 +35,6 @@ public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
         return columnNames[col];
     }
 
-    /**
-     * List item is equal to measurement.
-     * AbstractmeasurementResult contains measurement's result for each region of interest
-     * @param values values to set into table
-     */
     @Override
     public void setValues(List<AbstractMeasurementResult> values) {
         logger.debug("Set " + values.size() + " of rows");
@@ -115,28 +110,62 @@ public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
     }
 
     @Override
-    public Object[] getColumnData(String column) {
-        if (column.isEmpty()) {
-            throw new IllegalArgumentException("Column name is empty");
+    public Object[] getColumnData(String columnName) {
+        if (data == null || data.length == 0) {
+            return null;
         }
+        int size = data.length;
+        int[] rows = new int[size];
+        for (int rowIndex = 0; rowIndex < size; rowIndex++) {
+            rows[rowIndex] = rowIndex;
+        }
+
+        return getColumnData(columnName, rows);
+    }
+
+    @Override
+    public int getColumnIndexByName(String columnName) {
         int columnIndex = -1;
         for (int i = 0; i < columnNames.length; i++) {
-            if (columnNames[i].equals(column)) {
+            if (columnNames[i].equals(columnName)) {
                 columnIndex = i;
                 break;
             }
         }
+        return columnIndex;
+    }
 
+    @Override
+    public Object[] getColumnData(String columnName, int... rows) {
+        if (columnName.isEmpty()) {
+            logger.error("Column name is empty");
+//            throw new IllegalArgumentException("Column name is empty");
+        }
+
+        if (rows == null || rows.length == 0) {
+            logger.error("Rows indexes is null or empty");
+            //throw new IllegalArgumentException("Rows indexes is null or empty");
+        }
+
+        int columnIndex = getColumnIndexByName(columnName);
         if (columnIndex == -1) {
             return null;
         }
 
-        int size = data.length;
+        int size = rows.length;
         Object[] columnData = new Object[size];
-        for (int rowIndex = 0; rowIndex < size; rowIndex++) {
-            columnData[rowIndex] = getValueAt(rowIndex, columnIndex);
+        int i = 0;
+        for (int rowIndex : rows) {
+            columnData[i] = getValueAt(rowIndex, columnIndex);
+            i++;
         }
 
         return columnData;
+    }
+
+    @Override
+    public Object[] getColumnData(int columnIndex, int... rows) {
+        String columnName = getColumnName(columnIndex);
+        return getColumnData(columnName, rows);
     }
 }

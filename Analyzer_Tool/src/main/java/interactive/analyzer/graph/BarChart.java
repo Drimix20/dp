@@ -26,7 +26,6 @@ public class BarChart implements Chart {
     private static int GRAPH_MARGIN = 3;
     private int margin = 35;
 
-    private boolean prepareData = true;
     private int chartHeight;
     private int chartWidth;
     private int barWidth;

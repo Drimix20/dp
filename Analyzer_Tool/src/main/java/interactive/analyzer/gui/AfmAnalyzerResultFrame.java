@@ -306,15 +306,23 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String selectedColumnName = (String) columnComboBox.getSelectedItem();
-        Object[] columnData = ((AbstractAfmTableModel) tableModel).getColumnData(selectedColumnName);
+
+        Object[] columnData = null;
+        if (jTable1.getSelectedRowCount() == 0) {
+            //no row is selected so compute chart from all rows
+            logger.trace("Show data for whole table");
+            columnData = ((AbstractAfmTableModel) tableModel).getColumnData(selectedColumnName);
+        } else {
+            //compute chart from selected rows
+            logger.trace("Show data for selected rows: [" + jTable1.getSelectedRows() + "]");
+            columnData = ((AbstractAfmTableModel) tableModel).getColumnData(selectedColumnName, jTable1.getSelectedRows());
+        }
 
         ObjectFilteringFrame frame = new ObjectFilteringFrame();
         Chart chart = new BarChart();
         chart.loadData(DataStatistics.computeDataSetFromTable(columnData));
         frame.addChart(chart);
         frame.setVisible(true);
-
-        DataStatistics.PairsToString(DataStatistics.computeDataSetFromTable(columnData).getPairs());
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

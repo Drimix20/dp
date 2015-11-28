@@ -29,6 +29,12 @@
             <artifactId>fiji-lib</artifactId>
             <version>2.1.0</version>
         </dependency>
+        <!--graph library-->
+        <dependency>
+            <groupId>jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.0.13</version>
+        </dependency>
         <!-- Logovani -->
         <dependency>
             <groupId>log4j</groupId>

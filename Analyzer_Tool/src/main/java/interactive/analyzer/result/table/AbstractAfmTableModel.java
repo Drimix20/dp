@@ -10,6 +10,9 @@ import javax.swing.table.AbstractTableModel;
  */
 public abstract class AbstractAfmTableModel extends AbstractTableModel {
 
+    protected String[] columnNames;
+    protected Object[][] data;
+
     /**
      Get number of row in current table
      @return number of row
@@ -69,5 +72,12 @@ public abstract class AbstractAfmTableModel extends AbstractTableModel {
      */
     @Override
     public abstract Object getValueAt(int rowIndex, int columnIndex);
+
+    /**
+     * Return column data from table model specified by column name
+     * @param column name of column
+     * @return column data
+     */
+    public abstract Object[] getColumnData(String column);
 
 }

@@ -14,3 +14,12 @@ hs_err_pid*
 
 # generated shaded pom file
 dependency-reduced-pom.xml
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Maven
+log/
+target/

@@ -10,8 +10,6 @@ import org.apache.log4j.Logger;
 public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
 
     private Logger logger = Logger.getLogger(AfmAnalyzerTableModel.class);
-    private String[] columnNames;
-    private Object[][] data;
 
     public AfmAnalyzerTableModel(List<String> columnNames) {
         this.columnNames = columnNames.toArray(new String[columnNames.size()]);
@@ -116,4 +114,29 @@ public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
         fireTableCellUpdated(row, column);
     }
 
+    @Override
+    public Object[] getColumnData(String column) {
+        if (column.isEmpty()) {
+            throw new IllegalArgumentException("Column name is empty");
+        }
+        int columnIndex = -1;
+        for (int i = 0; i < columnNames.length; i++) {
+            if (columnNames[i].equals(column)) {
+                columnIndex = i;
+                break;
+            }
+        }
+
+        if (columnIndex == -1) {
+            return null;
+        }
+
+        int size = data.length;
+        Object[] columnData = new Object[size];
+        for (int rowIndex = 0; rowIndex < size; rowIndex++) {
+            columnData[rowIndex] = getValueAt(rowIndex, columnIndex);
+        }
+
+        return columnData;
+    }
 }

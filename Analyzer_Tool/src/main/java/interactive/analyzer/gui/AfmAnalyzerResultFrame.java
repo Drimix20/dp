@@ -1,5 +1,8 @@
 package interactive.analyzer.gui;
 
+import interactive.analyzer.graph.BarChart;
+import interactive.analyzer.graph.Chart;
+import interactive.analyzer.graph.data.DataStatistics;
 import interactive.analyzer.result.table.AbstractAfmTableModel;
 import interactive.analyzer.result.table.AbstractMeasurementResult;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
@@ -9,6 +12,7 @@ import interactive.analyzer.listeners.RowSelectedListener;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JFrame;
@@ -59,6 +63,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
             AbstractAfmTableModel tableModel) {
         this.tableHeaderTooltips = tableHeaderTooltips;
         this.tableModel = tableModel;
+        this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
         initComponents();
     }
 
@@ -70,7 +75,36 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
     public AfmAnalyzerResultFrame(JTable table, AbstractAfmTableModel tableModel) {
         this.jTable1 = table;
         this.tableModel = tableModel;
+        this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
         initComponents();
+    }
+
+    private List<String> getColumnNamesFromTableModel(
+            AbstractAfmTableModel tableModel) {
+        int columnCount = tableModel.getColumnCount();
+        if (columnCount == 0) {
+            logger.trace("No columns in tableModel");
+            return Collections.EMPTY_LIST;
+        }
+        List<String> columnNames = new ArrayList<>();
+        for (int i = 1; i < columnCount; i++) {
+            columnNames.add(tableModel.getColumnName(i));
+        }
+        return columnNames;
+    }
+
+    /**
+     * Get column headers without first column for columnSelector. First column always contains id
+     * @return column headers
+     */
+    private String[] getColumnHeadersForCombobox() {
+        int size = tableColumnNames.size() + 1;
+        String[] columnHeaders = new String[size];
+        columnHeaders[0] = "NONE";
+        for (int i = 1; i < size; i++) {
+            columnHeaders[i] = tableColumnNames.get(i - 1);
+        }
+        return columnHeaders;
     }
 
     public boolean addRowSelectedListener(RowSelectedListener listener) {
@@ -157,7 +191,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         jTable1 = createTableInstance();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
+        columnComboBox = new javax.swing.JComboBox();
         jButton1 = new javax.swing.JButton();
         jCheckBox1 = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -177,11 +211,19 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
 
         jLabel1.setText("Selected Column:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Area", "AverageIntensity", "Volume" }));
-        jComboBox1.setEnabled(false);
+        columnComboBox.setModel(new javax.swing.DefaultComboBoxModel(getColumnHeadersForCombobox()));
+        columnComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                columnComboBoxItemStateChanged(evt);
+            }
+        });
 
         jButton1.setText("Show histogram");
-        jButton1.setEnabled(false);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jCheckBox1.setText("Global");
         jCheckBox1.setEnabled(false);
@@ -198,7 +240,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel1)
                             .addGap(18, 18, 18)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(columnComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 113, Short.MAX_VALUE)
                             .addComponent(jButton1))
                         .addComponent(jCheckBox1))
@@ -212,7 +254,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
                     .addGap(18, 18, 18)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel1)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(columnComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jButton1))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(jCheckBox1)
@@ -256,6 +298,25 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void columnComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_columnComboBoxItemStateChanged
+        String selectedItem = (String) columnComboBox.getSelectedItem();
+        boolean enabled = !selectedItem.equals("NONE");
+        this.jButton1.setEnabled(enabled);
+    }//GEN-LAST:event_columnComboBoxItemStateChanged
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String selectedColumnName = (String) columnComboBox.getSelectedItem();
+        Object[] columnData = ((AbstractAfmTableModel) tableModel).getColumnData(selectedColumnName);
+
+        ObjectFilteringFrame frame = new ObjectFilteringFrame();
+        Chart chart = new BarChart();
+        chart.loadData(DataStatistics.computeDataSetFromTable(columnData));
+        frame.addChart(chart);
+        frame.setVisible(true);
+
+        DataStatistics.PairsToString(DataStatistics.computeDataSetFromTable(columnData).getPairs());
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -293,9 +354,9 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox columnComboBox;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;

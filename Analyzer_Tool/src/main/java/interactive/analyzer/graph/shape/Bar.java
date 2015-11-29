@@ -15,29 +15,8 @@ public class Bar extends Shape {
     private Rectangle2D rectangle;
     private Graphics2D graphics;
 
-    public Bar() {
-    }
-
-    public Bar(int x, int y, int width, int height) {
-        if (width <= 0) {
-            throw new IllegalArgumentException("Width is negative or zero");
-        }
-        if (height <= 0) {
-            throw new IllegalArgumentException("Width is negative or zero");
-        }
-
-        rectangle = new Rectangle2D.Double(x, y, width, height);
-    }
-
-    public Bar(double x, double y, double width, double height) {
-        if (width <= 0) {
-            throw new IllegalArgumentException("Width is negative or zero");
-        }
-        if (height <= 0) {
-            throw new IllegalArgumentException("Width is negative or zero");
-        }
-
-        rectangle = new Rectangle2D.Double(x, y, width, height);
+    public Bar(int ID, double value) {
+        super(ID, value);
     }
 
     @Override
@@ -53,8 +32,11 @@ public class Bar extends Shape {
 
     @Override
     public void draw(Graphics2D g) {
-        graphics = g;
+        if (rectangle == null) {
+            return;
+        }
 
+        graphics = g;
         if (isSelected()) {
             draw(g, super.getSelectionColor(), super.getBorderColor());
         } else {
@@ -64,6 +46,10 @@ public class Bar extends Shape {
 
     @Override
     public void draw(Graphics2D g, Color bg, Color border) {
+        if (rectangle == null) {
+            return;
+        }
+
         graphics = g;
         g.setColor(bg);
         g.fill(rectangle);
@@ -73,6 +59,9 @@ public class Bar extends Shape {
 
     @Override
     public boolean contains(double x, double y) {
+        if (rectangle == null) {
+            return false;
+        }
         return rectangle.contains(x, y);
     }
 

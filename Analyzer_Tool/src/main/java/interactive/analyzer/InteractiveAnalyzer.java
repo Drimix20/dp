@@ -5,7 +5,7 @@ import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
 import interactive.analyzer.gui.AfmAnalyzerResultFrame;
 import interactive.analyzer.listeners.RoiSelectedListener;
-import interactive.analyzer.listeners.RowSelectedListener;
+import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
@@ -40,7 +40,7 @@ public class InteractiveAnalyzer {
 
         imageWindow = new InteractiveImageWindow();
         imageWindow.setImagesToShow(img);
-        resultFrame.addRowSelectedListener((RowSelectedListener) imageWindow);
+        resultFrame.addTableSelectionListener((TableSelectionListener) imageWindow);
         imageWindow.addRoiSelectedListener((RoiSelectedListener) resultFrame);
         //TODO bind roiManager with imageWindow
 

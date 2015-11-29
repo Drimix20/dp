@@ -6,7 +6,7 @@ import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
 import interactive.analyzer.listeners.RoiSelectedListener;
-import interactive.analyzer.listeners.RowSelectedListener;
+import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.listeners.StackSliceChangedListener;
 import interactive.analyzer.selection.ExtendedRoi;
 import interactive.analyzer.selection.ImageSegments;
@@ -21,7 +21,7 @@ import selector.ChannelContainer;
  * Extended implementation of StackWindow for AFM analyzer.
  * @author Drimal
  */
-public class InteractiveImageWindow implements ImageWindowI, RowSelectedListener, StackSliceChangedListener {
+public class InteractiveImageWindow implements ImageWindowI, TableSelectionListener, StackSliceChangedListener {
 
     private String stackTitle = "AFM Analyzer Images";
     private static Logger logger = Logger.getLogger(InteractiveImageWindow.class);
@@ -177,9 +177,10 @@ public class InteractiveImageWindow implements ImageWindowI, RowSelectedListener
         }
     }
 
+    // TableSelectionListener implementation
     @Override
-    public void selectedRowIndexIsChanged(int rowIndex) {
-        logger.trace("Event processed: selected row is " + rowIndex);
+    public void selectedRowIndexIsChanged(int rowIndex, double value) {
+        logger.trace(rowIndex);
         int labelToSelect = rowIndex + 1;
         Roi selectedRoi = showingImg.getRoi();
         if (selectedRoi != null) {
@@ -196,6 +197,12 @@ public class InteractiveImageWindow implements ImageWindowI, RowSelectedListener
         }
     }
 
+    @Override
+    public void clearAllSelections() {
+        //no needed
+    }
+
+    // TableSelectionListener end of implementation
     // StackSliceChangedListener implementation
     @Override
     public void movingSliceAboutAmount(int amount) {
@@ -217,4 +224,5 @@ public class InteractiveImageWindow implements ImageWindowI, RowSelectedListener
         logger.trace("Current stack index " + index);
     }
     // StackSliceChangedListener end of implementation
+
 }

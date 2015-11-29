@@ -53,4 +53,9 @@ public interface Chart {
      * @return scaled point
      */
     public Point scaleToGraphCanvasCoords(double x, double y);
+
+    /**
+     * Method clear all shape selection in chart
+     */
+    public abstract void clearAllSelections();
 }

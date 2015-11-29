@@ -1,0 +1,221 @@
+<Project>
+  <Name>AFM_Interactive_Analyzer</Name>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>Notification</Name>
+    <Language>Java</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>GraphPanel</Name>
+        <Access>Public</Access>
+        <Location left="294" top="226" />
+        <Size width="200" height="128" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">List&lt;ChartSelectionListener&gt; csl</Member>
+        <Member type="Method">void selectedRowIndexIsChanged(int rowIndex, double value)</Member>
+        <Member type="Method">void clearAllSelections()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>AfmAnalyzerResultFrame</Name>
+        <Access>Public</Access>
+        <Location left="818" top="226" />
+        <Size width="235" height="145" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private List&lt;TableSelectionListener&gt; tsl</Member>
+        <Member type="Method">void notifyBarSelected()</Member>
+        <Member type="Method">void notifyBarDeselected()</Member>
+        <Member type="Method">void notifyRoiSelected()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Interface">
+        <Name>TableSelectionListener</Name>
+        <Access>Public</Access>
+        <Location left="294" top="12" />
+        <Size width="162" height="111" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public void selectedRowIndexIsChanged(int rowIndex, double value)</Member>
+        <Member type="Method">public void clearAllSelections()</Member>
+      </Entity>
+      <Entity type="Class">
+        <Name>InteractiveImageWindow</Name>
+        <Access>Public</Access>
+        <Location left="10" top="260" />
+        <Size width="162" height="179" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">void selectedRowIndexIsChanged(int rowIndex, double value)</Member>
+        <Member type="Method">void clearAllSelections()</Member>
+        <Member type="Method">void movingSliceAboutAmount()</Member>
+        <Member type="Method">void moveToSpecificPosition()</Member>
+        <Member type="Method">void sliceAtPositionDeleted()</Member>
+        <Member type="Method">void currentStackIndex()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Interface">
+        <Name>ChartSelectionListener</Name>
+        <Access>Public</Access>
+        <Location left="486" top="470" />
+        <Size width="162" height="111" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">void notifyBarSelected()</Member>
+        <Member type="Method">void notifyBarDeselected()</Member>
+      </Entity>
+      <Entity type="Comment">
+        <Text>Imports TableSelectionListener and notify all subscribers</Text>
+        <Location left="675" top="52" />
+        <Size width="160" height="75" />
+      </Entity>
+      <Entity type="Comment">
+        <Text>Subscribe
+</Text>
+        <Location left="374" top="157" />
+        <Size width="70" height="50" />
+      </Entity>
+      <Entity type="Comment">
+        <Text>Subscribe
+</Text>
+        <Location left="153" top="133" />
+        <Size width="70" height="50" />
+      </Entity>
+      <Entity type="Comment">
+        <Text>Imports ChartSelectionListener and notify all subscribers
+</Text>
+        <Location left="294" top="380" />
+        <Size width="160" height="61" />
+      </Entity>
+      <Entity type="Comment">
+        <Text>Subscribe
+</Text>
+        <Location left="675" top="380" />
+        <Size width="70" height="50" />
+      </Entity>
+      <Entity type="Interface">
+        <Name>RoiSelectedListener</Name>
+        <Access>Public</Access>
+        <Location left="511" top="634" />
+        <Size width="162" height="94" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">void notifyRoiSelected()</Member>
+      </Entity>
+      <Entity type="Comment">
+        <Text>Imports RoiSelectedListener and notify all subscribers
+</Text>
+        <Location left="90" top="534" />
+        <Size width="160" height="50" />
+      </Entity>
+      <Entity type="Comment">
+        <Text>Subscribe
+</Text>
+        <Location left="899" top="470" />
+        <Size width="70" height="50" />
+      </Entity>
+      <Entity type="Interface">
+        <Name>StackSliceChangedListener</Name>
+        <Access>Public</Access>
+        <Location left="348" top="783" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">void movingSliceAboutAmount()</Member>
+        <Member type="Method">void moveToSpecificPosition()</Member>
+        <Member type="Method">void sliceAtPositionDeleted()</Member>
+        <Member type="Method">void currentStackIndex()</Member>
+      </Entity>
+      <Entity type="Comment">
+        <Text>Subscribe
+</Text>
+        <Location left="37" top="820" />
+        <Size width="70" height="50" />
+      </Entity>
+      <Entity type="Class">
+        <Name>ExtendedImageStackWindow</Name>
+        <Access>Public</Access>
+        <Location left="716" top="752" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Comment">
+        <Text>Imports StackSliceChangedListener and notify all subscribers</Text>
+        <Location left="534" top="876" />
+        <Size width="160" height="75" />
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Realization" first="0" second="2">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Dependency" first="1" second="2">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>493</X>
+          <Y>68</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Realization" first="3" second="2">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>92</X>
+          <Y>196</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>327</X>
+          <Y>175</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Dependency" first="0" second="4">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Realization" first="1" second="4">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>610</X>
+          <Y>444</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Dependency" first="3" second="10">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>461</X>
+          <Y>686</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Realization" first="1" second="10">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>740</X>
+          <Y>688</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Realization" first="3" second="13">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>40</X>
+          <Y>467</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>267</X>
+          <Y>960</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Dependency" first="15" second="13">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+</Project>

@@ -1,6 +1,9 @@
 package interactive.analyzer.graph;
 
+import interactive.analyzer.file.tools.ImageFileFilter;
 import interactive.analyzer.graph.shape.Shape;
+import interactive.analyzer.listeners.ChartSelectionListener;
+import interactive.analyzer.listeners.TableSelectionListener;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -13,8 +16,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import javax.swing.filechooser.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
@@ -24,33 +28,39 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class GraphPanel extends JPanel {
+public class GraphPanel extends JPanel implements TableSelectionListener {
 
     private static Logger logger = Logger.getLogger(GraphPanel.class);
+
     private Graphics2D graphics2D;
     private BufferedImage paintImage;
     private boolean mousePressed = false;
     private Chart chart;
-
+    private boolean draggedSelection = false;
+    private double downRangeValue;
+    private double upperRangeValue;
+    private Color selectionColor;
+    private List<Shape> selectionByDragged;
+    private List<ChartSelectionListener> selectionListeners;
     private ImageFileFilter[] filefilters = new ImageFileFilter[]{
         new ImageFileFilter("png"),
         new ImageFileFilter("jpg"),
         new ImageFileFilter("gif"),};
 
     public GraphPanel() {
+        selectionListeners = new ArrayList<>();
+        selectionByDragged = new ArrayList<>();
         paintImage = new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR);
 
         addComponentListener(new ComponentAdapter() {
 
             @Override
             public void componentResized(ComponentEvent e) {
-                logger.trace("");
                 updatePaint();
             }
 
             @Override
             public void componentShown(ComponentEvent e) {
-                logger.trace("");
                 updatePaint();
             }
         });
@@ -69,6 +79,9 @@ public class GraphPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 logger.trace("" + e.getPoint());
+                if (mousePressed) {
+                    draggedSelection = true;
+                }
                 boolean deselectionModeIsOn = false;
                 int onMask = MouseEvent.ALT_DOWN_MASK | MouseEvent.BUTTON1_DOWN_MASK;
                 if (e.getModifiersEx() == onMask) {
@@ -78,9 +91,15 @@ public class GraphPanel extends JPanel {
                 Shape shape = getShapeAtPoint(e.getPoint());
                 if (shape != null) {
                     if (mousePressed) {
-                        shape.setSelected(!deselectionModeIsOn);
+                        logger.trace("mousePressed: " + mousePressed);
+                        boolean select = !deselectionModeIsOn;
+                        shape.setSelected(select);
+
                         //needed to repaint canvas
                         updatePaint();
+                    }
+                    if (draggedSelection) {
+                        selectionByDragged.add(shape);
                     }
                 }
             }
@@ -101,10 +120,22 @@ public class GraphPanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 logger.trace("" + e.getPoint());
 
+                logger.trace("mousePressed: " + mousePressed);
                 Shape shape = getShapeAtPoint(e.getPoint());
                 if (shape != null) {
                     logger.trace(shape.getID() + ", " + shape.getTooltipText());
-                    shape.setSelected(!shape.isSelected());
+                    boolean select = !shape.isSelected();
+                    shape.setSelected(select);
+
+                    for (ChartSelectionListener listener : selectionListeners) {
+                        if (select) {
+                            //chart shape was selected
+                            listener.notifyBarSelected(shape.getValue(), shape.getValue(), selectionColor);
+                        } else {
+                            //chart shape was deselected
+                            listener.notifyBarDeselected(shape.getValue(), shape.getValue());
+                        }
+                    }
                     //needed to repaint canvas
                     updatePaint();
                 }
@@ -114,14 +145,50 @@ public class GraphPanel extends JPanel {
             public void mousePressed(MouseEvent e) {
                 logger.trace("" + e.getPoint());
                 mousePressed = true;
+
+                Shape shape = getShapeAtPoint(e.getPoint());
+                if (shape != null) {
+                    downRangeValue = shape.getValue();
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 logger.trace("" + e.getPoint());
                 mousePressed = false;
+                //multiple selection by mouse dragged
+                Shape shape = getShapeAtPoint(e.getPoint());
+                if (shape != null) {
+                    upperRangeValue = shape.getValue();
+                    if (draggedSelection) {
+                        boolean select = shape.isSelected();
+
+                        for (ChartSelectionListener listener : selectionListeners) {
+                            for (Shape shapeByDragged : selectionByDragged) {
+                                if (select) {
+                                    //chart shape was selected
+                                    listener.notifyBarSelected(shapeByDragged.getValue(), shapeByDragged.getValue(), selectionColor);
+                                } else {
+                                    //chart shape was deselected
+                                    listener.notifyBarDeselected(shapeByDragged.getValue(), shapeByDragged.getValue());
+                                }
+                            }
+                        }
+                        selectionByDragged = new ArrayList<>();
+                    }
+                }
+
+                draggedSelection = false;
             }
         });
+    }
+
+    public Color getSelectionColor() {
+        return selectionColor;
+    }
+
+    public void setSelectionColor(Color selectionColor) {
+        this.selectionColor = selectionColor;
     }
 
     /**
@@ -130,6 +197,18 @@ public class GraphPanel extends JPanel {
      */
     public void setChart(Chart chart) {
         this.chart = chart;
+    }
+
+    public boolean addChartSelectionListener(ChartSelectionListener listener) {
+        return selectionListeners.add(listener);
+    }
+
+    public boolean removeChartSelectionListener(ChartSelectionListener listener) {
+        return selectionListeners.remove(listener);
+    }
+
+    public void removeAllChartSelectionListeners() {
+        selectionListeners.clear();
     }
 
     /**
@@ -197,27 +276,24 @@ public class GraphPanel extends JPanel {
         ImageIO.write(paintImage, filter.getExtension(), file);
     }
 
-    public static class ImageFileFilter extends FileFilter {
-
-        private String extension;
-
-        private ImageFileFilter(String extension) {
-            this.extension = extension;
+    @Override
+    public void selectedRowIndexIsChanged(int rowIndex, double value) {
+        for (Shape shape : chart.getDrawShapes()) {
+            if (shape.getValue() == value) {
+                shape.setSelected(true);
+            }
         }
+        updatePaint();
+    }
 
-        @Override
-        public boolean accept(File f) {
-            return f.isDirectory() || f.getAbsolutePath().toLowerCase().endsWith("." + extension);
+    @Override
+    public void clearAllSelections() {
+        logger.trace("");
+        chart.clearAllSelections();
+        for (ChartSelectionListener listener : selectionListeners) {
+            listener.notifyClearAllSelections();
         }
-
-        public String getExtension() {
-            return extension;
-        }
-
-        @Override
-        public String getDescription() {
-            return extension.toUpperCase() + " file";
-        }
+        updatePaint();
     }
 
 }

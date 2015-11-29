@@ -39,7 +39,7 @@ public class BarChart implements Chart {
 
     @Override
     public void loadData(DataSet dataSet) {
-        logger.trace("median: " + dataSet.getMedian());
+//        logger.trace("median: " + dataSet.getMedian());
         this.data = dataSet;
         prepareShapes(!shapes.isEmpty());
     }
@@ -59,17 +59,16 @@ public class BarChart implements Chart {
         List<Pair> pairs = this.data.getPairs();
         int dataSize = pairs.size();
         barWidth = (chartWidth - 2 * GRAPH_MARGIN) / dataSize;
-        logger.trace("barWidth=" + barWidth);
+//        logger.trace("barWidth=" + barWidth);
         for (int i = 0; i < dataSize; i++) {
             double value = pairs.get(i).getValue();
             logger.trace(i + ", " + value);
             int id = pairs.get(i).getID();
-            Bar bar = new Bar();
-            bar.setID(id);
+            Bar bar = new Bar(id, value);
             bar.setTooltipText(value + "");
 
             if (selectPreviousSelected) {
-                logger.trace("Selecting previous selected bars");
+//                logger.trace("Selecting previous selected bars");
                 for (Shape shape : oldShape) {
                     if (bar.getID() == shape.getID()) {
                         bar.setSelected(shape.isSelected());
@@ -89,13 +88,13 @@ public class BarChart implements Chart {
 
     @Override
     public void draw(Graphics2D g, Dimension area) {
-        logger.debug("width " + area.width + ", height " + area.height);
+//        logger.debug("width " + area.width + ", height " + area.height);
         FontMetrics metrics = g.getFontMetrics();
         margin = 2 * metrics.getHeight() + 3 * TEXT_MARGIN;
 
         chartWidth = area.width - 2 * margin;
         chartHeight = area.height - 2 * margin;
-        logger.trace("chart margin=" + margin + ", chart width=" + chartWidth + ", chart height=" + chartHeight);
+//        logger.trace("chart margin=" + margin + ", chart width=" + chartWidth + ", chart height=" + chartHeight);
 
         int countOfBars = shapes.size();
         barWidth = (chartWidth - 2 * GRAPH_MARGIN) / countOfBars;
@@ -154,7 +153,7 @@ public class BarChart implements Chart {
     private void drawShapes(Graphics2D g) {
         int shapeSize = shapes.size();
         barWidth = (chartWidth - 2 * GRAPH_MARGIN) / shapeSize;
-        logger.trace("barWidth=" + barWidth);
+//        logger.trace("barWidth=" + barWidth);
         List<Pair> pairs = this.data.getPairs();
         for (int i = 0; i < shapeSize; i++) {
             double value = pairs.get(i).getValue();
@@ -195,6 +194,13 @@ public class BarChart implements Chart {
     @Override
     public Point scaleToGraphCanvasCoords(int x, int y) {
         return new Point(x - margin - GRAPH_MARGIN, y - margin - GRAPH_MARGIN - chartHeight);
+    }
+
+    @Override
+    public void clearAllSelections() {
+        for (Shape shape : shapes) {
+            shape.setSelected(false);
+        }
     }
 
 }

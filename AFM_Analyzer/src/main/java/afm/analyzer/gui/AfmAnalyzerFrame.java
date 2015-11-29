@@ -9,7 +9,7 @@ import interactive.analyzer.result.table.AbstractMeasurementResult;
 import afm.analyzer.segmentation.Segmentation;
 import interactive.analyzer.selection.ImageSegments;
 import interactive.analyzer.listeners.RoiSelectedListener;
-import interactive.analyzer.listeners.RowSelectedListener;
+import interactive.analyzer.listeners.TableSelectionListener;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import afm.analyzer.threshold.ThresholderExecutor;
 import afm.analyzer.threshold.ThresholderExecutor.Strategies;
@@ -323,7 +323,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         AfmAnalyzerResultFrame resultFrame = new AfmAnalyzerResultFrame(resultTableHeader, Collections.EMPTY_LIST);
         resultFrame.setAnalyzerValues(afmAnalyzerResult);
         analyzerImageWindow.setImagesSegments(segmentImages);
-        resultFrame.addRowSelectedListener((RowSelectedListener) this.analyzerImageWindow);
+        resultFrame.addTableSelectionListener((TableSelectionListener) this.analyzerImageWindow);
         analyzerImageWindow.addRoiSelectedListener((RoiSelectedListener) resultFrame);
 
         InteractiveAnalyzer analyzer = new InteractiveAnalyzer(resultFrame, analyzerImageWindow);

@@ -3,13 +3,20 @@ package interactive.analyzer.gui;
 import interactive.analyzer.graph.BarChart;
 import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.data.DataStatistics;
+import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.result.table.AbstractAfmTableModel;
 import interactive.analyzer.result.table.AbstractMeasurementResult;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.listeners.RoiSelectedListener;
-import interactive.analyzer.listeners.RowSelectedListener;
+import interactive.analyzer.listeners.TableSelectionListener;
+import java.awt.Color;
 import java.awt.Rectangle;
+import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
+import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
+import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,7 +33,7 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListener {
+public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListener, ChartSelectionListener {
 
     private static Logger logger = Logger.getLogger(AfmAnalyzerResultFrame.class);
 
@@ -34,11 +41,22 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
     //TODO implement export - save as (csv), show as ImageJ's ResultsTable
     //TODO implement as new thread
     //TODO implement setting up values from measurement results
+    //constants
+    private static final int CTRL_WITH_LMB_DOWN = CTRL_DOWN_MASK | BUTTON1_DOWN_MASK;
+    private static final int SHIFT_WITH_LMB_DOWN = SHIFT_DOWN_MASK | BUTTON1_DOWN_MASK;
+
     private TableModel tableModel;
     private List<String> tableHeaderTooltips;
     private List<String> tableColumnNames;
+    private String selectedColumnName;
+    private Color defaultSelectionColor;
     private Map<String, List<AbstractMeasurementResult>> analyzerValues;
-    private List<RowSelectedListener> rowSelectedListeners = new ArrayList<>();
+    private List<TableSelectionListener> tableSelectionListeners = new ArrayList<>();
+
+    private boolean notificationSendViaChartListener = false;
+    private boolean shiftIsDown = false;
+    private boolean ctrlIsDown = false;
+    private boolean justButton1IsDown = true;
 
     /**
      * Base constructor. TableModel is automatically set up in initComponents to default
@@ -52,6 +70,8 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         this.tableColumnNames = tableColumnNames;
         this.tableHeaderTooltips = tableHeaderTooltips;
         initComponents();
+
+        defaultSelectionColor = jTable1.getSelectionBackground();
     }
 
     /**
@@ -65,6 +85,8 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         this.tableModel = tableModel;
         this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
         initComponents();
+
+        defaultSelectionColor = jTable1.getSelectionBackground();
     }
 
     /**
@@ -77,8 +99,15 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         this.tableModel = tableModel;
         this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
         initComponents();
+
+        defaultSelectionColor = jTable1.getSelectionBackground();
     }
 
+    /**
+     * Get column names from specified table model
+     * @param tableModel
+     * @return list of column names
+     */
     private List<String> getColumnNamesFromTableModel(
             AbstractAfmTableModel tableModel) {
         int columnCount = tableModel.getColumnCount();
@@ -107,16 +136,16 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         return columnHeaders;
     }
 
-    public boolean addRowSelectedListener(RowSelectedListener listener) {
-        return rowSelectedListeners.add(listener);
+    public boolean addTableSelectionListener(TableSelectionListener listener) {
+        return tableSelectionListeners.add(listener);
     }
 
-    public boolean removeRowSelecredListener(RowSelectedListener listener) {
-        return rowSelectedListeners.remove(listener);
+    public boolean removeTableSelectionListener(TableSelectionListener listener) {
+        return tableSelectionListeners.remove(listener);
     }
 
-    public void removeAllRowSelectedListeners() {
-        rowSelectedListeners.clear();
+    public void removeAllTableSelectionListeners() {
+        tableSelectionListeners.clear();
     }
 
     /**
@@ -136,14 +165,67 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
                         //changes are being still made
                         return;
                     }
-                    String rows = "";
-                    for (RowSelectedListener listener : rowSelectedListeners) {
-                        listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex());
+
+                    int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
+                    Object columnValue = jTable1.getValueAt(jTable1.getSelectionModel().getLeadSelectionIndex(), columnIndex);
+
+                    for (TableSelectionListener listener : tableSelectionListeners) {
+                        if (justButton1IsDown && !notificationSendViaChartListener) {
+                            listener.clearAllSelections();
+                            listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex(), (double) columnValue);
+                            notificationSendViaChartListener = false;
+                        }
+                        if (shiftIsDown) {
+                            int minSelectionIndex = jTable1.getSelectionModel().getMinSelectionIndex();
+                            int maxSelectionIndex = jTable1.getSelectionModel().getMaxSelectionIndex();
+                            for (int i = minSelectionIndex; i <= maxSelectionIndex; i++) {
+                                columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
+                                columnValue = jTable1.getValueAt(i, columnIndex);
+                                listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex(), (double) columnValue);
+                            }
+                        }
+                        if (ctrlIsDown) {
+                            listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex(), (double) columnValue);
+                        }
                     }
-                    for (int r : jTable1.getSelectedRows()) {
-                        rows += ", " + r;
+                }
+
+            });
+            jTable1.addMouseListener(new MouseAdapter() {
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    retrieveCurrentSelectionMode(e);
+
+                    super.mousePressed(e);
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    retrieveCurrentSelectionMode(e);
+
+                    super.mouseReleased(e);
+                }
+
+                private void retrieveCurrentSelectionMode(MouseEvent e) {
+                    int modifiersEx = e.getModifiersEx();
+                    if (modifiersEx == SHIFT_WITH_LMB_DOWN) {
+                        shiftIsDown = true;
+                    } else {
+                        shiftIsDown = false;
                     }
-                    logger.trace("Lead: " + jTable1.getSelectionModel().getLeadSelectionIndex() + ", Rows: " + rows);
+
+                    if (modifiersEx == CTRL_WITH_LMB_DOWN) {
+                        ctrlIsDown = true;
+                    } else {
+                        ctrlIsDown = false;
+                    }
+
+                    if (modifiersEx == BUTTON1_DOWN_MASK) {
+                        justButton1IsDown = true;
+                    } else {
+                        justButton1IsDown = false;
+                    }
                 }
 
             });
@@ -157,6 +239,43 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         logger.trace("Selection notification received from roi " + roiLabel);
         jTable1.getSelectionModel().setSelectionInterval(roiLabel - 1, roiLabel - 1);
         jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(roiLabel, 0, true)));
+    }
+
+    @Override
+    public void notifyBarSelected(double downRangeValue, double upperRangeValue,
+            Color color) {
+        logger.trace("selection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue + ", color=" + color);
+
+        notificationSendViaChartListener = true;
+        for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
+            int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
+            double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
+            if (val >= downRangeValue && val <= upperRangeValue) {
+                ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
+                jTable1.addRowSelectionInterval(rowIndex, rowIndex);
+            }
+        }
+    }
+
+    @Override
+    public void notifyBarDeselected(double downRangeValue,
+            double upperRangeValue) {
+        logger.trace("deselection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue);
+
+        notificationSendViaChartListener = true;
+        for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
+            int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
+            double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
+            if (val >= downRangeValue && val <= upperRangeValue) {
+                ((AfmAnalyzerResultTable) jTable1).removeRowFromSelection(rowIndex);
+                jTable1.removeRowSelectionInterval(rowIndex, rowIndex);
+            }
+        }
+    }
+
+    @Override
+    public void notifyClearAllSelections() {
+        jTable1.clearSelection();
     }
 
     /**
@@ -193,7 +312,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         jLabel1 = new javax.swing.JLabel();
         columnComboBox = new javax.swing.JComboBox();
         jButton1 = new javax.swing.JButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        clearSelectionsButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -225,40 +344,41 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
             }
         });
 
-        jCheckBox1.setText("Global");
-        jCheckBox1.setEnabled(false);
+        clearSelectionsButton.setText("Clear selections");
+        clearSelectionsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearSelectionsButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel1)
-                            .addGap(18, 18, 18)
-                            .addComponent(columnComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 113, Short.MAX_VALUE)
-                            .addComponent(jButton1))
-                        .addComponent(jCheckBox1))
-                    .addContainerGap()))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(clearSelectionsButton))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(columnComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 90, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(18, 18, 18)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1)
-                        .addComponent(columnComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(jCheckBox1)
-                    .addContainerGap(19, Short.MAX_VALUE)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(columnComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(clearSelectionsButton)
+                .addGap(16, 16, 16))
         );
 
         jMenu1.setText("Export");
@@ -290,9 +410,9 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
-                .addGap(27, 27, 27)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -305,7 +425,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
     }//GEN-LAST:event_columnComboBoxItemStateChanged
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String selectedColumnName = (String) columnComboBox.getSelectedItem();
+        selectedColumnName = (String) columnComboBox.getSelectedItem();
 
         Object[] columnData = null;
         if (jTable1.getSelectedRowCount() == 0) {
@@ -319,11 +439,21 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         }
 
         ObjectFilteringFrame frame = new ObjectFilteringFrame();
+        frame.addChartSelectionListener(this);
+        this.addTableSelectionListener((TableSelectionListener) frame.getGraphPanel());
         Chart chart = new BarChart();
         chart.loadData(DataStatistics.computeDataSetFromTable(columnData));
         frame.addChart(chart);
         frame.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void clearSelectionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSelectionsButtonActionPerformed
+        logger.debug("");
+        jTable1.clearSelection();
+        for (TableSelectionListener listener : tableSelectionListeners) {
+            listener.clearAllSelections();
+        }
+    }//GEN-LAST:event_clearSelectionsButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -362,9 +492,9 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton clearSelectionsButton;
     private javax.swing.JComboBox columnComboBox;
     private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -374,5 +504,4 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
-
 }

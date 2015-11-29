@@ -77,13 +77,13 @@ public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
 
     @Override
     public int getRowCount() {
-        logger.debug("Row count " + data.length);
+        logger.trace("Row count " + data.length);
         return data.length;
     }
 
     @Override
     public int getColumnCount() {
-        logger.debug("Column count " + columnNames.length);
+        logger.trace("Column count " + columnNames.length);
         return columnNames.length;
     }
 
@@ -138,13 +138,11 @@ public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
     @Override
     public Object[] getColumnData(String columnName, int... rows) {
         if (columnName.isEmpty()) {
-            logger.error("Column name is empty");
-//            throw new IllegalArgumentException("Column name is empty");
+            throw new IllegalArgumentException("Column name is empty");
         }
 
         if (rows == null || rows.length == 0) {
-            logger.error("Rows indexes is null or empty");
-            //throw new IllegalArgumentException("Rows indexes is null or empty");
+            throw new IllegalArgumentException("Rows indexes is null or empty");
         }
 
         int columnIndex = getColumnIndexByName(columnName);

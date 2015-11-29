@@ -1,11 +1,14 @@
 package interactive.analyzer.gui;
 
+import interactive.analyzer.file.tools.ImageFileFilter;
 import interactive.analyzer.graph.BarChart;
 import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.GraphPanel;
 import interactive.analyzer.graph.data.DataSet;
 import interactive.analyzer.graph.data.DataStatistics;
 import interactive.analyzer.graph.data.Pair;
+import interactive.analyzer.listeners.ChartSelectionListener;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JFileChooser;
@@ -22,12 +25,14 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     //TODO dynamic resize margins due to label
     private static Logger logger = Logger.getLogger(ObjectFilteringFrame.class);
     private DataSet originChartData;
+    private Color currentSelectionColor = Color.red;
 
     /**
      * Creates new frame of ObjectFilteringFrame
      */
     public ObjectFilteringFrame() {
         initComponents();
+        graphPanel.setSelectionColor(currentSelectionColor);
         logger.trace("Frame width" + getWidth() + ", height=" + getHeight());
     }
 
@@ -35,6 +40,22 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         graphPanel.setChart(chart);
         originChartData = chart.getData();
         graphPanel.updatePaint();
+    }
+
+    public GraphPanel getGraphPanel() {
+        return graphPanel;
+    }
+
+    public boolean addChartSelectionListener(ChartSelectionListener listener) {
+        return graphPanel.addChartSelectionListener(listener);
+    }
+
+    public boolean removeChartSelectionListener(ChartSelectionListener listener) {
+        return graphPanel.removeChartSelectionListener(listener);
+    }
+
+    public void removeAllChartSelectionListeners() {
+        graphPanel.removeAllChartSelectionListeners();
     }
 
     /** This method is called from within the constructor to
@@ -49,6 +70,20 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         jPopupMenu1 = new javax.swing.JPopupMenu();
         jSeparator1 = new javax.swing.JSeparator();
         graphPanel = new interactive.analyzer.graph.GraphPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        tagNameField = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        colorThumbnail = new javax.swing.JPanel();
+        colorChooserButton = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea2 = new javax.swing.JTextArea();
+        deleteButton = new javax.swing.JButton();
+        saveButton = new javax.swing.JButton();
+        addTagButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         Save = new javax.swing.JMenuItem();
@@ -67,11 +102,124 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         graphPanel.setLayout(graphPanelLayout);
         graphPanelLayout.setHorizontalGroup(
             graphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 408, Short.MAX_VALUE)
         );
         graphPanelLayout.setVerticalGroup(
             graphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 249, Short.MAX_VALUE)
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Tags"));
+
+        jLabel1.setText("Name:");
+
+        jLabel2.setText("Description:");
+
+        jLabel3.setText("Color:");
+
+        colorThumbnail.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout colorThumbnailLayout = new javax.swing.GroupLayout(colorThumbnail);
+        colorThumbnail.setLayout(colorThumbnailLayout);
+        colorThumbnailLayout.setHorizontalGroup(
+            colorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 25, Short.MAX_VALUE)
+        );
+        colorThumbnailLayout.setVerticalGroup(
+            colorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 23, Short.MAX_VALUE)
+        );
+
+        colorChooserButton.setText("Choose");
+
+        jTextArea2.setColumns(20);
+        jTextArea2.setRows(5);
+        jScrollPane2.setViewportView(jTextArea2);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tagNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(colorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(colorChooserButton))
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(0, 0, Short.MAX_VALUE))))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(tagNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(colorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(colorChooserButton))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2)))
+        );
+
+        deleteButton.setText("Delete");
+
+        saveButton.setText("Save");
+
+        addTagButton.setText("Add");
+
+        jButton1.setText("Clear");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(addTagButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(saveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(addTagButton)
+                        .addGap(18, 18, 18)
+                        .addComponent(saveButton)
+                        .addGap(18, 18, 18)
+                        .addComponent(deleteButton))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         fileMenu.setText("File");
@@ -104,8 +252,9 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 401, Short.MAX_VALUE)
-            .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jSeparator1)
+            .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -113,7 +262,8 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
                 .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 129, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -132,7 +282,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             File file = fc.getSelectedFile();
 
             try {
-                graphPanel.save(file, (GraphPanel.ImageFileFilter) fc.getFileFilter());
+                graphPanel.save(file, (ImageFileFilter) fc.getFileFilter());
             } catch (IOException ex) {
             }
         }
@@ -149,6 +299,11 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             graphPanel.updatePaint();
         }
     }//GEN-LAST:event_sortingMenuItemActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        graphPanel.clearAllSelections();
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -203,12 +358,26 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Save;
+    private javax.swing.JButton addTagButton;
+    private javax.swing.JButton colorChooserButton;
+    private javax.swing.JPanel colorThumbnail;
+    private javax.swing.JButton deleteButton;
     private javax.swing.JMenu fileMenu;
     private interactive.analyzer.graph.GraphPanel graphPanel;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPopupMenu jPopupMenu1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTextArea jTextArea2;
+    private javax.swing.JButton saveButton;
     private javax.swing.JRadioButtonMenuItem sortingMenuItem;
+    private javax.swing.JTextField tagNameField;
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
 }

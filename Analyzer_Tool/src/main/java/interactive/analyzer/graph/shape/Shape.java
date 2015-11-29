@@ -11,10 +11,16 @@ public abstract class Shape {
 
     private int ID;
     private String textTooltip;
+    private double value;
     private boolean isSelected;
     private Color bgColor = new Color(0, 0, 139);
     private Color borderColor = Color.WHITE;
     private Color selectionColor = Color.RED;
+
+    public Shape(int ID, double value) {
+        this.ID = ID;
+        this.value = value;
+    }
 
     public int getID() {
         return ID;
@@ -54,6 +60,10 @@ public abstract class Shape {
 
     public void setTooltipText(String tooltip) {
         this.textTooltip = tooltip;
+    }
+
+    public double getValue() {
+        return value;
     }
 
     /**

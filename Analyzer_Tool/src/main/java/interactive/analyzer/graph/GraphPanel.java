@@ -37,11 +37,10 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     private boolean mousePressed = false;
     private Chart chart;
     private boolean draggedSelection = false;
-    private double downRangeValue;
-    private double upperRangeValue;
     private Color selectionColor;
     private List<Shape> selectionByDragged;
     private List<ChartSelectionListener> selectionListeners;
+
     private ImageFileFilter[] filefilters = new ImageFileFilter[]{
         new ImageFileFilter("png"),
         new ImageFileFilter("jpg"),
@@ -94,6 +93,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                         logger.trace("mousePressed: " + mousePressed);
                         boolean select = !deselectionModeIsOn;
                         shape.setSelected(select);
+                        shape.setSelectionColor(selectionColor);
 
                         //needed to repaint canvas
                         updatePaint();
@@ -126,6 +126,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                     logger.trace(shape.getID() + ", " + shape.getTooltipText());
                     boolean select = !shape.isSelected();
                     shape.setSelected(select);
+                    shape.setSelectionColor(selectionColor);
 
                     for (ChartSelectionListener listener : selectionListeners) {
                         if (select) {
@@ -145,11 +146,6 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
             public void mousePressed(MouseEvent e) {
                 logger.trace("" + e.getPoint());
                 mousePressed = true;
-
-                Shape shape = getShapeAtPoint(e.getPoint());
-                if (shape != null) {
-                    downRangeValue = shape.getValue();
-                }
             }
 
             @Override
@@ -159,7 +155,6 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                 //multiple selection by mouse dragged
                 Shape shape = getShapeAtPoint(e.getPoint());
                 if (shape != null) {
-                    upperRangeValue = shape.getValue();
                     if (draggedSelection) {
                         boolean select = shape.isSelected();
 
@@ -281,6 +276,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         for (Shape shape : chart.getDrawShapes()) {
             if (shape.getValue() == value) {
                 shape.setSelected(true);
+                shape.setSelectionColor(selectionColor);
             }
         }
         updatePaint();

@@ -11,6 +11,7 @@ import interactive.analyzer.listeners.ChartSelectionListener;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
@@ -24,6 +25,8 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     //TODO create barchart from selected lines
     //TODO dynamic resize margins due to label
     private static Logger logger = Logger.getLogger(ObjectFilteringFrame.class);
+    private static final Color DEFAULT_SELECTION_COLOR = Color.red;
+
     private DataSet originChartData;
     private Color currentSelectionColor = Color.red;
 
@@ -33,6 +36,8 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     public ObjectFilteringFrame() {
         initComponents();
         graphPanel.setSelectionColor(currentSelectionColor);
+        colorThumbnail.setBackground(DEFAULT_SELECTION_COLOR);
+        this.setLocationRelativeTo(null);
         logger.trace("Frame width=" + getWidth() + ", height=" + getHeight());
     }
 
@@ -83,7 +88,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         deleteButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
         addTagButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        clearButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         Save = new javax.swing.JMenuItem();
@@ -131,6 +136,11 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         );
 
         colorChooserButton.setText("Choose");
+        colorChooserButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                colorChooserButtonActionPerformed(evt);
+            }
+        });
 
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
@@ -183,10 +193,10 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
         addTagButton.setText("Add");
 
-        jButton1.setText("Clear");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        clearButton.setText("Clear");
+        clearButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                clearButtonActionPerformed(evt);
             }
         });
 
@@ -202,7 +212,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
                     .addComponent(addTagButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(saveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(clearButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -211,7 +221,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1)
+                        .addComponent(clearButton)
                         .addGap(18, 18, 18)
                         .addComponent(addTagButton)
                         .addGap(18, 18, 18)
@@ -300,10 +310,17 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_sortingMenuItemActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         graphPanel.clearAllSelections();
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_clearButtonActionPerformed
+
+    private void colorChooserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooserButtonActionPerformed
+        currentSelectionColor = JColorChooser.showDialog(null,
+                "Color chooser", DEFAULT_SELECTION_COLOR);
+        colorThumbnail.setBackground(currentSelectionColor);
+        graphPanel.setSelectionColor(currentSelectionColor);
+    }//GEN-LAST:event_colorChooserButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -360,12 +377,12 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Save;
     private javax.swing.JButton addTagButton;
+    private javax.swing.JButton clearButton;
     private javax.swing.JButton colorChooserButton;
     private javax.swing.JPanel colorThumbnail;
     private javax.swing.JButton deleteButton;
     private javax.swing.JMenu fileMenu;
     private interactive.analyzer.graph.GraphPanel graphPanel;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -1,11 +1,13 @@
 package interactive.analyzer.result.table;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 import org.apache.log4j.Logger;
 
 /**
@@ -22,6 +24,7 @@ public class AfmAnalyzerResultTable extends JTable {
     private List<String> headerTooltips = new ArrayList<>();
     private List<ColorizedTableSelection> tableSelectionList = new ArrayList<>();
     private static final Color DEFAULT_BACKGROUND_ROW_COLOR = Color.WHITE;
+    private static final Color DEFAULT_SELECTION_COLOR = new Color(187, 207, 229);
 
     public List<String> getTooltips() {
         return headerTooltips;
@@ -130,25 +133,30 @@ public class AfmAnalyzerResultTable extends JTable {
         super.clearSelection();
     }
 
-//    @Override
-//    public Component prepareRenderer(TableCellRenderer renderer, int row,
-//            int column) {
-//        //Get component for current row
-//        Component comp = super.prepareRenderer(renderer, row, column);
-//        Color background = comp.getBackground();
-//
-//        Color selectionColor = DEFAULT_BACKGROUND_ROW_COLOR;
-//        for (ColorizedTableSelection ts : tableSelectionList) {
-//            if (ts.containsRow(row)) {
-//                selectionColor = ts.getColorForRow(row);
-//            }
-//        }
-//        if (selectionColor == null) {
-//            selectionColor = DEFAULT_BACKGROUND_ROW_COLOR;
-//        }
-//        comp.setBackground(selectionColor);
-//        return comp;
-//    }
+    @Override
+    public Component prepareRenderer(TableCellRenderer renderer, int row,
+            int column) {
+        //Get component for current row
+        Component comp = super.prepareRenderer(renderer, row, column);
+        Color background = comp.getBackground();
+        logger.trace(background);
+
+        Color selectionColor = null;
+        for (ColorizedTableSelection ts : tableSelectionList) {
+            if (ts.containsRow(row)) {
+                selectionColor = ts.getColorForRow(row);
+            }
+        }
+        if (selectionColor == null && isRowSelected(row)) {
+            selectionColor = DEFAULT_SELECTION_COLOR;
+        }
+        if (selectionColor == null) {
+            selectionColor = DEFAULT_BACKGROUND_ROW_COLOR;
+        }
+        comp.setBackground(selectionColor);
+        return comp;
+    }
+
     private void rowBounds(int row) throws IllegalArgumentException {
         if (row < 0 || row > (getRowCount() - 1)) {
             throw new IllegalArgumentException("Row index is out of range");

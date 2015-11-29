@@ -22,10 +22,12 @@ import org.apache.log4j.Logger;
 public class BarChart implements Chart {
 
     private Logger logger = Logger.getLogger(BarChart.class);
-    private static int TEXT_MARGIN = 3;
-    private static int GRAPH_MARGIN = 3;
-    private int margin = 35;
+    private static final int BOTTOM_OFFSET_UP = 10;
+    private static final int TEXT_MARGIN = 3;
+    private static final int GRAPH_MARGIN = 3;
 
+    private String columnName = "";
+    private int margin = 35;
     private int chartHeight;
     private int chartWidth;
     private int barWidth;
@@ -39,9 +41,13 @@ public class BarChart implements Chart {
 
     @Override
     public void loadData(DataSet dataSet) {
-//        logger.trace("median: " + dataSet.getMedian());
         this.data = dataSet;
         prepareShapes(!shapes.isEmpty());
+    }
+
+    @Override
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
     }
 
     @Override
@@ -49,6 +55,11 @@ public class BarChart implements Chart {
         return data;
     }
 
+    /**
+     * Prepare shapes representing bars in graph. If sorting was performed after
+     * selection then selection will be visible after sorting
+     * @param selectPreviousSelected
+     */
     private void prepareShapes(boolean selectPreviousSelected) {
         if (data == null || this.data.getPairs().isEmpty()) {
             return;
@@ -61,14 +72,14 @@ public class BarChart implements Chart {
         barWidth = (chartWidth - 2 * GRAPH_MARGIN) / dataSize;
 //        logger.trace("barWidth=" + barWidth);
         for (int i = 0; i < dataSize; i++) {
-            double value = pairs.get(i).getValue();
+            Pair p = pairs.get(i);
+            double value = p.getValue();
             logger.trace(i + ", " + value);
-            int id = pairs.get(i).getID();
-            Bar bar = new Bar(id, value);
+            Bar bar = new Bar(p.getID(), value, p.getCount());
             bar.setTooltipText(value + "");
 
             if (selectPreviousSelected) {
-//                logger.trace("Selecting previous selected bars");
+                //reselecting selected shapes before sorting
                 for (Shape shape : oldShape) {
                     if (bar.getID() == shape.getID()) {
                         bar.setSelected(shape.isSelected());
@@ -88,13 +99,13 @@ public class BarChart implements Chart {
 
     @Override
     public void draw(Graphics2D g, Dimension area) {
-//        logger.debug("width " + area.width + ", height " + area.height);
+        logger.debug("width " + area.width + ", height " + area.height);
         FontMetrics metrics = g.getFontMetrics();
-        margin = 2 * metrics.getHeight() + 3 * TEXT_MARGIN;
 
+        margin = 2 * metrics.getHeight() + 3 * TEXT_MARGIN;
         chartWidth = area.width - 2 * margin;
         chartHeight = area.height - 2 * margin;
-//        logger.trace("chart margin=" + margin + ", chart width=" + chartWidth + ", chart height=" + chartHeight);
+        logger.trace("chart margin=" + margin + ", chart width=" + chartWidth + ", chart height=" + chartHeight);
 
         int countOfBars = shapes.size();
         barWidth = (chartWidth - 2 * GRAPH_MARGIN) / countOfBars;
@@ -111,13 +122,25 @@ public class BarChart implements Chart {
         //draw x axis enumeration
         int enumerationMargin = chartWidth / countOfBars;
         for (int i = 0; i < countOfBars; i++) {
-            g.drawString(i + "", barWidth / 2 + enumerationMargin * i - metrics.stringWidth(i + "") / 2, metrics.getHeight() + TEXT_MARGIN);
+            int count = shapes.get(i).getCount();
+            int xPos = GRAPH_MARGIN + barWidth / 2 + enumerationMargin * i - metrics.stringWidth(count + "") / 2;
+            int yPos = metrics.getHeight() + TEXT_MARGIN;
+            if (i % 2 == 0) {
+                g.drawString(count + "", xPos, yPos);
+                g.drawLine(xPos + metrics.stringWidth(count + "") / 2, 0, xPos + metrics.stringWidth(count + "") / 2, TEXT_MARGIN);
+            } else {
+                g.drawString(count + "", xPos, yPos + metrics.getHeight());
+                g.drawLine(xPos + metrics.stringWidth(count + "") / 2, 0, xPos + metrics.stringWidth(count + "") / 2, yPos - TEXT_MARGIN);
+            }
         }
-        //draw x axe description
-        g.drawString("Values", chartWidth / 2 - metrics.stringWidth("Values") / 2, 2 * metrics.getHeight() + 2 * TEXT_MARGIN);
 
-        //draw y axe description
-        drawStringRotated(g, (double) -2 * metrics.getHeight() + TEXT_MARGIN, (double) -chartHeight / 2 + metrics.stringWidth(getColumnDataName()) / 2, -90, getColumnDataName());
+        //draw x "Counts" axe description
+//        g.drawString("Counts", chartWidth / 2 - metrics.stringWidth("Values") / 2, 2 * metrics.getHeight() + 2 * TEXT_MARGIN);
+        g.drawString("Counts", -37, 22);
+
+        //draw y "Column date" axe description
+//        drawStringRotated(g, (double) -2 * metrics.getHeight() + TEXT_MARGIN, (double) -chartHeight / 2 + metrics.stringWidth(columnName) / 2, -90, columnName);
+        g.drawString(columnName, -37, -area.height + margin + metrics.getHeight());
 
         int numberOfYAxisLabels = 3;
         //draw y axis enumeration
@@ -142,25 +165,21 @@ public class BarChart implements Chart {
 
     private double linearStretch(double toDimensionMax, double toDimensionMin,
             double currentDimensionMax, double currentDimensionMin, double val) {
-//        double toDimensionMax = 255;
-//        double toDimensionMin = 0;
-//
-//        double currentDimensionMax = 65;
-//        double currentDimensionMin = 60;
+
         return (val - currentDimensionMin) * ((toDimensionMax - toDimensionMin) / (currentDimensionMax - currentDimensionMin)) + toDimensionMin;
     }
 
     private void drawShapes(Graphics2D g) {
         int shapeSize = shapes.size();
         barWidth = (chartWidth - 2 * GRAPH_MARGIN) / shapeSize;
-//        logger.trace("barWidth=" + barWidth);
+
         List<Pair> pairs = this.data.getPairs();
         for (int i = 0; i < shapeSize; i++) {
             double value = pairs.get(i).getValue();
             double barHeight = 0;
 
             if (value <= data.getMedian()) {
-                //draw data less equalt to median in down half graph
+                //draw data less or equal to median in down half graph
                 barHeight = linearStretch((chartHeight / 2) - 2 * GRAPH_MARGIN, BOTTOM_OFFSET_UP, data.getMedian(), data.getMinValue(), value);
             } else {
                 //draw data greater then median in upper half graph
@@ -170,7 +189,6 @@ public class BarChart implements Chart {
             shapes.get(i).draw(g);
         }
     }
-    private static final int BOTTOM_OFFSET_UP = 10;
 
     private static void drawStringRotated(Graphics2D g2d, double x, double y,
             int angle,
@@ -180,10 +198,6 @@ public class BarChart implements Chart {
         g2d.drawString(text, 0, 0);
         g2d.rotate(-Math.toRadians(angle));
         g2d.translate(-(float) x, -(float) y);
-    }
-
-    private static String getColumnDataName() {
-        return "Column_name";
     }
 
     @Override

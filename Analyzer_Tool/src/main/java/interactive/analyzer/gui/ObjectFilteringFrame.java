@@ -33,7 +33,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     public ObjectFilteringFrame() {
         initComponents();
         graphPanel.setSelectionColor(currentSelectionColor);
-        logger.trace("Frame width" + getWidth() + ", height=" + getHeight());
+        logger.trace("Frame width=" + getWidth() + ", height=" + getHeight());
     }
 
     public void addChart(Chart chart) {
@@ -337,6 +337,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             public void run() {
                 ObjectFilteringFrame frame = new ObjectFilteringFrame();
                 Chart chart = new BarChart();
+                chart.setColumnName("Column name");
                 DataSet dataSet = new DataSet();
                 dataSet.setMinValue(35);
                 dataSet.setMaxValue(140);

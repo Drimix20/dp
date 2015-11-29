@@ -27,6 +27,12 @@ public interface Chart {
     public void loadData(DataSet dataSet);
 
     /**
+     * Set column name of drawing data
+     * @param columnName column name
+     */
+    public void setColumnName(String columnName);
+
+    /**
      * Retrieve data from chart
      * @return data
      */

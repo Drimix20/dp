@@ -10,16 +10,19 @@ import java.awt.Graphics2D;
 public abstract class Shape {
 
     private int ID;
-    private String textTooltip;
     private double value;
+    private int count;
+    private String textTooltip;
+
     private boolean isSelected;
     private Color bgColor = new Color(0, 0, 139);
     private Color borderColor = Color.WHITE;
     private Color selectionColor = Color.RED;
 
-    public Shape(int ID, double value) {
+    public Shape(int ID, double value, int count) {
         this.ID = ID;
         this.value = value;
+        this.count = count;
     }
 
     public int getID() {
@@ -64,6 +67,10 @@ public abstract class Shape {
 
     public double getValue() {
         return value;
+    }
+
+    public int getCount() {
+        return count;
     }
 
     /**

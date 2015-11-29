@@ -442,6 +442,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         frame.addChartSelectionListener(this);
         this.addTableSelectionListener((TableSelectionListener) frame.getGraphPanel());
         Chart chart = new BarChart();
+        chart.setColumnName(selectedColumnName);
         chart.loadData(DataStatistics.computeDataSetFromTable(columnData));
         frame.addChart(chart);
         frame.setVisible(true);

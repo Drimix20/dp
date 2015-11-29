@@ -12,6 +12,7 @@
     <logger name="interactive.analyzer.result.table.AfmAnalyzerResultTable"><level value="trace"/></logger>
     <logger name="interactive.analyzer.result.table.AfmAnalyzerResultFrame"><level value="trace"/></logger>
     <logger name="interactive.analyzer.graph.GraphPanel"><level value="trace"/></logger>
+    <logger name="interactive.analyzer.graph.BarChart"><level value="trace"/></logger>
     <!--<logger name="interactive.analyzer.presenter"><level value="trace"/></logger>-->
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>

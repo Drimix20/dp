@@ -138,19 +138,20 @@ public class AfmAnalyzerResultTable extends JTable {
             int column) {
         //Get component for current row
         Component comp = super.prepareRenderer(renderer, row, column);
-        Color background = comp.getBackground();
-        logger.trace(background);
 
         Color selectionColor = null;
+        //row can be in selected range
         for (ColorizedTableSelection ts : tableSelectionList) {
             if (ts.containsRow(row)) {
                 selectionColor = ts.getColorForRow(row);
             }
         }
         if (selectionColor == null && isRowSelected(row)) {
+            //selection performed by click on table row
             selectionColor = DEFAULT_SELECTION_COLOR;
         }
         if (selectionColor == null) {
+            //row is not selected
             selectionColor = DEFAULT_BACKGROUND_ROW_COLOR;
         }
         comp.setBackground(selectionColor);

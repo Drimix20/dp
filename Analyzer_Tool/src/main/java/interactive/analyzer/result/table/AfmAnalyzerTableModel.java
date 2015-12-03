@@ -92,7 +92,7 @@ public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
         logger.trace("Get value from row " + rowIndex + " and column " + columnIndex);
 
         if (rowIndex < 0 || rowIndex > data.length || columnIndex < 0 || columnIndex > columnNames.length) {
-            throw new IllegalArgumentException("Row index or column index is out of range.");
+            throw new IllegalArgumentException("Row index or column index is out of range: row=" + rowIndex + ", col=" + columnIndex);
         }
 
         return data[rowIndex][columnIndex];

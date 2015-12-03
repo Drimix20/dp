@@ -103,4 +103,11 @@ public abstract class AbstractAfmTableModel extends AbstractTableModel {
      */
     public abstract int getColumnIndexByName(String columnName);
 
+    /**
+     * Force firing TableDataChanged event
+     */
+    public void forceFireDataChanged() {
+        fireTableDataChanged();
+    }
+
 }

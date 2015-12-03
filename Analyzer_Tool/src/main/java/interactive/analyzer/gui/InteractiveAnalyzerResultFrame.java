@@ -10,6 +10,7 @@ import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.listeners.RoiSelectedListener;
 import interactive.analyzer.listeners.TableSelectionListener;
+import interactive.analyzer.result.table.DecimalPrecisionRenderer;
 import java.awt.Color;
 import java.awt.Rectangle;
 import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
@@ -33,9 +34,9 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListener, ChartSelectionListener {
+public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelectedListener, ChartSelectionListener {
 
-    private static Logger logger = Logger.getLogger(AfmAnalyzerResultFrame.class);
+    private static Logger logger = Logger.getLogger(InteractiveAnalyzerResultFrame.class);
 
     //TODO not show other window after recomputation is performed
     //TODO implement export - save as (csv), show as ImageJ's ResultsTable
@@ -65,7 +66,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
      * @param tableColumnNames
      * @param tableHeaderTooltips tooltips for header row
      */
-    public AfmAnalyzerResultFrame(List<String> tableColumnNames,
+    public InteractiveAnalyzerResultFrame(List<String> tableColumnNames,
             List<String> tableHeaderTooltips) {
         this.tableColumnNames = tableColumnNames;
         this.tableHeaderTooltips = tableHeaderTooltips;
@@ -79,7 +80,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
      * @param tableHeaderTooltips
      @param tableModel table model defined by user
      */
-    public AfmAnalyzerResultFrame(List<String> tableHeaderTooltips,
+    public InteractiveAnalyzerResultFrame(List<String> tableHeaderTooltips,
             AbstractAfmTableModel tableModel) {
         this.tableHeaderTooltips = tableHeaderTooltips;
         this.tableModel = tableModel;
@@ -94,7 +95,8 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
      @param table table defined by user
      @param tableModel table model defined by user
      */
-    public AfmAnalyzerResultFrame(JTable table, AbstractAfmTableModel tableModel) {
+    public InteractiveAnalyzerResultFrame(JTable table,
+            AbstractAfmTableModel tableModel) {
         this.jTable1 = table;
         this.tableModel = tableModel;
         this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
@@ -157,6 +159,7 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
             jTable1 = new AfmAnalyzerResultTable();
             jTable1.setColumnSelectionAllowed(false);
             jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+            //jTable1.setDefaultRenderer(Object.class, new DecimalPrecisionRenderer());
             jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
                 @Override
@@ -317,11 +320,16 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        optionMeniItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("AFM Analyzer Results");
 
         jTable1.setModel(getTableModelInstance());
+        //set DecimalPrecisonRenderer for all columns but first. First column is column with RowID
+        for (int i = 1; i < jTable1.getColumnCount(); i++) {
+            jTable1.getColumnModel().getColumn(i).setCellRenderer(new DecimalPrecisionRenderer());
+        }
         jTable1.setAutoResizeMode(jTable1.getAutoResizeMode());
         jTable1.setFillsViewportHeight(true);
         jTable1.getTableHeader().setReorderingAllowed(false);
@@ -389,8 +397,16 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Options");
-        jMenu2.setEnabled(false);
+        jMenu2.setText("Edit");
+
+        optionMeniItem.setText("Options");
+        optionMeniItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionMeniItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(optionMeniItem);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -456,6 +472,14 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
         }
     }//GEN-LAST:event_clearSelectionsButtonActionPerformed
 
+    private void optionMeniItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionMeniItemActionPerformed
+        OptionsFrame frame = new OptionsFrame(this, true);
+        frame.setLocationRelativeTo(this);
+        frame.setVisible(true);
+
+        ((AbstractAfmTableModel) tableModel).forceFireDataChanged();
+    }//GEN-LAST:event_optionMeniItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -473,20 +497,21 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AfmAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AfmAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AfmAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AfmAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                AfmAnalyzerResultFrame frame = new AfmAnalyzerResultFrame(Arrays.asList("A", "b", "C", "D"), new AfmAnalyzerTableModel());
+                InteractiveAnalyzerResultFrame frame = new InteractiveAnalyzerResultFrame(Arrays.asList("A", "b", "C", "D"), new AfmAnalyzerTableModel());
                 frame.setVisible(true);
             }
         });
@@ -504,5 +529,6 @@ public class AfmAnalyzerResultFrame extends JFrame implements RoiSelectedListene
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JMenuItem optionMeniItem;
     // End of variables declaration//GEN-END:variables
 }

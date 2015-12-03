@@ -3,7 +3,7 @@ package interactive.analyzer;
 import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
-import interactive.analyzer.gui.AfmAnalyzerResultFrame;
+import interactive.analyzer.gui.InteractiveAnalyzerResultFrame;
 import interactive.analyzer.listeners.RoiSelectedListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.presenter.ImageWindowI;
@@ -22,7 +22,7 @@ public class InteractiveAnalyzer {
     private RoiManager roiManager;
     private AfmAnalyzerResultTable resultTable;
     private ImageWindowI imageWindow;
-    private AfmAnalyzerResultFrame resultFrame;
+    private InteractiveAnalyzerResultFrame resultFrame;
 
     public InteractiveAnalyzer(ResultsTable ijResultTable, RoiManager roiManager,
             ImagePlus img) {
@@ -36,7 +36,7 @@ public class InteractiveAnalyzer {
             throw new IllegalArgumentException("Image can't be null");
         }
         AfmAnalyzerTableModel tableModel = TableUtils.convertResultTableToInteractiveResultTable(ijResultTable);
-        resultFrame = new AfmAnalyzerResultFrame(Collections.EMPTY_LIST, tableModel);
+        resultFrame = new InteractiveAnalyzerResultFrame(Collections.EMPTY_LIST, tableModel);
 
         imageWindow = new InteractiveImageWindow();
         imageWindow.setImagesToShow(img);
@@ -47,7 +47,7 @@ public class InteractiveAnalyzer {
         this.roiManager = roiManager;
     }
 
-    public InteractiveAnalyzer(AfmAnalyzerResultFrame resultFrame,
+    public InteractiveAnalyzer(InteractiveAnalyzerResultFrame resultFrame,
             ImageWindowI imageWindow) {
         if (resultFrame == null) {
             throw new IllegalArgumentException("Result frame is null");

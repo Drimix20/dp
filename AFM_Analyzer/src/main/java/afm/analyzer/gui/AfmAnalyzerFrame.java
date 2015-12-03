@@ -1,6 +1,6 @@
 package afm.analyzer.gui;
 
-import interactive.analyzer.gui.AfmAnalyzerResultFrame;
+import interactive.analyzer.gui.InteractiveAnalyzerResultFrame;
 import afm.analyzer.measurements.AbstractMeasurement;
 import afm.analyzer.measurements.MeasurementComputation;
 import interactive.analyzer.presenter.InteractiveImageWindow;
@@ -320,7 +320,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
             }
             afmAnalyzerResult.put(channelContainer.getFile().getName(), measurementResultsForImage);
         }
-        AfmAnalyzerResultFrame resultFrame = new AfmAnalyzerResultFrame(resultTableHeader, Collections.EMPTY_LIST);
+        InteractiveAnalyzerResultFrame resultFrame = new InteractiveAnalyzerResultFrame(resultTableHeader, Collections.EMPTY_LIST);
         resultFrame.setAnalyzerValues(afmAnalyzerResult);
         analyzerImageWindow.setImagesSegments(segmentImages);
         resultFrame.addTableSelectionListener((TableSelectionListener) this.analyzerImageWindow);

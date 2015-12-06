@@ -56,6 +56,7 @@ public class Analyzer_Tool implements PlugIn {
         Prefs.blackBackground = false;
         IJ.run(heightImg, "Convert to Mask", "");
         //Compute default measurements and show results table and roi manager
+        IJ.run("Set Measurements...", "area mean center fit feret's redirect=None decimal=0");
         IJ.run(heightImg, "Analyze Particles...", "display add");
         //Compute default measurements and show just results
         //IJ.run(heightImg, "Analyze Particles...", "display");

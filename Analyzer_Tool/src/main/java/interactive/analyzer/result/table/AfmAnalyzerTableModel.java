@@ -91,7 +91,7 @@ public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         logger.trace("Get value from row " + rowIndex + " and column " + columnIndex);
 
-        if (rowIndex < 0 || rowIndex > data.length || columnIndex < 0 || columnIndex > columnNames.length) {
+        if (rowIndex < 0 || rowIndex > data.length - 1 || columnIndex < 0 || columnIndex > columnNames.length - 1) {
             throw new IllegalArgumentException("Row index or column index is out of range: row=" + rowIndex + ", col=" + columnIndex);
         }
 
@@ -125,6 +125,9 @@ public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
 
     @Override
     public int getColumnIndexByName(String columnName) {
+        if (data == null || data.length == 0) {
+            return -1;
+        }
         int columnIndex = -1;
         for (int i = 0; i < columnNames.length; i++) {
             if (columnNames[i].equals(columnName)) {

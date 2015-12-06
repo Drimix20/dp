@@ -11,7 +11,7 @@ public abstract class Shape {
 
     private int ID;
     private double value;
-    private int count;
+    private int occurence;
     private String textTooltip;
 
     private boolean isSelected;
@@ -19,10 +19,12 @@ public abstract class Shape {
     private Color borderColor = Color.WHITE;
     private Color selectionColor = Color.RED;
 
-    public Shape(int ID, double value, int count) {
+    public Shape(int ID, double value, int occurence) {
         this.ID = ID;
         this.value = value;
-        this.count = count;
+        this.occurence = occurence;
+        this.textTooltip = "<html>value: " + value + "<br>count: " + occurence
+                + "</html>";
     }
 
     public int getID() {
@@ -69,8 +71,8 @@ public abstract class Shape {
         return value;
     }
 
-    public int getCount() {
-        return count;
+    public int getOccurence() {
+        return occurence;
     }
 
     /**
@@ -124,8 +126,14 @@ public abstract class Shape {
      * Check if point [x,y] is in shape
      * @param x
      * @param y
-     @return
+     @return true if point is in shape otherwise false
      */
     public abstract boolean contains(double x, double y);
 
+    /**
+     * Check if point x coordinate is in shape
+     * @param x
+     @return true if x coordinate is in shape otherwise false
+     */
+    public abstract boolean cross(double x);
 }

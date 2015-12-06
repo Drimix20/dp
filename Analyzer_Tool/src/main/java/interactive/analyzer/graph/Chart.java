@@ -1,6 +1,6 @@
 package interactive.analyzer.graph;
 
-import interactive.analyzer.graph.data.DataSet;
+import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.shape.Shape;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -24,7 +24,13 @@ public interface Chart {
      * Method for loading data to draw from dataset
      * @param dataSet
      */
-    public void loadData(DataSet dataSet);
+    public void loadData(HistogramDataSet dataSet);
+
+    /**
+     * Method for loading column data to draw as chart.
+     * @param columnData
+     */
+    public void loadData(Object[] columnData);
 
     /**
      * Set column name of drawing data
@@ -36,7 +42,7 @@ public interface Chart {
      * Retrieve data from chart
      * @return data
      */
-    public DataSet getData();
+    public HistogramDataSet getData();
 
     /**
      * Return shapes draw on canvas

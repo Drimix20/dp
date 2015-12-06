@@ -4,9 +4,9 @@ import interactive.analyzer.file.tools.ImageFileFilter;
 import interactive.analyzer.graph.BarChart;
 import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.GraphPanel;
-import interactive.analyzer.graph.data.DataSet;
+import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.DataStatistics;
-import interactive.analyzer.graph.data.Pair;
+import interactive.analyzer.graph.data.HistogramPair;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import java.awt.Color;
 import java.io.File;
@@ -22,12 +22,11 @@ import org.apache.log4j.Logger;
  */
 public class ObjectFilteringFrame extends javax.swing.JFrame {
 
-    //TODO create barchart from selected lines
     //TODO dynamic resize margins due to label
     private static Logger logger = Logger.getLogger(ObjectFilteringFrame.class);
     private static final Color DEFAULT_SELECTION_COLOR = Color.red;
 
-    private DataSet originChartData;
+    private HistogramDataSet originChartData;
     private Color currentSelectionColor = Color.red;
 
     /**
@@ -72,7 +71,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPopupMenu1 = new javax.swing.JPopupMenu();
         jSeparator1 = new javax.swing.JSeparator();
         graphPanel = new interactive.analyzer.graph.GraphPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -95,7 +93,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         viewMenu = new javax.swing.JMenu();
         sortingMenuItem = new javax.swing.JRadioButtonMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Object's filtering");
 
         graphPanel.setMinimumSize(new java.awt.Dimension(401, 249));
@@ -170,9 +168,9 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -300,8 +298,8 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
     private void sortingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortingMenuItemActionPerformed
         if (sortingMenuItem.isSelected()) {
-            DataSet dataCopy = DataStatistics.createNewInstanceOfData(originChartData);
-            dataCopy.sortPairsData();
+            HistogramDataSet dataCopy = DataStatistics.createNewInstanceOfData(originChartData);
+            dataCopy.sortHistogramPairs();
             graphPanel.getChart().loadData(dataCopy);
             graphPanel.updatePaint();
         } else {
@@ -354,18 +352,20 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             public void run() {
                 ObjectFilteringFrame frame = new ObjectFilteringFrame();
                 Chart chart = new BarChart();
-                chart.setColumnName("Column name");
-                DataSet dataSet = new DataSet();
+                chart.setColumnName("ColumnA");
+                HistogramDataSet dataSet = new HistogramDataSet();
                 dataSet.setMinValue(35);
                 dataSet.setMaxValue(140);
-                dataSet.addPair(new Pair(1, 60, 1));
-                dataSet.addPair(new Pair(1, 40, 2));
-                dataSet.addPair(new Pair(1, 80, 3));
-                dataSet.addPair(new Pair(1, 120, 4));
-                dataSet.addPair(new Pair(1, 140, 5));
-                dataSet.addPair(new Pair(1, 35, 6));
-                dataSet.addPair(new Pair(1, 110, 7));
-                dataSet.setMedian(80);
+                dataSet.setMinOccurence(1);
+                dataSet.setMaxOccurence(6);
+                dataSet.addPair(new HistogramPair(1, 60, 1));
+                dataSet.addPair(new HistogramPair(2, 40, 2));
+                dataSet.addPair(new HistogramPair(3, 80, 3));
+                dataSet.addPair(new HistogramPair(4, 120, 1));
+                dataSet.addPair(new HistogramPair(5, 140, 5));
+                dataSet.addPair(new HistogramPair(6, 35, 6));
+                dataSet.addPair(new HistogramPair(7, 110, 1));
+                dataSet.setMedianValue(80);
 
                 chart.loadData(dataSet);
                 frame.addChart(chart);
@@ -389,7 +389,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextArea jTextArea2;

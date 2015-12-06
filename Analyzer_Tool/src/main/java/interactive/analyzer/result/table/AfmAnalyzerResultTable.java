@@ -44,7 +44,9 @@ public class AfmAnalyzerResultTable extends JTable {
         return new JTableHeader(columnModel) {
             @Override
             public String getToolTipText(MouseEvent e) {
-                //String tip = null;
+                if (headerTooltips.isEmpty()) {
+                    return "";
+                }
                 java.awt.Point p = e.getPoint();
                 int index = columnModel.getColumnIndexAtX(p.x);
                 int realIndex = columnModel.getColumn(index).getModelIndex();

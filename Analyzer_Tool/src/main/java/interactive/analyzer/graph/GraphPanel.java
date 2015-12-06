@@ -218,7 +218,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         }
         Point p2 = chart.scaleToGraphCanvasCoords(p.getX(), p.getY());
         for (Shape shape : chart.getDrawShapes()) {
-            if (shape.contains(p2.getX(), p2.getY())) {
+            if (shape.cross(p2.getX())) {
                 return shape;
             }
         }

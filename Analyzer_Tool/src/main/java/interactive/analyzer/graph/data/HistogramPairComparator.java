@@ -6,10 +6,10 @@ import java.util.Comparator;
  *
  * @author Drimal
  */
-public class PairComparator implements Comparator<Pair> {
+public class HistogramPairComparator implements Comparator<HistogramPair> {
 
     @Override
-    public int compare(Pair o1, Pair o2) {
+    public int compare(HistogramPair o1, HistogramPair o2) {
         return Double.compare(o1.getValue(), o2.getValue());
     }
 

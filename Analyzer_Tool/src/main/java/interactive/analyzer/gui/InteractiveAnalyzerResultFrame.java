@@ -2,7 +2,11 @@ package interactive.analyzer.gui;
 
 import interactive.analyzer.graph.BarChart;
 import interactive.analyzer.graph.Chart;
+import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.DataStatistics;
+import interactive.analyzer.graph.data.StatisticsTool;
+import interactive.analyzer.histogram.Histogram;
+import interactive.analyzer.histogram.HistogramOptionDialog;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.result.table.AbstractAfmTableModel;
 import interactive.analyzer.result.table.AbstractMeasurementResult;
@@ -53,6 +57,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     private Color defaultSelectionColor;
     private Map<String, List<AbstractMeasurementResult>> analyzerValues;
     private List<TableSelectionListener> tableSelectionListeners = new ArrayList<>();
+    private ObjectFilteringFrame objectFilteringFrame;
+    private Chart chart;
 
     private boolean notificationSendViaChartListener = false;
     private boolean shiftIsDown = false;
@@ -170,6 +176,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
                     }
 
                     int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
+                    if (columnIndex == -1) {
+                        logger.trace("Column index is -1 for selected column " + selectedColumnName);
+                        return;
+                    }
                     Object columnValue = jTable1.getValueAt(jTable1.getSelectionModel().getLeadSelectionIndex(), columnIndex);
 
                     for (TableSelectionListener listener : tableSelectionListeners) {
@@ -314,8 +324,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         columnComboBox = new javax.swing.JComboBox();
-        jButton1 = new javax.swing.JButton();
+        showHistogram = new javax.swing.JButton();
         clearSelectionsButton = new javax.swing.JButton();
+        cumulHistCheckBox = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -345,10 +356,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
             }
         });
 
-        jButton1.setText("Show histogram");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        showHistogram.setText("Show histogram");
+        showHistogram.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                showHistogramActionPerformed(evt);
             }
         });
 
@@ -358,6 +369,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
                 clearSelectionsButtonActionPerformed(evt);
             }
         });
+
+        cumulHistCheckBox.setText("Cumulative");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -374,16 +387,19 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
                         .addGap(18, 18, 18)
                         .addComponent(columnComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
+                        .addComponent(cumulHistCheckBox)
+                        .addGap(18, 18, 18)
+                        .addComponent(showHistogram)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
+                    .addComponent(showHistogram)
                     .addComponent(columnComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(cumulHistCheckBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(clearSelectionsButton)
                 .addGap(16, 16, 16))
@@ -437,10 +453,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     private void columnComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_columnComboBoxItemStateChanged
         String selectedItem = (String) columnComboBox.getSelectedItem();
         boolean enabled = !selectedItem.equals("NONE");
-        this.jButton1.setEnabled(enabled);
+        this.showHistogram.setEnabled(enabled);
     }//GEN-LAST:event_columnComboBoxItemStateChanged
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void showHistogramActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showHistogramActionPerformed
         selectedColumnName = (String) columnComboBox.getSelectedItem();
 
         Object[] columnData = null;
@@ -454,15 +470,41 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
             columnData = ((AbstractAfmTableModel) tableModel).getColumnData(selectedColumnName, jTable1.getSelectedRows());
         }
 
-        ObjectFilteringFrame frame = new ObjectFilteringFrame();
-        frame.addChartSelectionListener(this);
-        this.addTableSelectionListener((TableSelectionListener) frame.getGraphPanel());
-        Chart chart = new BarChart();
+        if (objectFilteringFrame == null) {
+            objectFilteringFrame = new ObjectFilteringFrame();
+            objectFilteringFrame.addChartSelectionListener(this);
+            this.addTableSelectionListener((TableSelectionListener) objectFilteringFrame.getGraphPanel());
+        }
+        if (chart == null) {
+            chart = new BarChart();
+        }
+
+        HistogramDataSet chartData = DataStatistics.computeDataSetFromTable(columnData);
+        HistogramOptionDialog histogramDialog = new HistogramOptionDialog(this, true, chartData.getHistogramPairs().size(), chartData.getMinValue(), chartData.getMaxValue());
+        histogramDialog.setVisible(true);
+
+        int[] calculatedHistogram;
+        if (cumulHistCheckBox.isSelected()) {
+            calculatedHistogram = Histogram.calculateCumulatedHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
+        } else {
+            calculatedHistogram = Histogram.calculateHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
+        }
+        Histogram.printHistogram(calculatedHistogram);
+        chartData.setMaxOccurence((int) StatisticsTool.computeMaxValue(calculatedHistogram));
+        chartData.setMinOccurence((int) StatisticsTool.computeMinValue(calculatedHistogram));
+        chartData.setMeanOccurence((int) StatisticsTool.computeMean(calculatedHistogram));
+        chartData.setPairs(Histogram.createHistogramPairsFromHistogram(calculatedHistogram));
+        chartData.setBinSize(Histogram.getBinSize());
+        chartData.setNumberOfBins(Histogram.getNumberBins());
+
         chart.setColumnName(selectedColumnName);
-        chart.loadData(DataStatistics.computeDataSetFromTable(columnData));
-        frame.addChart(chart);
-        frame.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+        chart.loadData(chartData);
+        objectFilteringFrame.addChart(chart);
+        objectFilteringFrame.getGraphPanel().updatePaint();
+        if (!objectFilteringFrame.isVisible()) {
+            objectFilteringFrame.setVisible(true);
+        }
+    }//GEN-LAST:event_showHistogramActionPerformed
 
     private void clearSelectionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSelectionsButtonActionPerformed
         logger.debug("");
@@ -520,7 +562,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton clearSelectionsButton;
     private javax.swing.JComboBox columnComboBox;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JCheckBox cumulHistCheckBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -530,5 +572,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JMenuItem optionMeniItem;
+    private javax.swing.JButton showHistogram;
     // End of variables declaration//GEN-END:variables
 }

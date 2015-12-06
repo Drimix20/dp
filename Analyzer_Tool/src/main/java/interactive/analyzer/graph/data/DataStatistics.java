@@ -1,10 +1,7 @@
 package interactive.analyzer.graph.data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -12,88 +9,133 @@ import java.util.Map;
  */
 public class DataStatistics {
 
-    public static DataSet computeDataSetFromTable(Object[] columnData) {
+    public static HistogramDataSet computeDataSetFromTable(Object[] columnData) {
         if (columnData == null) {
             throw new IllegalArgumentException("Column data are null");
         }
         if (columnData.length == 0) {
             throw new IllegalArgumentException("Column data ase empty");
         }
-        Map<Double, Integer> hist = new HashMap<Double, Integer>();
-        DataSet dataSet = new DataSet();
+
+//        Map<Double, Integer> hist = new HashMap<>();
+        HistogramDataSet dataSet = new HistogramDataSet();
 
         double minValue = Integer.MAX_VALUE;
         double maxValue = Integer.MIN_VALUE;
         double sum = 0;
-        for (int i = 0; i < columnData.length; i++) {
-            double value = (double) columnData[i];
+        for (Object cd : columnData) {
+            double value = (double) cd;
             if (value < minValue) {
                 minValue = value;
             }
             if (value > maxValue) {
                 maxValue = value;
             }
-            Integer mapVal = hist.get(value);
-            if (mapVal == null) {
-                hist.put(value, 1);
-            } else {
-                mapVal++;
-                hist.put(value, mapVal);
-            }
+//            Integer mapVal = hist.get(value);
+//            if (mapVal == null) {
+//                hist.put(value, 1);
+//            } else {
+//                mapVal++;
+//                hist.put(value, mapVal);
+//            }
             sum += value;
         }
 
-        int id = 1;
-        for (Map.Entry<Double, Integer> entrySet : hist.entrySet()) {
-            Double key = entrySet.getKey();
-            Integer value = entrySet.getValue();
-            Pair pair = new Pair(value, key, id);
-            dataSet.addPair(pair);
-
-            id++;
-        }
-
+//        int id = 1;
+//        for (Map.Entry<Double, Integer> entrySet : hist.entrySet()) {
+//            Double key = entrySet.getKey();
+//            Integer value = entrySet.getValue();
+//            HistogramPair pair = new HistogramPair(id, key, value);
+//            dataSet.addPair(pair);
+//
+//            id++;
+//        }
         dataSet.setMinValue(minValue);
         dataSet.setMaxValue(maxValue);
-        dataSet.setMedian(computeMedian(columnData));
-        dataSet.setAverage(sum / columnData.length);
+        dataSet.setMedianValue(StatisticsTool.computeMedian(columnData));
+        dataSet.setMeanValue(sum / columnData.length);
 
         return dataSet;
     }
 
-    public static double computeMedian(Object[] data) {
-        if (data == null) {
-            throw new IllegalArgumentException("Column data are null");
-        }
-        if (data.length == 0) {
-            throw new IllegalArgumentException("Column data ase empty");
-        }
-        Object[] tmp = Arrays.copyOf(data, data.length);
-        System.out.println(tmp);
-        Arrays.sort(tmp);
-        int middleLength = tmp.length / 2;
-
-        if (tmp.length % 2 == 0) {
-            //even length
-            double numb1 = (double) tmp[(middleLength - 1)];
-            double numb2 = (double) tmp[middleLength];
-            return (numb1 + numb2) / 2;
-        } else {
-            // odd length
-            return (double) tmp[(middleLength - 1)];
-        }
+//    public static HistogramDataSet computeHistogramDataSet(
+//            List<HistogramPair> histPairs) {
+//        if (histPairs == null) {
+//            throw new IllegalArgumentException("Histogram pairs are null");
+//        }
+//        if (histPairs.isEmpty()) {
+//            throw new IllegalArgumentException("Histogram pairs are empty");
+//        }
+//        HistogramDataSet dataSet = new HistogramDataSet();
+//        dataSet.setPairs(new ArrayList<>(histPairs));
+//
+//        int minOccurence = Integer.MAX_VALUE;
+//        int maxOccurence = Integer.MIN_VALUE;
+//        double sumOccurence = Integer.MIN_VALUE;
+//
+//        double minValue = Integer.MAX_VALUE;
+//        double maxValue = Integer.MIN_VALUE;
+//        double sumValue = 0;
+//        Object[] occurenceValues = new Object[histPairs.size()];
+//        Object[] values = new Object[histPairs.size()];
+//        int i = 0;
+//        for (HistogramPair p : histPairs) {
+//            //compute statistics for values;
+//            double value = p.getValue();
+//            values[i] = value;
+//            if (value < minValue) {
+//                minValue = value;
+//            }
+//            if (value > maxValue) {
+//                maxValue = value;
+//            }
+//            sumValue += value;
+//
+//            //compute statistics for occurence
+//            int occurence = p.getOccurence();
+//            occurenceValues[i] = occurence;
+//            if (occurence < minOccurence) {
+//                minOccurence = occurence;
+//            }
+//            if (occurence > maxOccurence) {
+//                maxOccurence = occurence;
+//            }
+//            sumOccurence += occurence;
+//
+//            i++;
+//        }
+//
+//        dataSet.setMinValue(minValue);
+//        dataSet.setMaxValue(maxValue);
+//        dataSet.setMeanValue(sumValue / histPairs.size());
+//        dataSet.setMedianValue(computeMedian(values));
+//
+//        dataSet.setMaxOccurence(maxOccurence);
+//        dataSet.setMinOccurence(minOccurence);
+//        dataSet.setMeanOccurence(sumOccurence / histPairs.size());
+//        dataSet.setMedianValue(computeMedian(occurenceValues));
+//
+//        return dataSet;
+//    }
+    public static HistogramPair createNewInstanceOfHistPair(HistogramPair pair) {
+        return new HistogramPair(pair.getID(), pair.getValue(), pair.getOccurence());
     }
 
-    public static DataSet createNewInstanceOfData(DataSet data) {
-        DataSet newInstance = new DataSet();
-        newInstance.setAverage(data.getAverage());
+    public static HistogramDataSet createNewInstanceOfData(HistogramDataSet data) {
+        HistogramDataSet newInstance = new HistogramDataSet();
+        newInstance.setMeanValue(data.getMeanValue());
+        newInstance.setMedianValue(data.getMedianValue());
         newInstance.setMaxValue(data.getMaxValue());
         newInstance.setMinValue(data.getMinValue());
-        newInstance.setMedian(data.getMedian());
 
-        List<Pair> newPairs = new ArrayList<>();
-        for (Pair pair : data.getPairs()) {
-            newPairs.add(new Pair(pair.getCount(), pair.getValue(), pair.getID()));
+        newInstance.setMeanOccurence(data.getMeanOccurence());
+        newInstance.setMedianOccurence(data.getMedianOccurence());
+        newInstance.setMaxOccurence(data.getMaxOccurence());
+        newInstance.setMinOccurence(data.getMinOccurence());
+
+        List<HistogramPair> newPairs = new ArrayList<>();
+        for (HistogramPair pair : data.getHistogramPairs()) {
+            newPairs.add(createNewInstanceOfHistPair(pair));
         }
         newInstance.setPairs(newPairs);
 
@@ -101,12 +143,12 @@ public class DataStatistics {
     }
 
     //TODO delete this method
-    public static void PairsToString(List<Pair> pairs) {
+    public static void PairsToString(List<HistogramPair> pairs) {
         StringBuilder sb = new StringBuilder();
         int i = 1;
-        for (Pair pair : pairs) {
+        for (HistogramPair pair : pairs) {
             sb.append("dataset.addValue(")
-                    .append(pair.getValue())
+                    .append(pair.getOccurence())
                     .append(", series1,\"").append(i).append("\");");
             i++;
         }

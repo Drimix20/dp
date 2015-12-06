@@ -65,4 +65,21 @@ public class Bar extends Shape {
         return rectangle.contains(x, y);
     }
 
+    @Override
+    public boolean cross(double x) {
+        if (rectangle == null) {
+            return false;
+        }
+
+        return rectangle.getX() < x && x < (rectangle.getX() + rectangle.getWidth());
+    }
+
+    @Override
+    public String toString() {
+        return "Bar{" + " x=" + rectangle.getX()
+                + ", y=" + rectangle.getY()
+                + ", width=" + rectangle.getWidth()
+                + ", height=" + rectangle.getHeight() + '}';
+    }
+
 }

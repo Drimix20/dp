@@ -4,15 +4,15 @@ package interactive.analyzer.graph.data;
  *
  * @author Drimal
  */
-public class Pair {
+public class HistogramPair {
 
     private int ID;
-    private int count;
     private double value;
+    private int occurence;
 
-    public Pair(int count, double value, int id) {
-        this.count = count;
+    public HistogramPair(int id, double value, int occurence) {
         this.value = value;
+        this.occurence = occurence;
         this.ID = id;
     }
 
@@ -20,17 +20,18 @@ public class Pair {
         return ID;
     }
 
-    public int getCount() {
-        return count;
-    }
-
     public double getValue() {
         return value;
     }
 
+    public int getOccurence() {
+        return occurence;
+    }
+
     @Override
     public String toString() {
-        return "Pair[" + "count=" + count + ", value=" + value + ']';
+        return "Pair[ id=" + ID + ", value=" + value
+                + ", occurence=" + occurence + ']';
     }
 
 }

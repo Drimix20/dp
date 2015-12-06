@@ -16,7 +16,7 @@ public class TableUtils {
 
         String[] headings = mergeArrays(new String[]{"id"}, resultsTable.getHeadings());
         int rowCounter = resultsTable.getCounter();
-        int columnCounter = resultsTable.getLastColumn() + 2;
+        int columnCounter = resultsTable.getHeadings().length + 1;
 
         Object[][] data = new Object[rowCounter][columnCounter];
         for (int row = 0; row < rowCounter; row++) {

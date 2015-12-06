@@ -8,14 +8,13 @@
         </layout>
     </appender>
 
-    <logger name="interactive.analyzer.gui"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.result.table.AfmAnalyzerResultTable"><level value="trace"/></logger>
+    <!--<logger name="interactive.analyzer.gui"><level value="trace"/></logger>-->
+    <!--<logger name="interactive.analyzer.result.table.AfmAnalyzerResultTable"><level value="trace"/></logger>-->
     <!--<logger name="interactive.analyzer.result.table.AfmAnalyzerTableModel"><level value="trace"/></logger>-->
-    <logger name="interactive.analyzer.result.table.AfmAnalyzerResultFrame"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.graph.BarChart"><level value="trace"/></logger>
+    <!--<logger name="interactive.analyzer.result.table.AfmAnalyzerResultFrame"><level value="trace"/></logger>-->
     <!--<logger name="interactive.analyzer.result.table.DecimalPrecisionRenderer"><level value="trace"/></logger>-->
     <logger name="interactive.analyzer.graph.GraphPanel"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.graph.BarChart"><level value="trace"/></logger>
+    <logger name="interactive.analyzer.graph.HistogramChart"><level value="trace"/></logger>
     <!--<logger name="interactive.analyzer.presenter"><level value="trace"/></logger>-->
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>

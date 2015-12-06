@@ -18,9 +18,9 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class BarChart implements Chart {
+public class HistogramChart implements Chart {
 
-    private Logger logger = Logger.getLogger(BarChart.class);
+    private Logger logger = Logger.getLogger(HistogramChart.class);
     private static final int TEXT_MARGIN = 3;
     private static final int GRAPH_MARGIN = 3;
 
@@ -28,12 +28,12 @@ public class BarChart implements Chart {
     private int margin = 35;
     private int chartHeight;
     private int chartWidth;
-    private int barWidth;
+    private double barWidth;
 
     private List<Shape> shapes;
     private HistogramDataSet data;
 
-    public BarChart() {
+    public HistogramChart() {
         shapes = new ArrayList<>();
     }
 
@@ -96,7 +96,6 @@ public class BarChart implements Chart {
 
         List<HistogramPair> pairs = this.data.getHistogramPairs();
         int dataSize = pairs.size();
-        barWidth = (chartWidth - 2 * GRAPH_MARGIN) / dataSize;
 //        logger.trace("barWidth=" + barWidth);
         for (int i = 0; i < dataSize; i++) {
             HistogramPair p = pairs.get(i);
@@ -136,7 +135,7 @@ public class BarChart implements Chart {
         g.setColor(Color.BLACK);
 
         //draw title "<column> column"
-        g.drawString(columnName + " column", area.width / 2 - metrics.stringWidth(columnName + " column") / 2, metrics.getHeight() + TEXT_MARGIN);
+        g.drawString(columnName + " histogram", area.width / 2 - metrics.stringWidth(columnName + " histogram") / 2, metrics.getHeight() + TEXT_MARGIN);
 
         //translate to begining of x axe
         g.translate(margin, area.height - margin);
@@ -157,17 +156,21 @@ public class BarChart implements Chart {
             logger.trace("Count of bars is zero");
             return;
         }
-        barWidth = (chartWidth - 2 * GRAPH_MARGIN) / countOfBars;
+        barWidth = (double) (chartWidth - 2 * GRAPH_MARGIN) / countOfBars;
 
         //draw x axis enumeration
-        int enumerationMargin = chartWidth / countOfBars;
+        double enumerationMargin = (double) chartWidth / countOfBars;
         //draw 0-min value on x axe
-        int yPos = metrics.getHeight() + TEXT_MARGIN;
-        int xPos = GRAPH_MARGIN + barWidth / 2 + enumerationMargin * 0 - metrics.stringWidth(data.getMinValue() + "") / 2;
-        g.drawString(data.getMinValue() + "", xPos, yPos);
+        double yPos = metrics.getHeight() + TEXT_MARGIN;
+        double xPos = GRAPH_MARGIN + barWidth / 2 + enumerationMargin * 0 - metrics.stringWidth(data.getMinValue() + "") / 2;
+        g.drawString(data.getMinValue() + "", (int) xPos, (int) yPos);
         //draw max value on x axe
         xPos = GRAPH_MARGIN + barWidth / 2 + enumerationMargin * (countOfBars - 1) - metrics.stringWidth(data.getMaxValue() + "") / 2;
-        g.drawString(data.getMaxValue() + "", xPos, yPos);
+        logger.trace("barWidth: " + barWidth);
+        logger.trace("enumeration*(countsOfBars-1): " + (enumerationMargin * (countOfBars - 1)));
+        logger.trace("max-val-half-width: " + (metrics.stringWidth(data.getMaxValue() + "") / 2));
+        logger.trace("Position for x-max-val: xPos=" + xPos + ", yPos=" + yPos);
+        g.drawString(data.getMaxValue() + "", (int) xPos, (int) yPos);
 //        for (int i = 0; i < countOfBars; i++) {
 //            double value = shapes.get(i).getValue();
 //            int xPos = GRAPH_MARGIN + barWidth / 2 + enumerationMargin * i - metrics.stringWidth(value + "") / 2;
@@ -183,29 +186,49 @@ public class BarChart implements Chart {
 
         int numberOfYAxisLabels = data.getMaxOccurence() + 1;
         //draw y axis enumeration
-        int yAxisEnumerationSize = numberOfYAxisLabels - 1;
-        enumerationMargin = (chartHeight - 2 * GRAPH_MARGIN) / yAxisEnumerationSize;
-        for (int i = 0; i < numberOfYAxisLabels; i++) {
+        int tupleNumber = decreaseDrawableYAxeLables(chartHeight, metrics, numberOfYAxisLabels);
+        enumerationMargin = (double) (chartHeight - 2 * GRAPH_MARGIN) / (numberOfYAxisLabels - 1);
+        for (int i = 0; i < (numberOfYAxisLabels - 1); i++) {
             xPos = -TEXT_MARGIN;
             yPos = -(GRAPH_MARGIN + enumerationMargin * i);
 
-            g.drawString(i + "", xPos - metrics.stringWidth(i + ""), (yPos + (metrics.getHeight() / 4)));
-            g.drawLine(xPos, yPos, xPos + 8, yPos);
+            g.drawLine((int) xPos, (int) yPos, (int) (xPos + 8), (int) yPos);
+            if (isMultiple(i, tupleNumber)) {
+                g.drawString(i + "", (int) (xPos - metrics.stringWidth(i + "")), (int) ((yPos + (metrics.getHeight() / 4))));
+            }
+
         }
+
+        xPos = -TEXT_MARGIN;
+        yPos = -(GRAPH_MARGIN + enumerationMargin * (numberOfYAxisLabels - 1));
+        g.drawLine((int) xPos, (int) yPos, (int) (xPos + 8), (int) yPos);
+        g.drawString((numberOfYAxisLabels - 1) + "", (int) (xPos - metrics.stringWidth((numberOfYAxisLabels - 1) + "")), (int) ((yPos + (metrics.getHeight() / 4))));
 
         drawShapes(g);
     }
 
+    private int decreaseDrawableYAxeLables(double chartHeight,
+            FontMetrics metrics, int numberOfYAxeLabels) {
+        int textHeight = metrics.getHeight() * numberOfYAxeLabels;
+
+        return (int) Math.ceil(textHeight / chartHeight);
+    }
+
+    //Ex.: isMultiple(10, 5) is 10 % 5 equal to zero?
+    private boolean isMultiple(int multiple, int numb) {
+        return (multiple % numb) == 0;
+    }
+
     private void drawShapes(Graphics2D g) {
         int shapeSize = shapes.size();
-        barWidth = (chartWidth - 2 * GRAPH_MARGIN) / shapeSize;
+//        barWidth = (chartWidth - 2 * GRAPH_MARGIN) / shapeSize;
 
         List<HistogramPair> pairs = this.data.getHistogramPairs();
         for (int i = 0; i < shapeSize; i++) {
             double value = pairs.get(i).getOccurence();
             double barHeight = linearStretch(chartHeight - 2 * GRAPH_MARGIN, GRAPH_MARGIN, data.getMaxOccurence(), 0, value);
             shapes.get(i).setLocationAndSize(0 + GRAPH_MARGIN + barWidth * i, -barHeight - GRAPH_MARGIN, barWidth, barHeight);
-            logger.trace(shapes.get(i));
+//            logger.trace(shapes.get(i));
             shapes.get(i).draw(g);
         }
     }

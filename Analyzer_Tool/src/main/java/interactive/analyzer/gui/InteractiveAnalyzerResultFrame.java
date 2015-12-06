@@ -1,6 +1,6 @@
 package interactive.analyzer.gui;
 
-import interactive.analyzer.graph.BarChart;
+import interactive.analyzer.graph.HistogramChart;
 import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.DataStatistics;
@@ -476,7 +476,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
             this.addTableSelectionListener((TableSelectionListener) objectFilteringFrame.getGraphPanel());
         }
         if (chart == null) {
-            chart = new BarChart();
+            chart = new HistogramChart();
         }
 
         HistogramDataSet chartData = DataStatistics.computeDataSetFromTable(columnData);
@@ -485,8 +485,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
 
         int[] calculatedHistogram;
         if (cumulHistCheckBox.isSelected()) {
+            chart.setColumnName(selectedColumnName + " cumulated ");
             calculatedHistogram = Histogram.calculateCumulatedHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
         } else {
+            chart.setColumnName(selectedColumnName);
             calculatedHistogram = Histogram.calculateHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
         }
         Histogram.printHistogram(calculatedHistogram);
@@ -496,6 +498,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         chartData.setPairs(Histogram.createHistogramPairsFromHistogram(calculatedHistogram));
         chartData.setBinSize(Histogram.getBinSize());
         chartData.setNumberOfBins(Histogram.getNumberBins());
+        System.out.println("maxOccurence= " + chartData.getMaxOccurence());
+        System.out.println("minOccurence= " + chartData.getMinOccurence());
+        System.out.println("maxVal= " + chartData.getMaxValue());
+        System.out.println("minVal= " + chartData.getMinValue());
 
         chart.setColumnName(selectedColumnName);
         chart.loadData(chartData);

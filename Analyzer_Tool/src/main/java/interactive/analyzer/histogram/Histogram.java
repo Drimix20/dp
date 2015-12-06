@@ -97,7 +97,8 @@ public class Histogram {
     public static void printHistogram(int[] data) {
         for (int i = 0; i < data.length; i++) {
             double val = Math.round(histMin + i * binSize);
-            System.out.println(i + " (" + val + ") ->" + data[i]);
+//            System.out.println(i + " (" + val + ") ->" + data[i]);
+            System.out.println("dataSet.addPair(new HistogramPair(" + (i + 1) + "," + val + "," + data[i] + "));");
         }
     }
 

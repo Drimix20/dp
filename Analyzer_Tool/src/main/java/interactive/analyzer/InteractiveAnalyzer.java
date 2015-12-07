@@ -39,7 +39,7 @@ public class InteractiveAnalyzer {
         resultFrame = new InteractiveAnalyzerResultFrame(Collections.EMPTY_LIST, tableModel);
 
         imageWindow = new InteractiveImageWindow();
-        imageWindow.setImagesToShow(img);
+        imageWindow.setImagesToShow(img.duplicate());
         resultFrame.addTableSelectionListener((TableSelectionListener) imageWindow);
         imageWindow.addRoiSelectedListener((RoiSelectedListener) resultFrame);
         //TODO bind roiManager with imageWindow

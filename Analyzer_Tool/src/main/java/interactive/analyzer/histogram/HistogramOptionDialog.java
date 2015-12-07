@@ -45,6 +45,7 @@ public class HistogramOptionDialog extends javax.swing.JDialog {
         this.xMinValue = xMinValue;
         this.xMaxValue = xMaxValue;
         initComponents();
+        setLocationRelativeTo(parent);
     }
 
     /** Creates new form HistogramOptionDialog
@@ -133,8 +134,7 @@ public class HistogramOptionDialog extends javax.swing.JDialog {
 
         jLabel1.setText("Bins:");
 
-        binsSpinner.setModel(new javax.swing.SpinnerNumberModel());
-        binsSpinner.setValue(numbBins);
+        binsSpinner.setModel(new javax.swing.SpinnerNumberModel(256, null, null, Integer.valueOf(1)));
         binsSpinner.setToolTipText("");
 
         useDataMinAndMaxCheckbox.setText("Use column range value");

@@ -138,8 +138,8 @@
     </Component>
     <Component class="javax.swing.JSpinner" name="binsSpinner">
       <Properties>
-        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor" postCode="binsSpinner.setValue(numbBins);">
-          <SpinnerModel initial="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
+        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="new javax.swing.SpinnerNumberModel(256, null, null, Integer.valueOf(1))" type="code"/>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>

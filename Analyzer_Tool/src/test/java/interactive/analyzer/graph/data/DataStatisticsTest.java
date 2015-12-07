@@ -19,7 +19,7 @@ public class DataStatisticsTest {
         dataset.sortHistogramPairs();
         assertEquals((double) 5, dataset.getMinValue(), 0);
         assertEquals((double) 50, dataset.getMaxValue(), 0);
-        List<HistogramPair> pairs = dataset.getHistogramPairs();
+        List<HistogramBin> pairs = dataset.getHistogramPairs();
 //        assertEquals(6, pairs.size());
 //
 //        assertEquals(5.0, pairs.get(0).getValue(), 0);

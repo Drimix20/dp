@@ -11,10 +11,13 @@ public class HistogramTest {
 
     @Test
     public void testCalculateHistogram() {
-        Object[] data = new Object[]{75.0, 75.0, 75.0, 75.0, 82.0, 82.0, 82.0, 82.0, 82.0, 82.0, 85.0, 85.0, 85.0, 91.0, 91.0};
-        int[] expResult = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 6, 0, 0, 3, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0};
+        Object[] data = new Object[]{75.0, 75.0, 75.0, 75.0, 82.0, 82.0, 82.0,
+            82.0, 82.0, 82.0, 85.0, 85.0, 85.0, 91.0, 91.0};
+        int[] expResult = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 6, 0,
+            0, 3, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0};
         int[] result = Histogram.calculateHistogram(data, 0, 100, 100);
         for (int i = 0; i < result.length; i++) {
             System.out.println(result[i] + ",");
@@ -25,12 +28,11 @@ public class HistogramTest {
 
     @Test
     public void testCalculateHistogram3() {
-        Object[] data = new Object[]{36.0, 25.0, 38.0, 46.0, 55.0, 68.0, 72.0, 55.0, 36.0, 38.0, 67.0, 45.0, 22.0, 48.0, 91.0, 46.0, 52.0, 61.0, 58.0, 55.0};
+        Object[] data = new Object[]{36.0, 25.0, 38.0, 46.0, 55.0, 68.0,
+            72.0, 55.0, 36.0, 38.0, 67.0, 45.0, 22.0, 48.0, 91.0, 46.0, 52.0,
+            61.0, 58.0, 55.0};
         int[] expResult = new int[]{2, 4, 4, 5, 3, 1, 0, 1};
         int[] result = Histogram.calculateHistogram(data, 20, 100, 8);
-        for (int i = 0; i < result.length; i++) {
-            System.out.println(result[i] + ",");
-        }
 
         assertArrayEquals(expResult, result);
     }

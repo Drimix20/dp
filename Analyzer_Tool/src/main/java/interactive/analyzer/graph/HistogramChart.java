@@ -1,7 +1,7 @@
 package interactive.analyzer.graph;
 
 import interactive.analyzer.graph.data.HistogramDataSet;
-import interactive.analyzer.graph.data.HistogramPair;
+import interactive.analyzer.graph.data.HistogramBin;
 import interactive.analyzer.graph.shape.Bar;
 import interactive.analyzer.graph.shape.Shape;
 import java.awt.Color;
@@ -40,6 +40,7 @@ public class HistogramChart implements Chart {
     @Override
     public void loadData(HistogramDataSet dataSet) {
         validateDataSet(dataSet);
+        clearAllSelections();
         this.data = dataSet;
         prepareShapes(!shapes.isEmpty());
     }
@@ -94,14 +95,13 @@ public class HistogramChart implements Chart {
         List<Shape> oldShape = Collections.unmodifiableList(shapes);
         shapes = new ArrayList<>();
 
-        List<HistogramPair> pairs = this.data.getHistogramPairs();
+        List<HistogramBin> pairs = this.data.getHistogramPairs();
         int dataSize = pairs.size();
 //        logger.trace("barWidth=" + barWidth);
         for (int i = 0; i < dataSize; i++) {
-            HistogramPair p = pairs.get(i);
-            double value = p.getValue();
-            logger.trace(value + ": " + p.getOccurence());
-            Bar bar = new Bar(p.getID(), value, p.getOccurence());
+            HistogramBin bin = pairs.get(i);
+            logger.trace(bin);
+            Bar bar = new Bar(bin.getID(), bin.getLowerBound(), bin.getUpperBound(), bin.getOccurence());
 
             if (selectPreviousSelected) {
                 //reselecting selected shapes before sorting
@@ -194,6 +194,7 @@ public class HistogramChart implements Chart {
 
             g.drawLine((int) xPos, (int) yPos, (int) (xPos + 8), (int) yPos);
             if (isMultiple(i, tupleNumber)) {
+                logger.trace("Label: " + i + "-> yPos= " + yPos);
                 g.drawString(i + "", (int) (xPos - metrics.stringWidth(i + "")), (int) ((yPos + (metrics.getHeight() / 4))));
             }
 
@@ -223,12 +224,12 @@ public class HistogramChart implements Chart {
         int shapeSize = shapes.size();
 //        barWidth = (chartWidth - 2 * GRAPH_MARGIN) / shapeSize;
 
-        List<HistogramPair> pairs = this.data.getHistogramPairs();
+        List<HistogramBin> pairs = this.data.getHistogramPairs();
         for (int i = 0; i < shapeSize; i++) {
             double value = pairs.get(i).getOccurence();
-            double barHeight = linearStretch(chartHeight - 2 * GRAPH_MARGIN, GRAPH_MARGIN, data.getMaxOccurence(), 0, value);
+            double barHeight = linearStretch((double) chartHeight - 2 * GRAPH_MARGIN, (double) GRAPH_MARGIN, (double) data.getMaxOccurence(), 0, value) - GRAPH_MARGIN;
             shapes.get(i).setLocationAndSize(0 + GRAPH_MARGIN + barWidth * i, -barHeight - GRAPH_MARGIN, barWidth, barHeight);
-//            logger.trace(shapes.get(i));
+            logger.trace(shapes.get(i));
             shapes.get(i).draw(g);
         }
     }

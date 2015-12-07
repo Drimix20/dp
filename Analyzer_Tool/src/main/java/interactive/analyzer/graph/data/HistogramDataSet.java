@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class HistogramDataSet {
 
-    private List<HistogramPair> histogramPairs;
+    private List<HistogramBin> histogramPairs;
     private int numberOfBins;
     private double binSize;
     //data used to draw y-axe
@@ -102,9 +102,9 @@ public class HistogramDataSet {
         this.meanValue = meanValue;
     }
 
-    public List<HistogramPair> getHistogramPairs() {
+    public List<HistogramBin> getHistogramPairs() {
 //        TODO no sorting of results
-//        Collections.sort(histogramPairs, new HistogramPairComparator());
+//        Collections.sort(histogramPairs, new HistogramBinComparator());
         return histogramPairs;
     }
 
@@ -112,16 +112,16 @@ public class HistogramDataSet {
         histogramPairs.clear();
     }
 
-    public void addPair(HistogramPair pair) {
+    public void addPair(HistogramBin pair) {
         histogramPairs.add(pair);
     }
 
-    public void setPairs(List<HistogramPair> pairs) {
+    public void setPairs(List<HistogramBin> pairs) {
         this.histogramPairs = pairs;
     }
 
     public void sortHistogramPairs() {
-        Collections.sort(histogramPairs, new HistogramPairComparator());
+        Collections.sort(histogramPairs, new HistogramBinComparator());
     }
 
     public void sortPairsData(Comparator comparator) {

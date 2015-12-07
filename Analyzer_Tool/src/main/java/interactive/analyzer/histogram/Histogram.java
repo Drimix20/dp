@@ -1,6 +1,6 @@
 package interactive.analyzer.histogram;
 
-import interactive.analyzer.graph.data.HistogramPair;
+import interactive.analyzer.graph.data.HistogramBin;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +60,7 @@ public class Histogram {
         return cumulHist;
     }
 
-    public static List<HistogramPair> createHistogramPairsFromHistogram(
+    public static List<HistogramBin> createHistogramPairsFromHistogram(
             int[] hist) {
         if (hist == null) {
             throw new IllegalArgumentException("Null data");
@@ -68,10 +68,11 @@ public class Histogram {
         if (hist.length == 0) {
             throw new IllegalArgumentException("Empty data");
         }
-        List<HistogramPair> pairs = new ArrayList<>();
+        List<HistogramBin> pairs = new ArrayList<>();
         for (int i = 0; i < hist.length; i++) {
-            double val = histMin + i * binSize;
-            HistogramPair p = new HistogramPair(i + 1, val, hist[i]);
+            double low = histMin + i * binSize;
+            double upper = histMin + (i + 1) * binSize;
+            HistogramBin p = new HistogramBin(i + 1, (int) low, (int) upper, hist[i]);
             pairs.add(p);
         }
 

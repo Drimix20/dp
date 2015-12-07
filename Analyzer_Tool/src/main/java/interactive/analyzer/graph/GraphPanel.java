@@ -131,10 +131,10 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                     for (ChartSelectionListener listener : selectionListeners) {
                         if (select) {
                             //chart shape was selected
-                            listener.notifyBarSelected(shape.getValue(), shape.getValue(), selectionColor);
+                            listener.notifyBarSelected(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
                         } else {
                             //chart shape was deselected
-                            listener.notifyBarDeselected(shape.getValue(), shape.getValue());
+                            listener.notifyBarDeselected(shape.getLowerBound(), shape.getUpperBound());
                         }
                     }
                     //needed to repaint canvas
@@ -162,10 +162,10 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                             for (Shape shapeByDragged : selectionByDragged) {
                                 if (select) {
                                     //chart shape was selected
-                                    listener.notifyBarSelected(shapeByDragged.getValue(), shapeByDragged.getValue(), selectionColor);
+                                    listener.notifyBarSelected(shapeByDragged.getLowerBound(), shapeByDragged.getUpperBound(), selectionColor);
                                 } else {
                                     //chart shape was deselected
-                                    listener.notifyBarDeselected(shapeByDragged.getValue(), shapeByDragged.getValue());
+                                    listener.notifyBarDeselected(shapeByDragged.getLowerBound(), shapeByDragged.getUpperBound());
                                 }
                             }
                         }
@@ -273,8 +273,11 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
     @Override
     public void selectedRowIndexIsChanged(int rowIndex, double value) {
+        if (chart == null) {
+            return;
+        }
         for (Shape shape : chart.getDrawShapes()) {
-            if (shape.getValue() == value) {
+            if (shape.isValueInRange(value)) {
                 shape.setSelected(true);
                 shape.setSelectionColor(selectionColor);
             }
@@ -285,7 +288,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     @Override
     public void clearAllSelections() {
         logger.trace("");
-        chart.clearAllSelections();
+        if (chart != null) {
+            chart.clearAllSelections();
+        }
         for (ChartSelectionListener listener : selectionListeners) {
             listener.notifyClearAllSelections();
         }

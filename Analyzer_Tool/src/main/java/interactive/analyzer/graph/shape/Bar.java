@@ -15,8 +15,8 @@ public class Bar extends Shape {
     private Rectangle2D rectangle;
     private Graphics2D graphics;
 
-    public Bar(int ID, double value, int count) {
-        super(ID, value, count);
+    public Bar(int ID, double lowerBound, double upperBound, int occurence) {
+        super(ID, lowerBound, upperBound, occurence);
     }
 
     @Override

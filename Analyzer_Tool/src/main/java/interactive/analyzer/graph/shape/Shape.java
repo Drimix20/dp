@@ -10,7 +10,8 @@ import java.awt.Graphics2D;
 public abstract class Shape {
 
     private int ID;
-    private double value;
+    private double lowerBound;
+    private double upperBound;
     private int occurence;
     private String textTooltip;
 
@@ -19,11 +20,12 @@ public abstract class Shape {
     private Color borderColor = Color.WHITE;
     private Color selectionColor = Color.RED;
 
-    public Shape(int ID, double value, int occurence) {
+    public Shape(int ID, double lowerBound, double upperBound, int occurence) {
         this.ID = ID;
-        this.value = value;
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
         this.occurence = occurence;
-        this.textTooltip = "<html>value: " + value + "<br>count: " + occurence
+        this.textTooltip = "<html>lower bound: " + lowerBound + "<br>upper bound:" + upperBound + "<br>count: " + occurence
                 + "</html>";
     }
 
@@ -67,8 +69,12 @@ public abstract class Shape {
         this.textTooltip = tooltip;
     }
 
-    public double getValue() {
-        return value;
+    public double getLowerBound() {
+        return lowerBound;
+    }
+
+    public double getUpperBound() {
+        return upperBound;
     }
 
     public int getOccurence() {
@@ -87,6 +93,15 @@ public abstract class Shape {
      */
     public boolean isSelected() {
         return isSelected;
+    }
+
+    /**
+     * Check if value is in range lowerBound and upperBound
+     * @param value
+     * @return if is value in range return true otherwise false
+     */
+    public boolean isValueInRange(double value) {
+        return lowerBound <= value && value < upperBound;
     }
 
     /**

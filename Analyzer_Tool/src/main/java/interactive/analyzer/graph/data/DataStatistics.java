@@ -17,7 +17,6 @@ public class DataStatistics {
             throw new IllegalArgumentException("Column data ase empty");
         }
 
-//        Map<Double, Integer> hist = new HashMap<>();
         HistogramDataSet dataSet = new HistogramDataSet();
 
         double minValue = Integer.MAX_VALUE;
@@ -31,25 +30,9 @@ public class DataStatistics {
             if (value > maxValue) {
                 maxValue = value;
             }
-//            Integer mapVal = hist.get(value);
-//            if (mapVal == null) {
-//                hist.put(value, 1);
-//            } else {
-//                mapVal++;
-//                hist.put(value, mapVal);
-//            }
             sum += value;
         }
 
-//        int id = 1;
-//        for (Map.Entry<Double, Integer> entrySet : hist.entrySet()) {
-//            Double key = entrySet.getKey();
-//            Integer value = entrySet.getValue();
-//            HistogramPair pair = new HistogramPair(id, key, value);
-//            dataSet.addPair(pair);
-//
-//            id++;
-//        }
         dataSet.setMinValue(minValue);
         dataSet.setMaxValue(maxValue);
         dataSet.setMedianValue(StatisticsTool.computeMedian(columnData));
@@ -58,67 +41,8 @@ public class DataStatistics {
         return dataSet;
     }
 
-//    public static HistogramDataSet computeHistogramDataSet(
-//            List<HistogramPair> histPairs) {
-//        if (histPairs == null) {
-//            throw new IllegalArgumentException("Histogram pairs are null");
-//        }
-//        if (histPairs.isEmpty()) {
-//            throw new IllegalArgumentException("Histogram pairs are empty");
-//        }
-//        HistogramDataSet dataSet = new HistogramDataSet();
-//        dataSet.setPairs(new ArrayList<>(histPairs));
-//
-//        int minOccurence = Integer.MAX_VALUE;
-//        int maxOccurence = Integer.MIN_VALUE;
-//        double sumOccurence = Integer.MIN_VALUE;
-//
-//        double minValue = Integer.MAX_VALUE;
-//        double maxValue = Integer.MIN_VALUE;
-//        double sumValue = 0;
-//        Object[] occurenceValues = new Object[histPairs.size()];
-//        Object[] values = new Object[histPairs.size()];
-//        int i = 0;
-//        for (HistogramPair p : histPairs) {
-//            //compute statistics for values;
-//            double value = p.getValue();
-//            values[i] = value;
-//            if (value < minValue) {
-//                minValue = value;
-//            }
-//            if (value > maxValue) {
-//                maxValue = value;
-//            }
-//            sumValue += value;
-//
-//            //compute statistics for occurence
-//            int occurence = p.getOccurence();
-//            occurenceValues[i] = occurence;
-//            if (occurence < minOccurence) {
-//                minOccurence = occurence;
-//            }
-//            if (occurence > maxOccurence) {
-//                maxOccurence = occurence;
-//            }
-//            sumOccurence += occurence;
-//
-//            i++;
-//        }
-//
-//        dataSet.setMinValue(minValue);
-//        dataSet.setMaxValue(maxValue);
-//        dataSet.setMeanValue(sumValue / histPairs.size());
-//        dataSet.setMedianValue(computeMedian(values));
-//
-//        dataSet.setMaxOccurence(maxOccurence);
-//        dataSet.setMinOccurence(minOccurence);
-//        dataSet.setMeanOccurence(sumOccurence / histPairs.size());
-//        dataSet.setMedianValue(computeMedian(occurenceValues));
-//
-//        return dataSet;
-//    }
-    public static HistogramPair createNewInstanceOfHistPair(HistogramPair pair) {
-        return new HistogramPair(pair.getID(), pair.getValue(), pair.getOccurence());
+    public static HistogramBin createNewInstanceOfHistPair(HistogramBin pair) {
+        return new HistogramBin(pair.getID(), pair.getLowerBound(), pair.getLowerBound(), pair.getOccurence());
     }
 
     public static HistogramDataSet createNewInstanceOfData(HistogramDataSet data) {
@@ -133,8 +57,8 @@ public class DataStatistics {
         newInstance.setMaxOccurence(data.getMaxOccurence());
         newInstance.setMinOccurence(data.getMinOccurence());
 
-        List<HistogramPair> newPairs = new ArrayList<>();
-        for (HistogramPair pair : data.getHistogramPairs()) {
+        List<HistogramBin> newPairs = new ArrayList<>();
+        for (HistogramBin pair : data.getHistogramPairs()) {
             newPairs.add(createNewInstanceOfHistPair(pair));
         }
         newInstance.setPairs(newPairs);
@@ -143,10 +67,10 @@ public class DataStatistics {
     }
 
     //TODO delete this method
-    public static void PairsToString(List<HistogramPair> pairs) {
+    public static void PairsToString(List<HistogramBin> pairs) {
         StringBuilder sb = new StringBuilder();
         int i = 1;
-        for (HistogramPair pair : pairs) {
+        for (HistogramBin pair : pairs) {
             sb.append("dataset.addValue(")
                     .append(pair.getOccurence())
                     .append(", series1,\"").append(i).append("\");");

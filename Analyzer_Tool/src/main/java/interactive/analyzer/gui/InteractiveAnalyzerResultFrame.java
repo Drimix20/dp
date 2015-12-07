@@ -54,11 +54,11 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     private List<String> tableHeaderTooltips;
     private List<String> tableColumnNames;
     private String selectedColumnName;
-    private Color defaultSelectionColor;
     private Map<String, List<AbstractMeasurementResult>> analyzerValues;
     private List<TableSelectionListener> tableSelectionListeners = new ArrayList<>();
     private ObjectFilteringFrame objectFilteringFrame;
     private Chart chart;
+    private Color currentSelectionColor = Color.RED;
 
     private boolean notificationSendViaChartListener = false;
     private boolean shiftIsDown = false;
@@ -77,8 +77,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         this.tableColumnNames = tableColumnNames;
         this.tableHeaderTooltips = tableHeaderTooltips;
         initComponents();
-
-        defaultSelectionColor = jTable1.getSelectionBackground();
     }
 
     /**
@@ -92,8 +90,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         this.tableModel = tableModel;
         this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
         initComponents();
-
-        defaultSelectionColor = jTable1.getSelectionBackground();
     }
 
     /**
@@ -107,8 +103,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         this.tableModel = tableModel;
         this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
         initComponents();
-
-        defaultSelectionColor = jTable1.getSelectionBackground();
     }
 
     /**
@@ -130,18 +124,21 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         return columnNames;
     }
 
+    private Color getCurrentSelectionColor() {
+        if (objectFilteringFrame == null) {
+            return Color.RED;
+        } else {
+            return objectFilteringFrame.getCurrentSelectionColor();
+        }
+    }
+
     /**
      * Get column headers without first column for columnSelector. First column always contains id
      * @return column headers
      */
     private String[] getColumnHeadersForCombobox() {
-        int size = tableColumnNames.size() + 1;
-        String[] columnHeaders = new String[size];
-        columnHeaders[0] = "NONE";
-        for (int i = 1; i < size; i++) {
-            columnHeaders[i] = tableColumnNames.get(i - 1);
-        }
-        return columnHeaders;
+        String[] columnHeaders = new String[tableColumnNames.size()];
+        return tableColumnNames.toArray(columnHeaders);
     }
 
     public boolean addTableSelectionListener(TableSelectionListener listener) {
@@ -185,7 +182,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
                     for (TableSelectionListener listener : tableSelectionListeners) {
                         if (justButton1IsDown && !notificationSendViaChartListener) {
                             listener.clearAllSelections();
-                            listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex(), (double) columnValue);
+                            int rowIndex = jTable1.getSelectionModel().getLeadSelectionIndex();
+                            ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(currentSelectionColor, rowIndex);
+                            listener.selectedRowIndexIsChanged(rowIndex, (double) columnValue);
                             notificationSendViaChartListener = false;
                         }
                         if (shiftIsDown) {
@@ -194,10 +193,13 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
                             for (int i = minSelectionIndex; i <= maxSelectionIndex; i++) {
                                 columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
                                 columnValue = jTable1.getValueAt(i, columnIndex);
+                                ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(currentSelectionColor, i);
                                 listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex(), (double) columnValue);
                             }
                         }
                         if (ctrlIsDown) {
+                            int rowIndex = jTable1.getSelectionModel().getLeadSelectionIndex();
+                            ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(currentSelectionColor, rowIndex);
                             listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex(), (double) columnValue);
                         }
                     }
@@ -205,6 +207,12 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
 
             });
             jTable1.addMouseListener(new MouseAdapter() {
+
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    notificationSendViaChartListener = false;
+                    super.mouseClicked(e);
+                }
 
                 @Override
                 public void mousePressed(MouseEvent e) {
@@ -258,6 +266,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     public void notifyBarSelected(double downRangeValue, double upperRangeValue,
             Color color) {
         logger.trace("selection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue + ", color=" + color);
+        currentSelectionColor = color;
 
         notificationSendViaChartListener = true;
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
@@ -350,11 +359,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         jLabel1.setText("Selected Column:");
 
         columnComboBox.setModel(new javax.swing.DefaultComboBoxModel(getColumnHeadersForCombobox()));
-        columnComboBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                columnComboBoxItemStateChanged(evt);
-            }
-        });
 
         showHistogram.setText("Show histogram");
         showHistogram.addActionListener(new java.awt.event.ActionListener() {
@@ -450,12 +454,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void columnComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_columnComboBoxItemStateChanged
-        String selectedItem = (String) columnComboBox.getSelectedItem();
-        boolean enabled = !selectedItem.equals("NONE");
-        this.showHistogram.setEnabled(enabled);
-    }//GEN-LAST:event_columnComboBoxItemStateChanged
-
     private void showHistogramActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showHistogramActionPerformed
         selectedColumnName = (String) columnComboBox.getSelectedItem();
 
@@ -478,7 +476,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         if (chart == null) {
             chart = new HistogramChart();
         }
-
+        clearTableSelectionAndNotifyListeners();
         HistogramDataSet chartData = DataStatistics.computeDataSetFromTable(columnData);
         HistogramOptionDialog histogramDialog = new HistogramOptionDialog(this, true, chartData.getHistogramPairs().size(), chartData.getMinValue(), chartData.getMaxValue());
         histogramDialog.setVisible(true);
@@ -514,11 +512,15 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
 
     private void clearSelectionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSelectionsButtonActionPerformed
         logger.debug("");
+        clearTableSelectionAndNotifyListeners();
+    }//GEN-LAST:event_clearSelectionsButtonActionPerformed
+
+    private void clearTableSelectionAndNotifyListeners() {
         jTable1.clearSelection();
         for (TableSelectionListener listener : tableSelectionListeners) {
             listener.clearAllSelections();
         }
-    }//GEN-LAST:event_clearSelectionsButtonActionPerformed
+    }
 
     private void optionMeniItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionMeniItemActionPerformed
         OptionsFrame frame = new OptionsFrame(this, true);

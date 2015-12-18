@@ -82,8 +82,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                     draggedSelection = true;
                 }
                 boolean deselectionModeIsOn = false;
-                int onMask = MouseEvent.ALT_DOWN_MASK | MouseEvent.BUTTON1_DOWN_MASK;
-                if (e.getModifiersEx() == onMask) {
+                if (e.getModifiersEx() == MouseEvent.BUTTON3_DOWN_MASK) {
                     deselectionModeIsOn = true;
                 }
 

@@ -277,6 +277,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
             }
         }
+        jTable1.repaint();
     }
 
     @Override
@@ -293,11 +294,13 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
                 jTable1.removeRowSelectionInterval(rowIndex, rowIndex);
             }
         }
+        jTable1.repaint();
     }
 
     @Override
     public void notifyClearAllSelections() {
         jTable1.clearSelection();
+        jTable1.repaint();
     }
 
     /**

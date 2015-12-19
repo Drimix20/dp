@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
  */
 public class HistogramChart implements Chart {
 
+    //TODO do clean up
     private Logger logger = Logger.getLogger(HistogramChart.class);
     private static final int TEXT_MARGIN = 3;
     private static final int GRAPH_MARGIN = 3;
@@ -166,10 +167,10 @@ public class HistogramChart implements Chart {
         g.drawString(data.getMinValue() + "", (int) xPos, (int) yPos);
         //draw max value on x axe
         xPos = GRAPH_MARGIN + barWidth / 2 + enumerationMargin * (countOfBars - 1) - metrics.stringWidth(data.getMaxValue() + "") / 2;
-        logger.trace("barWidth: " + barWidth);
-        logger.trace("enumeration*(countsOfBars-1): " + (enumerationMargin * (countOfBars - 1)));
-        logger.trace("max-val-half-width: " + (metrics.stringWidth(data.getMaxValue() + "") / 2));
-        logger.trace("Position for x-max-val: xPos=" + xPos + ", yPos=" + yPos);
+//        logger.trace("barWidth: " + barWidth);
+//        logger.trace("enumeration*(countsOfBars-1): " + (enumerationMargin * (countOfBars - 1)));
+//        logger.trace("max-val-half-width: " + (metrics.stringWidth(data.getMaxValue() + "") / 2));
+//        logger.trace("Position for x-max-val: xPos=" + xPos + ", yPos=" + yPos);
         g.drawString(data.getMaxValue() + "", (int) xPos, (int) yPos);
 //        for (int i = 0; i < countOfBars; i++) {
 //            double value = shapes.get(i).getValue();

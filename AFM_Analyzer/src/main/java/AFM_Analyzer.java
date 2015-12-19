@@ -40,7 +40,7 @@ public class AFM_Analyzer implements PlugIn {
                 try {
                     ImageWindowI analyzerImageWindow = new InteractiveImageWindow();
                     analyzerImageWindow.setImagesToShow(selectedChannelContainer);
-                    analyzerImageWindow.setVisible(true);
+                    analyzerImageWindow.setImageVisible(true);
 
                     AfmAnalyzerFrame analyzer = new AfmAnalyzerFrame(analyzerImageWindow);
                     analyzer.setChannels(selectedChannelContainer);

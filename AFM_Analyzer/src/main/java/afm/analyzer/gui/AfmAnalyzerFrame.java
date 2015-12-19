@@ -48,6 +48,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
     /**
      * Creates new form AfmAnalyzer
+     * @param imageWindow
      */
     public AfmAnalyzerFrame(ImageWindowI imageWindow) {
         if (imageWindow == null) {

@@ -271,7 +271,8 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     @Override
-    public void selectedRowIndexIsChanged(int rowIndex, double value) {
+    public void selectedRowIndexIsChanged(int rowIndex, double value,
+            Color color) {
         if (chart == null) {
             return;
         }
@@ -282,6 +283,25 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
             }
         }
         updatePaint();
+    }
+
+    @Override
+    public void selectedMultipleRows(int rowIndex, double value, Color color) {
+        if (chart == null) {
+            return;
+        }
+        for (Shape shape : chart.getDrawShapes()) {
+            if (shape.isValueInRange(value)) {
+                shape.setSelected(true);
+                shape.setSelectionColor(selectionColor);
+            }
+        }
+        updatePaint();
+    }
+
+    @Override
+    public void deselectedRow(int rowIndex) {
+        //not needed
     }
 
     @Override

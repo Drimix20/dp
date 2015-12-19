@@ -1,15 +1,13 @@
 package interactive.analyzer.presenter;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.gui.ImageCanvas;
-import ij.gui.Roi;
-import ij.plugin.frame.RoiManager;
 import interactive.analyzer.listeners.RoiSelectedListener;
 import interactive.analyzer.listeners.TableSelectionListener;
-import interactive.analyzer.listeners.StackSliceChangedListener;
-import interactive.analyzer.selection.ExtendedRoi;
 import interactive.analyzer.selection.ImageSegments;
+import java.awt.Color;
+import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
+import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -18,46 +16,76 @@ import org.apache.log4j.Logger;
 import selector.ChannelContainer;
 
 /**
+ * TODO not valid desc of class
  * Extended implementation of StackWindow for AFM analyzer.
  * @author Drimal
  */
-public class InteractiveImageWindow implements ImageWindowI, TableSelectionListener, StackSliceChangedListener {
+public class InteractiveImageWindow implements ImageWindowI, TableSelectionListener {
 
-    private String stackTitle = "AFM Analyzer Images";
     private static Logger logger = Logger.getLogger(InteractiveImageWindow.class);
-    private ExtendedImageStackWindow imageStackWindow;
-    private List<ImageSegments> imagesSegments;
-    private static List<RoiSelectedListener> roiSelectedListeners;
-    private ImagePlus showingImg;
-    private static RoiManager roiManager;
 
-    public InteractiveImageWindow() {
-        imageStackWindow = new ExtendedImageStackWindow(new ImagePlus());
-        imageStackWindow.setVisible(false);
-        imagesSegments = new ArrayList<>();
+    public static final Color DEFAULT_STROKE_ROI_COLOR = Color.YELLOW;
+    public static final Color DEFAULT_ROI_SELECTION_COLOR = Color.CYAN;
+
+    private static final int CTRL_WITH_LMB_DOWN = CTRL_DOWN_MASK | BUTTON1_DOWN_MASK;
+    private static final int LMB_DOWN = BUTTON1_DOWN_MASK;
+
+    private String stackTitle = "Interactive Analyzer window";
+
+    private static List<RoiSelectedListener> roiSelectedListeners;
+    private ExtendedImageStackWindow imageStackWindow;
+    private OverlayManager overlayManager;
+    private List<Roi> rois;
+    private ImagePlus showingImg;
+
+    public InteractiveImageWindow(ImagePlus imp, List<Roi> rois) {
+        validate(imp, rois);
         roiSelectedListeners = new ArrayList<>();
-        roiManager = RoiManager.getInstance();
-        if (roiManager == null) {
-            roiManager = new RoiManager(true);
-        }
+
+        //create use custom image window implementation
+        ImagePlus duplicatedImp = imp.duplicate();
+        duplicatedImp.setOverlay(null);
+        imageStackWindow = new ExtendedImageStackWindow(duplicatedImp);
+        imageStackWindow.setTitle(stackTitle + "-" + imp.getTitle());
+        imageStackWindow.setVisible(false);
+        showingImg = duplicatedImp;
+
+        this.rois = rois;
+        overlayManager = new OverlayManager(this.rois, showingImg);
+        overlayManager.drawRois();
+
         registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
+    }
+
+    private void validate(ImagePlus img, List<Roi> rois) {
+        if (img == null) {
+            throw new IllegalArgumentException("Image is null");
+        }
+        if (rois == null) {
+            throw new IllegalArgumentException("Rois is null");
+        }
+        if (rois.isEmpty()) {
+            throw new IllegalArgumentException("Rois is null");
+        }
     }
 
     @Override
     public void setImagesSegments(List<ImageSegments> imagesSegments) {
-        this.imagesSegments = imagesSegments;
-        //TODO functionality just for one image in window
-        if (showingImg != null) {
-            int currentSlice = showingImg.getCurrentSlice();
-            ImageSegments segments = imagesSegments.get(currentSlice - 1);
-            for (Roi roi : segments.getRois()) {
-                roiManager.addRoi(roi);
-                //roiManager.add(showingImg, roi, ((ExtendedRoi) roi).getLabel());
-            }
-            showingImg.updateImage();
-        }
+//        this.imagesSegments = imagesSegments;
+//        //TODO functionality just for one image in window
+//        if (showingImg != null) {
+//            int currentSlice = showingImg.getCurrentSlice();
+//            ImageSegments segments = imagesSegments.get(currentSlice - 1);
+//            for (Roi roi : segments.getRois()) {
+//                roiManager.addRoi(roi);
+//                //roiManager.add(showingImg, roi, ((ExtendedRoi) roi).getLabel());
+//            }
+//            showingImg.updateImage();
+//        }
+        throw new UnsupportedOperationException();
     }
 
+    // <editor-fold defaultstate="collapsed" desc="Roi Selection Listener add, remove, removeAll">
     @Override
     public boolean addRoiSelectedListener(RoiSelectedListener listener) {
         return roiSelectedListeners.add(listener);
@@ -72,6 +100,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     public void removeAllRoiSelectedListeners() {
         roiSelectedListeners.clear();
     }
+    //</editor-fold>
 
     /**
      * Configure visible title to image window
@@ -82,6 +111,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         stackTitle = title;
     }
 
+    @Override
     public boolean isVisible() {
         return imageStackWindow.isVisible();
     }
@@ -92,14 +122,15 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
      */
     @Override
     public void setImagesToShow(List<ChannelContainer> channelContainer) {
-        ImagePlus tmp = channelContainer.get(0).getImagePlus();
-        ImageStack imgStack = new ImageStack(tmp.getWidth(), tmp.getHeight());
-        for (ChannelContainer channelContainer1 : channelContainer) {
-            imgStack.addSlice(channelContainer1.getImagePlus().getProcessor());
-        }
-
-        showingImg = new ImagePlus(stackTitle, imgStack);
-        configureImageStackWindow();
+//        ImagePlus tmp = channelContainer.get(0).getImagePlus();
+//        ImageStack imgStack = new ImageStack(tmp.getWidth(), tmp.getHeight());
+//        for (ChannelContainer channelContainer1 : channelContainer) {
+//            imgStack.addSlice(channelContainer1.getImagePlus().getProcessor());
+//        }
+//
+//        showingImg = new ImagePlus(stackTitle, imgStack);
+//        configureImageStackWindow();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -108,13 +139,15 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
      */
     @Override
     public void setImagesToShow(ImagePlus images) {
-        showingImg = images;
-        configureImageStackWindow();
+//        showingImg = images;
+//        configureImageStackWindow();
+        throw new UnsupportedOperationException();
+
     }
 
+    //Not used
     private void configureImageStackWindow() {
         imageStackWindow = new ExtendedImageStackWindow(showingImg);
-        imageStackWindow.addStackSliceChangedListener(this);
         registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
         imageStackWindow.setTitle(stackTitle);
     }
@@ -125,6 +158,12 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
             @Override
             public void mousePressed(MouseEvent e) {
                 logger.trace("Pressed on image: " + e.getX() + ", " + e.getY());
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                logger.trace("Released on image: " + e.getX() + ", " + e.getY());
                 super.mousePressed(e);
             }
 
@@ -144,19 +183,46 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mousePressed(e);
-                Roi roi = imageStackWindow.getImagePlus().getRoi();
-                if (roi != null) {
-                    int parsedRoiLabel = parseRoiLabel(roi.getName());
-                    logger.debug("Clicked on image: " + e.getX() + ", " + e.getY() + ", roi label: " + parsedRoiLabel);
-                    for (RoiSelectedListener listener : roiSelectedListeners) {
-                        listener.notifySelectedRoi(parsedRoiLabel);
-                    }
-                } else {
-                    logger.warn("No roi is selected");
-                }
+//                List<Roi> selectedRois = new ArrayList<>();
+//                //Roi roi = imageStackWindow.getImagePlus().getRoi();
+//                if (roi != null) {
+//
+//                    if (checkIfSelectionIsDoneByRoi(roi)) {
+//                        //check if is new selection created
+//
+//                    } else {
+//                        //direct selection is performed (ctrl, shift)
+//                        switch (e.getModifiersEx()) {
+//                            case LMB_DOWN:
+//                                //single click selection
+//                                overlayManager.selectRoi(roi, DEFAULT_ROI_SELECTION_COLOR);
+//                                selectedRois.add(roi);
+//                                break;
+//                            case CTRL_WITH_LMB_DOWN:
+//                                //multiple selection with ctrl down
+//                                overlayManager.selectRoi(roi, DEFAULT_ROI_SELECTION_COLOR);
+//                                selectedRois.add(roi);
+//                                break;
+//                        }
+//                    }
+//
+//                    //notify listeners
+//                    for (Roi r : selectedRois) {
+//                        int parsedRoiLabel = parseRoiLabel(r.getName());
+//                        logger.debug("Clicked on image: " + e.getX() + ", " + e.getY() + ", roi label: " + parsedRoiLabel);
+//                        for (RoiSelectedListener listener : roiSelectedListeners) {
+//                            listener.notifySelectedRoi(parsedRoiLabel);
+//                        }
+//                    }
+//                } else {
+//                    logger.warn("No roi is selected");
+//                }
             }
-
         });
+    }
+
+    private boolean checkIfSelectionIsDoneByRoi(Roi roi) {
+        return false;
     }
 
     private int parseRoiLabel(String roiName) {
@@ -166,7 +232,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     }
 
     @Override
-    public void setVisible(boolean visible) {
+    public void setImageVisible(boolean visible) {
         int size = imageStackWindow.getStackSize();
         if (size == 0) {
             logger.debug("Numb of images is 0. No images will be shown");
@@ -179,50 +245,48 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
     // TableSelectionListener implementation
     @Override
-    public void selectedRowIndexIsChanged(int rowIndex, double value) {
+    public void selectedRowIndexIsChanged(int rowIndex, double value,
+            Color color) {
         logger.trace(rowIndex);
         int labelToSelect = rowIndex + 1;
-        Roi selectedRoi = showingImg.getRoi();
-        if (selectedRoi != null) {
-            logger.debug("Old selected roi is " + selectedRoi.getName());
-        }
+        overlayManager.selectRoi(labelToSelect, color);
+    }
 
-        Roi[] roisAsArray = roiManager.getRoisAsArray();
-        for (Roi roiToSelect : roisAsArray) {
-            if (parseRoiLabel(roiToSelect.getName()) == labelToSelect) {
-                String lbl = roiToSelect instanceof ExtendedRoi ? ((ExtendedRoi) roiToSelect).getLabel() + "" : roiToSelect.getName();
-                logger.debug("Selecting new roi: " + lbl + "with index in manager " + rowIndex);
-                roiManager.selectAndMakeVisible(showingImg, rowIndex);
-            }
-        }
+    @Override
+    public void selectedMultipleRows(int rowIndex, double value, Color color) {
+        logger.trace(rowIndex);
+        int labelToSelect = rowIndex + 1;
+        overlayManager.addRoiToSelection(labelToSelect, color);
+    }
+
+    @Override
+    public void deselectedRow(int rowIndex) {
+        logger.trace(rowIndex);
+        int labelToSelect = rowIndex + 1;
+        overlayManager.deselectRoi(labelToSelect, DEFAULT_STROKE_ROI_COLOR);
     }
 
     @Override
     public void clearAllSelections() {
-        //no needed
+        overlayManager.deselectAll();
     }
-
     // TableSelectionListener end of implementation
-    // StackSliceChangedListener implementation
+
     @Override
-    public void movingSliceAboutAmount(int amount) {
-        logger.trace("Moving slice about amount" + amount);
+    public void notifyBarSelected(double downRangeValue, double upperRangeValue,
+            Color color) {
+        //not used
     }
 
     @Override
-    public void moveToSpecificPosition(int currentPosition) {
-        logger.trace("Move to specific position" + currentPosition);
+    public void notifyBarDeselected(double downRangeValue,
+            double upperRangeValue) {
+        //not used
     }
 
     @Override
-    public void sliceAtPositionDeleted(int position) {
-        logger.trace("Slice at position deleted " + position);
+    public void notifyClearAllSelections() {
+        overlayManager.deselectAll();
     }
-
-    @Override
-    public void currentStackIndex(int index) {
-        logger.trace("Current stack index " + index);
-    }
-    // StackSliceChangedListener end of implementation
 
 }

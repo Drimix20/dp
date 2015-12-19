@@ -1,13 +1,20 @@
 package interactive.analyzer.listeners;
 
+import java.awt.Color;
+
 /**
  *
  * @author Drimal
  */
 public interface TableSelectionListener {
 
-    public void selectedRowIndexIsChanged(int rowIndex, double value);
+    public void selectedRowIndexIsChanged(int rowIndex, double value,
+            Color color);
 
-//    public void selectedRowIndexIsChanged(int rowIndex);
+    public void selectedMultipleRows(int rowIndex, double value,
+            Color color);
+
+    public void deselectedRow(int rowIndex);
+
     public void clearAllSelections();
 }

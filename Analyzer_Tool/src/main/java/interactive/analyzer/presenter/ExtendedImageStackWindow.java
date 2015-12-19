@@ -33,6 +33,7 @@ public class ExtendedImageStackWindow extends StackWindow implements ImageListen
         return imp.getStackSize();
     }
 
+    // <editor-fold defaultstate="collapsed" desc="StackSliceChangedListener methods">
     public boolean addStackSliceChangedListener(
             StackSliceChangedListener listener) {
         logger.info("Add stackSliceMovedListener");
@@ -48,7 +49,9 @@ public class ExtendedImageStackWindow extends StackWindow implements ImageListen
     public void removeAllStackSliceChangedListener() {
         stackSliceMovedListener.clear();
     }
+    // </editor-fold>
 
+    // Implementation of ImageListener
     @Override
     public void imageOpened(ImagePlus imp) {
         logger.trace("ImageListener - imageOpened");
@@ -80,6 +83,7 @@ public class ExtendedImageStackWindow extends StackWindow implements ImageListen
             }
         }
     }
+    // End of ImageListener implementation
 
     /**
      * Method observes mouse wheel event and save current slice index into local variable.

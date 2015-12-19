@@ -250,10 +250,10 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
             return;
         }
 
-        ImagePlus seectedImageWindow = WindowManager.getImage(imageWindowChoice.getSelectedItem());
+        ImagePlus selectedImageWindow = WindowManager.getImage(imageWindowChoice.getSelectedItem());
         ResultsTable selectedRT = getResultsTableFromWindow(resultTableChoice.getSelectedItem());
 
-        InteractiveAnalyzer analyzer = new InteractiveAnalyzer(selectedRT, roiManager, seectedImageWindow);
+        InteractiveAnalyzer analyzer = new InteractiveAnalyzer(selectedRT, roiManager, selectedImageWindow);
         analyzer.run();
     }//GEN-LAST:event_okButtonActionPerformed
 

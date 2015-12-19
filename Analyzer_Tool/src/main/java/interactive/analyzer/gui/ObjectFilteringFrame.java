@@ -626,10 +626,10 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 //                dataSet.addPair(new HistogramBin(254, 2077.0, 0));
 //                dataSet.addPair(new HistogramBin(255, 2086.0, 0));
 //                dataSet.addPair(new HistogramBin(256, 2094.0, 0));
-                dataSet.setMaxOccurence(19);
-                dataSet.setMinOccurence(0);
-                dataSet.setMaxValue(2102);
-                dataSet.setMinValue(1);
+//                dataSet.setMaxOccurence(19);
+//                dataSet.setMinOccurence(0);
+//                dataSet.setMaxValue(2102);
+//                dataSet.setMinValue(1);
 
                 chart.loadData(dataSet);
                 frame.addChart(chart);

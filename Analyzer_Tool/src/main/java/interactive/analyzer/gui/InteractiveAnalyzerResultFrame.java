@@ -1,5 +1,6 @@
 package interactive.analyzer.gui;
 
+import ij.ImagePlus;
 import interactive.analyzer.graph.HistogramChart;
 import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.data.HistogramDataSet;
@@ -14,6 +15,9 @@ import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.listeners.RoiSelectedListener;
 import interactive.analyzer.listeners.TableSelectionListener;
+import interactive.analyzer.presenter.ImageWindowI;
+import interactive.analyzer.presenter.InteractiveImageWindow;
+import interactive.analyzer.presenter.Roi;
 import interactive.analyzer.result.table.DecimalPrecisionRenderer;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -50,6 +54,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     private static final int CTRL_WITH_LMB_DOWN = CTRL_DOWN_MASK | BUTTON1_DOWN_MASK;
     private static final int SHIFT_WITH_LMB_DOWN = SHIFT_DOWN_MASK | BUTTON1_DOWN_MASK;
 
+    private ImageWindowI interactiveImageWindow;
     private TableModel tableModel;
     private List<String> tableHeaderTooltips;
     private List<String> tableColumnNames;
@@ -69,39 +74,51 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
      * Base constructor. TableModel is automatically set up in initComponents to default
      * implementation. For setting table model created by user constructor with specified
      * parameters should be used.
+     * @param interactiveImageWindow
      * @param tableColumnNames
      * @param tableHeaderTooltips tooltips for header row
      */
-    public InteractiveAnalyzerResultFrame(List<String> tableColumnNames,
+    public InteractiveAnalyzerResultFrame(ImageWindowI interactiveImageWindow,
+            List<String> tableColumnNames,
             List<String> tableHeaderTooltips) {
+        this.interactiveImageWindow = interactiveImageWindow;
         this.tableColumnNames = tableColumnNames;
         this.tableHeaderTooltips = tableHeaderTooltips;
         initComponents();
+        selectedColumnName = tableColumnNames.get(0);
     }
 
     /**
      Initialize Result frame with table model defined by user
+     * @param interactiveImageWindow
      * @param tableHeaderTooltips
      @param tableModel table model defined by user
      */
-    public InteractiveAnalyzerResultFrame(List<String> tableHeaderTooltips,
+    public InteractiveAnalyzerResultFrame(ImageWindowI interactiveImageWindow,
+            List<String> tableHeaderTooltips,
             AbstractAfmTableModel tableModel) {
         this.tableHeaderTooltips = tableHeaderTooltips;
         this.tableModel = tableModel;
+        this.interactiveImageWindow = interactiveImageWindow;
         this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
+        selectedColumnName = tableColumnNames.get(0);
         initComponents();
     }
 
     /**
      Initialize result frame with user defined table and table model
+     * @param interactiveImageWindow
      @param table table defined by user
      @param tableModel table model defined by user
      */
-    public InteractiveAnalyzerResultFrame(JTable table,
+    public InteractiveAnalyzerResultFrame(ImageWindowI interactiveImageWindow,
+            JTable table,
             AbstractAfmTableModel tableModel) {
         this.jTable1 = table;
         this.tableModel = tableModel;
+        this.interactiveImageWindow = interactiveImageWindow;
         this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
+        selectedColumnName = tableColumnNames.get(0);
         initComponents();
     }
 
@@ -173,18 +190,21 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
                     }
 
                     int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
-                    if (columnIndex == -1) {
+                    Object columnValue = null;
+                    if (columnIndex != -1) {
+                        columnValue = jTable1.getValueAt(jTable1.getSelectionModel().getLeadSelectionIndex(), columnIndex);
+                    } else {
                         logger.trace("Column index is -1 for selected column " + selectedColumnName);
-                        return;
+                        //return
                     }
-                    Object columnValue = jTable1.getValueAt(jTable1.getSelectionModel().getLeadSelectionIndex(), columnIndex);
 
                     for (TableSelectionListener listener : tableSelectionListeners) {
                         if (justButton1IsDown && !notificationSendViaChartListener) {
                             listener.clearAllSelections();
+                            notifyClearAllSelections();
                             int rowIndex = jTable1.getSelectionModel().getLeadSelectionIndex();
                             ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(currentSelectionColor, rowIndex);
-                            listener.selectedRowIndexIsChanged(rowIndex, (double) columnValue);
+                            listener.selectedRowIndexIsChanged(rowIndex, (double) columnValue, currentSelectionColor);
                             notificationSendViaChartListener = false;
                         }
                         if (shiftIsDown) {
@@ -194,15 +214,16 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
                                 columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
                                 columnValue = jTable1.getValueAt(i, columnIndex);
                                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(currentSelectionColor, i);
-                                listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex(), (double) columnValue);
+                                listener.selectedMultipleRows(i, (double) columnValue, currentSelectionColor);
                             }
                         }
                         if (ctrlIsDown) {
                             int rowIndex = jTable1.getSelectionModel().getLeadSelectionIndex();
                             ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(currentSelectionColor, rowIndex);
-                            listener.selectedRowIndexIsChanged(jTable1.getSelectionModel().getLeadSelectionIndex(), (double) columnValue);
+                            listener.selectedMultipleRows(jTable1.getSelectionModel().getLeadSelectionIndex(), (double) columnValue, currentSelectionColor);
                         }
                     }
+                    jTable1.repaint();
                 }
 
             });
@@ -259,7 +280,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     public void notifySelectedRoi(int roiLabel) {
         logger.trace("Selection notification received from roi " + roiLabel);
         jTable1.getSelectionModel().setSelectionInterval(roiLabel - 1, roiLabel - 1);
-        jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(roiLabel, 0, true)));
+        jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(roiLabel - 1, 0, true)));
     }
 
     @Override
@@ -275,6 +296,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
             if (val >= downRangeValue && val <= upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
+                for (TableSelectionListener listener : tableSelectionListeners) {
+                    listener.selectedMultipleRows(rowIndex, val, color);
+                }
             }
         }
         jTable1.repaint();
@@ -292,6 +316,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
             if (val >= downRangeValue && val <= upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).removeRowFromSelection(rowIndex);
                 jTable1.removeRowSelectionInterval(rowIndex, rowIndex);
+                for (TableSelectionListener listener : tableSelectionListeners) {
+                    listener.deselectedRow(rowIndex);
+                }
             }
         }
         jTable1.repaint();
@@ -474,6 +501,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         if (objectFilteringFrame == null) {
             objectFilteringFrame = new ObjectFilteringFrame();
             objectFilteringFrame.addChartSelectionListener(this);
+            objectFilteringFrame.addChartSelectionListener((ChartSelectionListener) interactiveImageWindow);
             this.addTableSelectionListener((TableSelectionListener) objectFilteringFrame.getGraphPanel());
         }
         if (chart == null) {
@@ -564,7 +592,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                InteractiveAnalyzerResultFrame frame = new InteractiveAnalyzerResultFrame(Arrays.asList("A", "b", "C", "D"), new AfmAnalyzerTableModel());
+                InteractiveAnalyzerResultFrame frame = new InteractiveAnalyzerResultFrame(new InteractiveImageWindow(new ImagePlus(), new ArrayList<Roi>()), Arrays.asList("A", "b", "C", "D"), new AfmAnalyzerTableModel());
                 frame.setVisible(true);
             }
         });

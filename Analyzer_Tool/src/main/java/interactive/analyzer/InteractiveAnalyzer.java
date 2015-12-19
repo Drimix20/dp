@@ -8,10 +8,15 @@ import interactive.analyzer.listeners.RoiSelectedListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
+import interactive.analyzer.presenter.Roi;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.result.table.TableUtils;
+import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -19,7 +24,7 @@ import java.util.Collections;
  */
 public class InteractiveAnalyzer {
 
-    private RoiManager roiManager;
+    private static Logger logger = Logger.getLogger(InteractiveAnalyzer.class);
     private AfmAnalyzerResultTable resultTable;
     private ImageWindowI imageWindow;
     private InteractiveAnalyzerResultFrame resultFrame;
@@ -35,33 +40,41 @@ public class InteractiveAnalyzer {
         if (img == null) {
             throw new IllegalArgumentException("Image can't be null");
         }
+
+        List<Roi> rois = new ArrayList<>();
+        for (ij.gui.Roi r : roiManager.getRoisAsArray()) {
+            rois.add(new Roi(parseRoiLabel(r.getName()), r.getPolygon(), Color.CYAN, false));
+        }
+
+        imageWindow = new InteractiveImageWindow(img, rois);
+
         AfmAnalyzerTableModel tableModel = TableUtils.convertResultTableToInteractiveResultTable(ijResultTable);
-        resultFrame = new InteractiveAnalyzerResultFrame(Collections.EMPTY_LIST, tableModel);
-
-        imageWindow = new InteractiveImageWindow();
-        imageWindow.setImagesToShow(img.duplicate());
+        resultFrame = new InteractiveAnalyzerResultFrame(imageWindow, Collections.EMPTY_LIST, tableModel);
         resultFrame.addTableSelectionListener((TableSelectionListener) imageWindow);
+
         imageWindow.addRoiSelectedListener((RoiSelectedListener) resultFrame);
-        //TODO bind roiManager with imageWindow
-
-        this.roiManager = roiManager;
     }
 
-    public InteractiveAnalyzer(InteractiveAnalyzerResultFrame resultFrame,
-            ImageWindowI imageWindow) {
-        if (resultFrame == null) {
-            throw new IllegalArgumentException("Result frame is null");
-        }
-        if (imageWindow == null) {
-            throw new IllegalArgumentException("ImageWindow is null");
-        }
-        this.resultFrame = resultFrame;
-        this.imageWindow = imageWindow;
+    private int parseRoiLabel(String roiName) {
+        logger.trace("Parse roi name: " + roiName);
+        String roiLabeString = roiName.split("-")[0];
+        return Integer.parseInt(roiLabeString);
     }
 
+//    public InteractiveAnalyzer(InteractiveAnalyzerResultFrame resultFrame,
+//            ImageWindowI imageWindow) {
+//        if (resultFrame == null) {
+//            throw new IllegalArgumentException("Result frame is null");
+//        }
+//        if (imageWindow == null) {
+//            throw new IllegalArgumentException("ImageWindow is null");
+//        }
+//        this.resultFrame = resultFrame;
+//        this.imageWindow = imageWindow;
+//    }
     public void run() {
         if (!imageWindow.isVisible()) {
-            imageWindow.setVisible(true);
+            imageWindow.setImageVisible(true);
         }
         if (!resultFrame.isVisible()) {
             resultFrame.setVisible(true);

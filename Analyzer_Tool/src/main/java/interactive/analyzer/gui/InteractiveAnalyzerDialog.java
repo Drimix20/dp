@@ -253,6 +253,7 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
         ImagePlus selectedImageWindow = WindowManager.getImage(imageWindowChoice.getSelectedItem());
         ResultsTable selectedRT = getResultsTableFromWindow(resultTableChoice.getSelectedItem());
 
+        this.setVisible(false);
         InteractiveAnalyzer analyzer = new InteractiveAnalyzer(selectedRT, roiManager, selectedImageWindow);
         analyzer.run();
     }//GEN-LAST:event_okButtonActionPerformed

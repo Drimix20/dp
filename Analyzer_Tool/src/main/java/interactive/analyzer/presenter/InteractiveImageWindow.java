@@ -43,6 +43,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
         //create custom image window implementation
         ImagePlus duplicatedImp = imp.duplicate();
+        duplicatedImp.setTitle(stackTitle + "-" + imp.getTitle());
         duplicatedImp.setOverlay(null);
         imageStackWindow = new ExtendedImageStackWindow(duplicatedImp);
         imageStackWindow.setTitle(stackTitle + "-" + imp.getTitle());

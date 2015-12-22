@@ -6,6 +6,7 @@ import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.DataStatistics;
 import interactive.analyzer.graph.data.StatisticsTool;
+import static interactive.analyzer.gui.InteractiveAnalyzerResultFrame.SelectionMode.*;
 import interactive.analyzer.histogram.Histogram;
 import interactive.analyzer.histogram.HistogramOptionDialog;
 import interactive.analyzer.listeners.ChartSelectionListener;
@@ -13,7 +14,7 @@ import interactive.analyzer.result.table.AbstractAfmTableModel;
 import interactive.analyzer.result.table.AbstractMeasurementResult;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
-import interactive.analyzer.listeners.RoiSelectedListener;
+import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
@@ -42,7 +43,7 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelectedListener, ChartSelectionListener {
+public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelectionListener, ChartSelectionListener {
 
     private static Logger logger = Logger.getLogger(InteractiveAnalyzerResultFrame.class);
 
@@ -65,7 +66,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     private Chart chart;
     private Color currentSelectionColor = Color.RED;
 
-    private boolean notificationSendViaChartListener = false;
+    private SelectionMode selectionMode = NONE;
+    private boolean clearTable = false;
+    private boolean notificationSendViaListener = false;
     private boolean shiftIsDown = false;
     private boolean ctrlIsDown = false;
     private boolean justButton1IsDown = true;
@@ -184,54 +187,37 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
 
                 @Override
                 public void valueChanged(ListSelectionEvent e) {
-                    if (e.getValueIsAdjusting()) {
+                    if (e.getValueIsAdjusting() || (selectionMode == CLEAR_SELECTIONS_IN_TABLE)) {
                         //changes are being still made
                         return;
                     }
 
-                    int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
-                    Object columnValue = null;
-                    if (columnIndex != -1) {
-                        columnValue = jTable1.getValueAt(jTable1.getSelectionModel().getLeadSelectionIndex(), columnIndex);
-                    } else {
-                        logger.trace("Column index is -1 for selected column " + selectedColumnName);
-                        //return
+                    if (selectionMode == SINGLE_CLICK) {
+                        logger.trace("Single row selection");
+                        singleRowSelectionInTable(jTable1, tableModel, selectedColumnName);
+                    } else if (selectionMode == CLICK_WITH_SHIFT && !notificationSendViaListener) {
+                        logger.trace("Multiple selection via pressed shift");
+                        //multiple selection via pressed shift on table
+                        int minSelectionIndex = jTable1.getSelectionModel().getMinSelectionIndex();
+                        int maxSelectionIndex = jTable1.getSelectionModel().getMaxSelectionIndex();
+                        for (int i = minSelectionIndex; i <= maxSelectionIndex; i++) {
+                            multipleRowsSelectionInTable(i, jTable1, selectedColumnName);
+                        }
+                    } else if (selectionMode == CLICK_WITH_CTRL) {
+                        logger.trace("Multiple selection via pressed ctrl");
+                        int rowIndex = jTable1.getSelectionModel().getLeadSelectionIndex();
+                        multipleRowsSelectionInTable(rowIndex, jTable1, selectedColumnName);
                     }
 
-                    for (TableSelectionListener listener : tableSelectionListeners) {
-                        if (justButton1IsDown && !notificationSendViaChartListener) {
-                            listener.clearAllSelections();
-                            notifyClearAllSelections();
-                            int rowIndex = jTable1.getSelectionModel().getLeadSelectionIndex();
-                            ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(currentSelectionColor, rowIndex);
-                            listener.selectedRowIndexIsChanged(rowIndex, (double) columnValue, currentSelectionColor);
-                            notificationSendViaChartListener = false;
-                        }
-                        if (shiftIsDown) {
-                            int minSelectionIndex = jTable1.getSelectionModel().getMinSelectionIndex();
-                            int maxSelectionIndex = jTable1.getSelectionModel().getMaxSelectionIndex();
-                            for (int i = minSelectionIndex; i <= maxSelectionIndex; i++) {
-                                columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
-                                columnValue = jTable1.getValueAt(i, columnIndex);
-                                ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(currentSelectionColor, i);
-                                listener.selectedMultipleRows(i, (double) columnValue, currentSelectionColor);
-                            }
-                        }
-                        if (ctrlIsDown) {
-                            int rowIndex = jTable1.getSelectionModel().getLeadSelectionIndex();
-                            ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(currentSelectionColor, rowIndex);
-                            listener.selectedMultipleRows(jTable1.getSelectionModel().getLeadSelectionIndex(), (double) columnValue, currentSelectionColor);
-                        }
-                    }
                     jTable1.repaint();
                 }
-
             });
             jTable1.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    notificationSendViaChartListener = false;
+                    notificationSendViaListener = false;
+
                     super.mouseClicked(e);
                 }
 
@@ -251,22 +237,15 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
 
                 private void retrieveCurrentSelectionMode(MouseEvent e) {
                     int modifiersEx = e.getModifiersEx();
+
                     if (modifiersEx == SHIFT_WITH_LMB_DOWN) {
-                        shiftIsDown = true;
+                        selectionMode = CLICK_WITH_SHIFT;
+                    } else if (modifiersEx == CTRL_WITH_LMB_DOWN) {
+                        selectionMode = CLICK_WITH_CTRL;
+                    } else if (modifiersEx == BUTTON1_DOWN_MASK) {
+                        selectionMode = SINGLE_CLICK;
                     } else {
-                        shiftIsDown = false;
-                    }
-
-                    if (modifiersEx == CTRL_WITH_LMB_DOWN) {
-                        ctrlIsDown = true;
-                    } else {
-                        ctrlIsDown = false;
-                    }
-
-                    if (modifiersEx == BUTTON1_DOWN_MASK) {
-                        justButton1IsDown = true;
-                    } else {
-                        justButton1IsDown = false;
+                        selectionMode = NONE;
                     }
                 }
 
@@ -276,11 +255,141 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         return jTable1;
     }
 
+    private void singleRowSelectionInTable(JTable jTable, TableModel tableModel,
+            String selectedColumnName) {
+        clearTable = false;
+        int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
+
+        if (columnIndex == -1) {
+            logger.trace("Column index is -1");
+            return;
+        }
+
+        double columnValue = (Double) jTable.getValueAt(jTable.getSelectionModel().getLeadSelectionIndex(), columnIndex);
+
+        clearTableSelection();
+        int rowIndex = jTable.getSelectionModel().getLeadSelectionIndex();
+        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(currentSelectionColor, rowIndex);
+        notifySingleRowSelected(rowIndex, columnValue, currentSelectionColor);
+    }
+
+    private void multipleRowsSelectionInTable(int rowIndex, JTable jTable,
+            String selectedColumnName) {
+        clearTable = false;
+        int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
+
+        if (columnIndex == -1) {
+            logger.trace("Column index is -1");
+            return;
+        }
+
+        double columnValue = (Double) jTable1.getValueAt(rowIndex, columnIndex);
+        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(currentSelectionColor, rowIndex);
+        notifyMultipleRowsSelected(rowIndex, columnValue, currentSelectionColor);
+    }
+
+    /**
+     * Notify all listeners that specific row with column value was selected in single selection and draw it with color
+     * @param rowIndex
+     * @param columnValue
+     * @param color
+     */
+    public void notifySingleRowSelected(int rowIndex, double columnValue,
+            Color color) {
+        for (TableSelectionListener listener : tableSelectionListeners) {
+            listener.selectedSingleRow(rowIndex, columnValue, color);
+        }
+    }
+
+    /**
+     * Notify all listeners that specific row with column value was selected in multiple selection and draw it with color
+     * @param rowIndex
+     * @param columnValue
+     * @param color
+     */
+    public void notifyMultipleRowsSelected(int rowIndex, double columnValue,
+            Color color) {
+        for (TableSelectionListener listener : tableSelectionListeners) {
+            listener.selectedMultipleRows(rowIndex, columnValue, color);
+        }
+    }
+
+    /**
+     * Notify all listeners that row index was deselected
+     * @param rowIndex
+     */
+    public void notifyRowDeselected(int rowIndex) {
+        for (TableSelectionListener listener : tableSelectionListeners) {
+            listener.deselectedRow(rowIndex);
+        }
+    }
+
+    /**
+     * Notify all listeners to clear all selections
+     */
+    public void notifyClearAll() {
+        for (TableSelectionListener listener : tableSelectionListeners) {
+            listener.clearAllSelections();
+        }
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="ImageSelectionListener...">
     @Override
-    public void notifySelectedRoi(int roiLabel) {
-        logger.trace("Selection notification received from roi " + roiLabel);
-        jTable1.getSelectionModel().setSelectionInterval(roiLabel - 1, roiLabel - 1);
-        jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(roiLabel - 1, 0, true)));
+    public void selectedRoiEvent(int roiLabel) {
+        logger.trace("ImageSelectionListener - Selection notification received from roi " + roiLabel);
+        notificationSendViaListener = true;
+        selectionMode = SINGLE_CLICK;
+
+        int rowIndex = roiLabel - 1;
+        jTable1.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+        jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(rowIndex, 0, true)));
+
+        singleRowSelectionInTable(jTable1, tableModel, selectedColumnName);
+    }
+
+    @Override
+    public void selectedMultipleRoiEvent(int roiLabel) {
+        logger.trace("ImageSelectionListener - selection notification received from roi " + roiLabel);
+        notificationSendViaListener = true;
+        selectionMode = CLICK_WITH_CTRL;
+
+        int rowIndex = roiLabel - 1;
+        jTable1.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+        jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(rowIndex, 0, true)));
+        //TODO uz neni potreba, pokud se selekce resi v metode ValueChanged
+        multipleRowsSelectionInTable(rowIndex, jTable1, selectedColumnName);
+    }
+
+    @Override
+    public void clearAllSelectionsEvent() {
+        logger.trace("ImageSelectionListener");
+        clearTableSelection();
+    }
+
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="ChartSelectionListener...">
+    //TODO refactore this methods
+    @Override
+    public void notifySingleBarSelected(double downRangeValue,
+            double upperRangeValue,
+            Color color) {
+        logger.trace("Single selection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue + ", color=" + color);
+        clearTableSelection();
+        notifyClearAll();
+        currentSelectionColor = color;
+
+        notificationSendViaListener = true;
+        for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
+            int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
+            double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
+            if (val >= downRangeValue && val <= upperRangeValue) {
+                ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
+                jTable1.addRowSelectionInterval(rowIndex, rowIndex);
+
+                notifyMultipleRowsSelected(rowIndex, val, color);
+            }
+        }
+        jTable1.repaint();
     }
 
     @Override
@@ -289,16 +398,15 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         logger.trace("selection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue + ", color=" + color);
         currentSelectionColor = color;
 
-        notificationSendViaChartListener = true;
+        notificationSendViaListener = true;
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
             int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
             double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
             if (val >= downRangeValue && val <= upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
-                for (TableSelectionListener listener : tableSelectionListeners) {
-                    listener.selectedMultipleRows(rowIndex, val, color);
-                }
+
+                notifyMultipleRowsSelected(rowIndex, val, color);
             }
         }
         jTable1.repaint();
@@ -309,23 +417,28 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
             double upperRangeValue) {
         logger.trace("deselection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue);
 
-        notificationSendViaChartListener = true;
+        notificationSendViaListener = true;
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
             int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
             double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
             if (val >= downRangeValue && val <= upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).removeRowFromSelection(rowIndex);
                 jTable1.removeRowSelectionInterval(rowIndex, rowIndex);
-                for (TableSelectionListener listener : tableSelectionListeners) {
-                    listener.deselectedRow(rowIndex);
-                }
+
+                notifyRowDeselected(rowIndex);
             }
         }
         jTable1.repaint();
     }
 
     @Override
-    public void notifyClearAllSelections() {
+    public void notifyClearBarSelections() {
+        clearTableSelection();
+    }
+    // </editor-fold>
+
+    private void clearTableSelection() {
+        selectionMode = CLEAR_SELECTIONS_IN_TABLE;
         jTable1.clearSelection();
         jTable1.repaint();
     }
@@ -527,10 +640,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
         chartData.setPairs(Histogram.createHistogramPairsFromHistogram(calculatedHistogram));
         chartData.setBinSize(Histogram.getBinSize());
         chartData.setNumberOfBins(Histogram.getNumberBins());
-        System.out.println("maxOccurence= " + chartData.getMaxOccurence());
-        System.out.println("minOccurence= " + chartData.getMinOccurence());
-        System.out.println("maxVal= " + chartData.getMaxValue());
-        System.out.println("minVal= " + chartData.getMinValue());
 
         chart.setColumnName(selectedColumnName);
         chart.loadData(chartData);
@@ -547,7 +656,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     }//GEN-LAST:event_clearSelectionsButtonActionPerformed
 
     private void clearTableSelectionAndNotifyListeners() {
-        jTable1.clearSelection();
+        clearTableSelection();
         for (TableSelectionListener listener : tableSelectionListeners) {
             listener.clearAllSelections();
         }
@@ -613,4 +722,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements RoiSelecte
     private javax.swing.JMenuItem optionMeniItem;
     private javax.swing.JButton showHistogram;
     // End of variables declaration//GEN-END:variables
+
+    enum SelectionMode {
+
+        SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, CLEAR_SELECTIONS_IN_TABLE, NONE;
+    }
 }

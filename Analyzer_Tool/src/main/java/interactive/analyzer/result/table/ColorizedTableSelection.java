@@ -1,8 +1,9 @@
 package interactive.analyzer.result.table;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  *
@@ -10,11 +11,11 @@ import java.util.List;
  */
 public class ColorizedTableSelection {
 
-    private List<Integer> rows;
+    private Set<Integer> rows;
     private Color color;
 
     public ColorizedTableSelection(Color color) {
-        rows = new ArrayList<>();
+        rows = new HashSet<>();
         this.color = color;
     }
 
@@ -82,4 +83,27 @@ public class ColorizedTableSelection {
 
         return null;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 79 * hash + Objects.hashCode(this.color);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ColorizedTableSelection other = (ColorizedTableSelection) obj;
+        if (!Objects.equals(this.color, other.color)) {
+            return false;
+        }
+        return true;
+    }
+
 }

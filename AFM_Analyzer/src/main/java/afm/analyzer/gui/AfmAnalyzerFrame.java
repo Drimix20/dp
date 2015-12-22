@@ -8,7 +8,7 @@ import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.result.table.AbstractMeasurementResult;
 import afm.analyzer.segmentation.Segmentation;
 import interactive.analyzer.selection.ImageSegments;
-import interactive.analyzer.listeners.RoiSelectedListener;
+import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import afm.analyzer.threshold.ThresholderExecutor;
@@ -325,7 +325,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         resultFrame.setAnalyzerValues(afmAnalyzerResult);
         analyzerImageWindow.setImagesSegments(segmentImages);
         resultFrame.addTableSelectionListener((TableSelectionListener) this.analyzerImageWindow);
-        analyzerImageWindow.addRoiSelectedListener((RoiSelectedListener) resultFrame);
+        analyzerImageWindow.addRoiSelectedListener((ImageSelectionListener) resultFrame);
 
         InteractiveAnalyzer analyzer = new InteractiveAnalyzer(resultFrame, analyzerImageWindow);
         analyzer.run();

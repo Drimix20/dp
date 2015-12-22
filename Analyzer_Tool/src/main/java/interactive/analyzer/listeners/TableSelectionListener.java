@@ -8,7 +8,7 @@ import java.awt.Color;
  */
 public interface TableSelectionListener {
 
-    public void selectedRowIndexIsChanged(int rowIndex, double value,
+    public void selectedSingleRow(int rowIndex, double value,
             Color color);
 
     public void selectedMultipleRows(int rowIndex, double value,

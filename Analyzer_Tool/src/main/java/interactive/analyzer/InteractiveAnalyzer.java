@@ -4,12 +4,11 @@ import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
 import interactive.analyzer.gui.InteractiveAnalyzerResultFrame;
-import interactive.analyzer.listeners.RoiSelectedListener;
+import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
 import interactive.analyzer.presenter.Roi;
-import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.result.table.TableUtils;
 import java.awt.Color;
@@ -25,7 +24,6 @@ import org.apache.log4j.Logger;
 public class InteractiveAnalyzer {
 
     private static Logger logger = Logger.getLogger(InteractiveAnalyzer.class);
-    private AfmAnalyzerResultTable resultTable;
     private ImageWindowI imageWindow;
     private InteractiveAnalyzerResultFrame resultFrame;
 
@@ -52,7 +50,7 @@ public class InteractiveAnalyzer {
         resultFrame = new InteractiveAnalyzerResultFrame(imageWindow, Collections.EMPTY_LIST, tableModel);
         resultFrame.addTableSelectionListener((TableSelectionListener) imageWindow);
 
-        imageWindow.addRoiSelectedListener((RoiSelectedListener) resultFrame);
+        imageWindow.addRoiSelectedListener((ImageSelectionListener) resultFrame);
     }
 
     private int parseRoiLabel(String roiName) {

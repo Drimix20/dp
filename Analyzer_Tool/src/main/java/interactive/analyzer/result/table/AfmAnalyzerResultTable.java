@@ -22,9 +22,14 @@ public class AfmAnalyzerResultTable extends JTable {
     private Logger logger = Logger.getLogger(AfmAnalyzerResultTable.class);
 
     private List<String> headerTooltips = new ArrayList<>();
-    private List<ColorizedTableSelection> tableSelectionList = new ArrayList<>();
+    private TableColorSelectionManager selectionManager;
     private static final Color DEFAULT_BACKGROUND_ROW_COLOR = Color.WHITE;
-    private static final Color DEFAULT_SELECTION_COLOR = new Color(187, 207, 229);
+    //TODO configure default selection color
+    private static final Color DEFAULT_SELECTION_COLOR = Color.red;//new Color(187, 207, 229);
+
+    public AfmAnalyzerResultTable() {
+        selectionManager = new TableColorSelectionManager();
+    }
 
     public List<String> getTooltips() {
         return headerTooltips;
@@ -60,47 +65,23 @@ public class AfmAnalyzerResultTable extends JTable {
             throw new IllegalArgumentException("Color is null");
         }
         rowBounds(row);
+        selectionManager.addRowToColorSelection(color, row);
 
-        for (ColorizedTableSelection ts : tableSelectionList) {
-            if (ts.getColor().equals(color)) {
-                return ts.addRow(row);
-            }
-        }
-        //TableSelection does not exists. New one is created and added into tableSelectionList
-        ColorizedTableSelection tableSelection = new ColorizedTableSelection(color);
-        tableSelection.addRow(row);
-
-        return tableSelectionList.add(tableSelection);
+        return true;
     }
 
-    public boolean addRowsToColorSelection(Color color, int... row) {
+    public boolean addRowsToColorSelection(Color color, int... rows) {
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
         }
-        for (ColorizedTableSelection ts : tableSelectionList) {
-            if (ts.getColor().equals(color)) {
-                for (int r : row) {
-                    return ts.addRow(r);
-                }
-            }
-        }
-        //TableSelection does not exists. New one is created and added into tableSelectionList
-        ColorizedTableSelection tableSelection = new ColorizedTableSelection(color);
-        for (int r : row) {
-            tableSelection.addRow(r);
-        }
+        selectionManager.addRowsToColorSelection(color, rows);
 
-        return tableSelectionList.add(tableSelection);
+        return true;
     }
 
     public void removeRowFromSelection(int row) {
         rowBounds(row);
-
-        for (ColorizedTableSelection ts : tableSelectionList) {
-            if (ts.containsRow(row)) {
-                ts.removeRow(row);
-            }
-        }
+        selectionManager.removeRowFromSelection(row);
     }
 
     public void removeRowFromColorSelection(Color color, int row) {
@@ -108,30 +89,21 @@ public class AfmAnalyzerResultTable extends JTable {
             throw new IllegalArgumentException("Color is null");
         }
         rowBounds(row);
-
-        for (ColorizedTableSelection ts : tableSelectionList) {
-            if (ts.getColor().equals(color)) {
-                ts.removeRow(row);
-            }
-        }
+        selectionManager.removeRowFromColorSelection(color, row);
     }
 
-    public void removeRowsFromColorSelection(Color color, int... row) {
+    public void removeRowsFromColorSelection(Color color, int... rows) {
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
         }
-        for (ColorizedTableSelection ts : tableSelectionList) {
-            if (ts.getColor().equals(color)) {
-                for (int r : row) {
-                    ts.removeRow(r);
-                }
-            }
-        }
+        selectionManager.removeRowsFromColorSelection(color, rows);
     }
 
     @Override
     public void clearSelection() {
-        tableSelectionList = new ArrayList<>();
+        if (selectionManager != null) {
+            selectionManager.deleteAllSelections();
+        }
         super.clearSelection();
     }
 
@@ -143,11 +115,10 @@ public class AfmAnalyzerResultTable extends JTable {
 
         Color selectionColor = null;
         //row can be in selected range
-        for (ColorizedTableSelection ts : tableSelectionList) {
-            if (ts.containsRow(row)) {
-                selectionColor = ts.getColorForRow(row);
-            }
+        if (selectionManager != null) {
+            selectionColor = selectionManager.getColorForRow(row);
         }
+
         if (selectionColor == null && isRowSelected(row)) {
             //selection performed by click on table row
             selectionColor = DEFAULT_SELECTION_COLOR;

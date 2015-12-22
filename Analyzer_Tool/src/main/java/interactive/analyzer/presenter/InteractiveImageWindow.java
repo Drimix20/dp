@@ -2,18 +2,17 @@ package interactive.analyzer.presenter;
 
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
-import interactive.analyzer.listeners.RoiSelectedListener;
+import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
-import interactive.analyzer.selection.ImageSegments;
 import java.awt.Color;
 import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Logger;
-import selector.ChannelContainer;
 
 /**
  * TODO not valid desc of class
@@ -32,7 +31,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
     private String stackTitle = "Interactive Analyzer window";
 
-    private static List<RoiSelectedListener> roiSelectedListeners;
+    private static List<ImageSelectionListener> roiSelectedListeners;
     private ExtendedImageStackWindow imageStackWindow;
     private OverlayManager overlayManager;
     private List<Roi> rois;
@@ -42,7 +41,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         validate(imp, rois);
         roiSelectedListeners = new ArrayList<>();
 
-        //create use custom image window implementation
+        //create custom image window implementation
         ImagePlus duplicatedImp = imp.duplicate();
         duplicatedImp.setOverlay(null);
         imageStackWindow = new ExtendedImageStackWindow(duplicatedImp);
@@ -69,8 +68,8 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         }
     }
 
-    @Override
-    public void setImagesSegments(List<ImageSegments> imagesSegments) {
+//    @Override
+//    public void setImagesSegments(List<ImageSegments> imagesSegments) {
 //        this.imagesSegments = imagesSegments;
 //        //TODO functionality just for one image in window
 //        if (showingImg != null) {
@@ -82,17 +81,16 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 //            }
 //            showingImg.updateImage();
 //        }
-        throw new UnsupportedOperationException();
-    }
-
+//        throw new UnsupportedOperationException();
+//    }
     // <editor-fold defaultstate="collapsed" desc="Roi Selection Listener add, remove, removeAll">
     @Override
-    public boolean addRoiSelectedListener(RoiSelectedListener listener) {
+    public boolean addRoiSelectedListener(ImageSelectionListener listener) {
         return roiSelectedListeners.add(listener);
     }
 
     @Override
-    public boolean removeRoiSelectedListener(RoiSelectedListener listener) {
+    public boolean removeRoiSelectedListener(ImageSelectionListener listener) {
         return roiSelectedListeners.remove(listener);
     }
 
@@ -120,8 +118,8 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
      * Set images which will be shown saved in special object for AFM analyzer
      * @param channelContainer container contains images to show
      */
-    @Override
-    public void setImagesToShow(List<ChannelContainer> channelContainer) {
+//    @Override
+//    public void setImagesToShow(List<ChannelContainer> channelContainer) {
 //        ImagePlus tmp = channelContainer.get(0).getImagePlus();
 //        ImageStack imgStack = new ImageStack(tmp.getWidth(), tmp.getHeight());
 //        for (ChannelContainer channelContainer1 : channelContainer) {
@@ -130,28 +128,18 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 //
 //        showingImg = new ImagePlus(stackTitle, imgStack);
 //        configureImageStackWindow();
-        throw new UnsupportedOperationException();
-    }
-
+//        throw new UnsupportedOperationException();
+//    }
     /**
      * Set images which will be shown in image window
      * @param images one image or stack of images to show
      */
-    @Override
-    public void setImagesToShow(ImagePlus images) {
+//    @Override
+//    public void setImagesToShow(ImagePlus images) {
 //        showingImg = images;
 //        configureImageStackWindow();
-        throw new UnsupportedOperationException();
-
-    }
-
-    //Not used
-    private void configureImageStackWindow() {
-        imageStackWindow = new ExtendedImageStackWindow(showingImg);
-        registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
-        imageStackWindow.setTitle(stackTitle);
-    }
-
+//        throw new UnsupportedOperationException();
+//    }
     private void registerMouseListenerToImageCanvas(ImageCanvas canvas) {
         canvas.addMouseListener(new MouseAdapter() {
 
@@ -165,6 +153,16 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
             public void mouseReleased(MouseEvent e) {
                 logger.trace("Released on image: " + e.getX() + ", " + e.getY());
                 super.mousePressed(e);
+                ij.gui.Roi selectionRoi = showingImg.getRoi();
+
+                if (selectionRoi != null) {
+                    logger.trace("Selection done by other roi");
+                    overlayManager.deselectAll();
+                    notifyClearAllSelections();
+                    List<Roi> multipleSelection = overlayManager.selectRoisInSelection(selectionRoi.getPolygon(), DEFAULT_ROI_SELECTION_COLOR);
+                    printSelectedRois(multipleSelection);
+                    notifyMultipleSelectionRoi(multipleSelection);
+                }
             }
 
             @Override
@@ -182,53 +180,65 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
             //TODO implement multiple roi selection
             @Override
             public void mouseClicked(MouseEvent e) {
-                super.mousePressed(e);
-//                List<Roi> selectedRois = new ArrayList<>();
-//                //Roi roi = imageStackWindow.getImagePlus().getRoi();
-//                if (roi != null) {
-//
-//                    if (checkIfSelectionIsDoneByRoi(roi)) {
-//                        //check if is new selection created
-//
-//                    } else {
-//                        //direct selection is performed (ctrl, shift)
-//                        switch (e.getModifiersEx()) {
-//                            case LMB_DOWN:
-//                                //single click selection
-//                                overlayManager.selectRoi(roi, DEFAULT_ROI_SELECTION_COLOR);
-//                                selectedRois.add(roi);
-//                                break;
-//                            case CTRL_WITH_LMB_DOWN:
-//                                //multiple selection with ctrl down
-//                                overlayManager.selectRoi(roi, DEFAULT_ROI_SELECTION_COLOR);
-//                                selectedRois.add(roi);
-//                                break;
-//                        }
-//                    }
-//
-//                    //notify listeners
-//                    for (Roi r : selectedRois) {
-//                        int parsedRoiLabel = parseRoiLabel(r.getName());
-//                        logger.debug("Clicked on image: " + e.getX() + ", " + e.getY() + ", roi label: " + parsedRoiLabel);
-//                        for (RoiSelectedListener listener : roiSelectedListeners) {
-//                            listener.notifySelectedRoi(parsedRoiLabel);
-//                        }
-//                    }
-//                } else {
-//                    logger.warn("No roi is selected");
-//                }
+                ij.gui.Roi selectionRoi = showingImg.getRoi();
+
+                if (selectionRoi != null) {
+                    logger.trace("Selection done by other roi");
+                    overlayManager.deselectAll();
+                    notifyClearAllSelections();
+                    List<Roi> multipleSelection = overlayManager.selectRoisInSelection(selectionRoi.getPolygon(), DEFAULT_STROKE_ROI_COLOR);
+                    printSelectedRois(multipleSelection);
+                    notifyMultipleSelectionRoi(multipleSelection);
+                } else {
+                    int modifiersEx = e.getModifiersEx();
+                    Roi selectedRoi = overlayManager.getRoiFromPoint(e.getPoint());
+                    if (selectedRoi == null) {
+                        logger.trace("No roi is selected by click");
+                        return;
+                    }
+                    if (modifiersEx == CTRL_DOWN_MASK) {
+                        logger.trace("Selection with ctrl key down: " + selectedRoi.getName() + " roi name");
+                        overlayManager.addRoiToSelection(selectedRoi, DEFAULT_STROKE_ROI_COLOR);
+                        overlayManager.drawRois();
+                        notifyMultipleSelectionRoi(Arrays.asList(selectedRoi));
+                    } else {
+                        logger.trace("Single selection: " + selectedRoi.getName() + " roi name");
+                        overlayManager.deselectAll();
+                        overlayManager.selectRoi(selectedRoi, DEFAULT_STROKE_ROI_COLOR);
+                        overlayManager.drawRois();
+                        notifySingleSelectionRoi(selectedRoi);
+                    }
+                }
+            }
+
+            private void printSelectedRois(List<Roi> rois) {
+                String msg = "";
+                for (Roi r : rois) {
+                    msg += r.getName() + "; ";
+                }
+                logger.trace(msg);
             }
         });
     }
 
-    private boolean checkIfSelectionIsDoneByRoi(Roi roi) {
-        return false;
+    public void notifyMultipleSelectionRoi(List<Roi> rois) {
+        for (Roi r : rois) {
+            for (ImageSelectionListener listener : roiSelectedListeners) {
+                listener.selectedMultipleRoiEvent(r.getName());
+            }
+        }
     }
 
-    private int parseRoiLabel(String roiName) {
-        logger.trace("Parse roi name: " + roiName);
-        String roiLabeString = roiName.split("-")[0];
-        return Integer.parseInt(roiLabeString);
+    public void notifySingleSelectionRoi(Roi roi) {
+        for (ImageSelectionListener listener : roiSelectedListeners) {
+            listener.selectedRoiEvent(roi.getName());
+        }
+    }
+
+    public void notifyClearAllSelections() {
+        for (ImageSelectionListener listener : roiSelectedListeners) {
+            listener.clearAllSelectionsEvent();
+        }
     }
 
     @Override
@@ -243,50 +253,65 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         }
     }
 
-    // TableSelectionListener implementation
+    // <editor-fold defaultstate="collapsed" desc="TableSelectionListener...">
     @Override
-    public void selectedRowIndexIsChanged(int rowIndex, double value,
+    public void selectedSingleRow(int rowIndex, double value,
             Color color) {
-        logger.trace(rowIndex);
+        if (showingImg.getRoi() != null) {
+            ij.gui.Roi imageR = null;
+            showingImg.setRoi(imageR);
+        }
+        logger.trace("rowIndex: " + rowIndex);
         int labelToSelect = rowIndex + 1;
+        overlayManager.deselectAll();
         overlayManager.selectRoi(labelToSelect, color);
+        overlayManager.drawRois();
     }
 
     @Override
     public void selectedMultipleRows(int rowIndex, double value, Color color) {
-        logger.trace(rowIndex);
+        logger.trace("rowIndex: " + rowIndex);
         int labelToSelect = rowIndex + 1;
         overlayManager.addRoiToSelection(labelToSelect, color);
+        overlayManager.drawRois();
     }
 
     @Override
     public void deselectedRow(int rowIndex) {
-        logger.trace(rowIndex);
+        logger.trace("rowIndex: " + rowIndex);
         int labelToSelect = rowIndex + 1;
         overlayManager.deselectRoi(labelToSelect, DEFAULT_STROKE_ROI_COLOR);
+        overlayManager.drawRois();
     }
 
     @Override
     public void clearAllSelections() {
-        overlayManager.deselectAll();
+        overlayManager.deselectAllAndRedraw();
     }
-    // TableSelectionListener end of implementation
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="ChartSelectionListener...">
+    @Override
+    public void notifySingleBarSelected(double downRangeValue,
+            double upperRangeValue, Color color) {
+        logger.trace("Not Implemented");
+    }
 
     @Override
     public void notifyBarSelected(double downRangeValue, double upperRangeValue,
             Color color) {
-        //not used
+        logger.trace("Not Implemented");
     }
 
     @Override
     public void notifyBarDeselected(double downRangeValue,
             double upperRangeValue) {
-        //not used
+        logger.trace("Not Implemented");
     }
 
     @Override
-    public void notifyClearAllSelections() {
-        overlayManager.deselectAll();
+    public void notifyClearBarSelections() {
+        overlayManager.deselectAllAndRedraw();
     }
-
+    // </editor-fold>
 }

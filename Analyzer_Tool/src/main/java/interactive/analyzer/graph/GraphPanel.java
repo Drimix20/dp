@@ -130,7 +130,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                     for (ChartSelectionListener listener : selectionListeners) {
                         if (select) {
                             //chart shape was selected
-                            listener.notifyBarSelected(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
+                            listener.notifySingleBarSelected(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
                         } else {
                             //chart shape was deselected
                             listener.notifyBarDeselected(shape.getLowerBound(), shape.getUpperBound());
@@ -270,8 +270,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         ImageIO.write(paintImage, filter.getExtension(), file);
     }
 
+    // <editor-fold defaultstate="collapsed" desc="TableSelectionListener...">
     @Override
-    public void selectedRowIndexIsChanged(int rowIndex, double value,
+    public void selectedSingleRow(int rowIndex, double value,
             Color color) {
         if (chart == null) {
             return;
@@ -280,6 +281,8 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
             if (shape.isValueInRange(value)) {
                 shape.setSelected(true);
                 shape.setSelectionColor(selectionColor);
+            } else {
+                shape.setSelected(false);
             }
         }
         updatePaint();
@@ -294,6 +297,8 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
             if (shape.isValueInRange(value)) {
                 shape.setSelected(true);
                 shape.setSelectionColor(selectionColor);
+            } else {
+                shape.setSelected(false);
             }
         }
         updatePaint();
@@ -311,9 +316,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
             chart.clearAllSelections();
         }
         for (ChartSelectionListener listener : selectionListeners) {
-            listener.notifyClearAllSelections();
+            listener.notifyClearBarSelections();
         }
         updatePaint();
     }
-
+    // </editor-fold>
 }

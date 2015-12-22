@@ -1,6 +1,7 @@
 package interactive.analyzer.presenter;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.util.Objects;
 
@@ -10,11 +11,11 @@ import java.util.Objects;
  */
 public class Roi {
 
-    private int name;
+    private int name = -1;
     private Polygon polygon;
     private Color strokeColor;
     private boolean isSelected;
-    private boolean stateChanged;
+    private boolean stateChanged = true;
 
     public Roi(int name, Polygon polygon, Color strokeColor, boolean isSelected) {
         this.name = name;
@@ -43,9 +44,18 @@ public class Roi {
         this.strokeColor = strokeColor;
     }
 
-    public void setSelected(boolean isSelected) {
-        stateChanged = isSelected != this.isSelected;
-        this.isSelected = isSelected;
+    public void setSelected(boolean setSelected) {
+        stateChanged = stateChanged(setSelected);
+        this.isSelected = setSelected;
+    }
+
+    private boolean stateChanged(boolean setSelected) {
+        if (setSelected && this.isSelected == true) {
+            return false;
+        } else if (setSelected == false && this.isSelected == false) {
+            return true;
+        }
+        return true;
     }
 
     public boolean isStateChanged() {
@@ -54,6 +64,14 @@ public class Roi {
 
     public void setStateChanged(boolean stateChanged) {
         this.stateChanged = stateChanged;
+    }
+
+    public boolean stateChanged() {
+        return stateChanged;
+    }
+
+    public boolean contains(Point p) {
+        return polygon.contains(p);
     }
 
     @Override
@@ -78,6 +96,11 @@ public class Roi {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Roi{" + "name=" + name + ", strokeColor=" + strokeColor + ", isSelected=" + isSelected + '}';
     }
 
 }

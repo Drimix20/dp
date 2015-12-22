@@ -76,7 +76,7 @@ public class DataStatistics {
                     .append(", series1,\"").append(i).append("\");");
             i++;
         }
-        System.out.println(sb.toString());
+//        System.out.println(sb.toString());
     }
 
 }

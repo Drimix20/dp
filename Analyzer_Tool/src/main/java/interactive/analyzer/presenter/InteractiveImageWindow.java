@@ -178,7 +178,6 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
                 super.mousePressed(e);
             }
 
-            //TODO implement multiple roi selection
             @Override
             public void mouseClicked(MouseEvent e) {
                 ij.gui.Roi selectionRoi = showingImg.getRoi();
@@ -256,7 +255,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
     // <editor-fold defaultstate="collapsed" desc="TableSelectionListener...">
     @Override
-    public void selectedSingleRow(int rowIndex, double value,
+    public void singleRowSelectedEvent(int rowIndex, double value,
             Color color) {
         if (showingImg.getRoi() != null) {
             ij.gui.Roi imageR = null;
@@ -270,7 +269,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     }
 
     @Override
-    public void selectedMultipleRows(int rowIndex, double value, Color color) {
+    public void multipleRowsSelectedEvent(int rowIndex, double value, Color color) {
         logger.trace("rowIndex: " + rowIndex);
         int labelToSelect = rowIndex + 1;
         overlayManager.addRoiToSelection(labelToSelect, color);
@@ -278,7 +277,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     }
 
     @Override
-    public void deselectedRow(int rowIndex) {
+    public void rowDeselectedEvent(int rowIndex) {
         logger.trace("rowIndex: " + rowIndex);
         int labelToSelect = rowIndex + 1;
         overlayManager.deselectRoi(labelToSelect, DEFAULT_STROKE_ROI_COLOR);
@@ -286,32 +285,32 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     }
 
     @Override
-    public void clearAllSelections() {
+    public void clearAllSelectionsEvent() {
         overlayManager.deselectAllAndRedraw();
     }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="ChartSelectionListener...">
     @Override
-    public void notifySingleBarSelected(double downRangeValue,
+    public void singleBarSelectedEvent(double downRangeValue,
             double upperRangeValue, Color color) {
         logger.trace("Not Implemented");
     }
 
     @Override
-    public void notifyBarSelected(double downRangeValue, double upperRangeValue,
+    public void barSelectedEvent(double downRangeValue, double upperRangeValue,
             Color color) {
         logger.trace("Not Implemented");
     }
 
     @Override
-    public void notifyBarDeselected(double downRangeValue,
+    public void barDeselectedEvent(double downRangeValue,
             double upperRangeValue) {
         logger.trace("Not Implemented");
     }
 
     @Override
-    public void notifyClearBarSelections() {
+    public void clearBarSelectionsEvent() {
         overlayManager.deselectAllAndRedraw();
     }
     // </editor-fold>

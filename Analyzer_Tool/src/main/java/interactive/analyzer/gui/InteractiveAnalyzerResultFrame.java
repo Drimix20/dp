@@ -297,7 +297,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     public void notifySingleRowSelected(int rowIndex, double columnValue,
             Color color) {
         for (TableSelectionListener listener : tableSelectionListeners) {
-            listener.selectedSingleRow(rowIndex, columnValue, color);
+            listener.singleRowSelectedEvent(rowIndex, columnValue, color);
         }
     }
 
@@ -310,7 +310,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     public void notifyMultipleRowsSelected(int rowIndex, double columnValue,
             Color color) {
         for (TableSelectionListener listener : tableSelectionListeners) {
-            listener.selectedMultipleRows(rowIndex, columnValue, color);
+            listener.multipleRowsSelectedEvent(rowIndex, columnValue, color);
         }
     }
 
@@ -320,7 +320,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
      */
     public void notifyRowDeselected(int rowIndex) {
         for (TableSelectionListener listener : tableSelectionListeners) {
-            listener.deselectedRow(rowIndex);
+            listener.rowDeselectedEvent(rowIndex);
         }
     }
 
@@ -329,7 +329,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
      */
     public void notifyClearAll() {
         for (TableSelectionListener listener : tableSelectionListeners) {
-            listener.clearAllSelections();
+            listener.clearAllSelectionsEvent();
         }
     }
 
@@ -370,7 +370,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     // <editor-fold defaultstate="collapsed" desc="ChartSelectionListener...">
     //TODO refactore this methods
     @Override
-    public void notifySingleBarSelected(double downRangeValue,
+    public void singleBarSelectedEvent(double downRangeValue,
             double upperRangeValue,
             Color color) {
         logger.trace("Single selection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue + ", color=" + color);
@@ -393,7 +393,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     }
 
     @Override
-    public void notifyBarSelected(double downRangeValue, double upperRangeValue,
+    public void barSelectedEvent(double downRangeValue, double upperRangeValue,
             Color color) {
         logger.trace("selection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue + ", color=" + color);
         currentSelectionColor = color;
@@ -413,7 +413,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     }
 
     @Override
-    public void notifyBarDeselected(double downRangeValue,
+    public void barDeselectedEvent(double downRangeValue,
             double upperRangeValue) {
         logger.trace("deselection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue);
 
@@ -432,7 +432,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     }
 
     @Override
-    public void notifyClearBarSelections() {
+    public void clearBarSelectionsEvent() {
         clearTableSelection();
     }
     // </editor-fold>
@@ -658,7 +658,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private void clearTableSelectionAndNotifyListeners() {
         clearTableSelection();
         for (TableSelectionListener listener : tableSelectionListeners) {
-            listener.clearAllSelections();
+            listener.clearAllSelectionsEvent();
         }
     }
 

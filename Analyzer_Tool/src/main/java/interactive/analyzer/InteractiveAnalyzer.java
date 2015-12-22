@@ -77,7 +77,6 @@ public class InteractiveAnalyzer {
         if (!resultFrame.isVisible()) {
             resultFrame.setVisible(true);
         }
-        //TODO show rois with label in created imageWindow
     }
 
 }

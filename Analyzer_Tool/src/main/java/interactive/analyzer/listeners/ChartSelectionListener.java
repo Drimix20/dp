@@ -8,15 +8,15 @@ import java.awt.Color;
  */
 public interface ChartSelectionListener {
 
-    public void notifySingleBarSelected(double downRangeValue,
+    public void singleBarSelectedEvent(double downRangeValue,
             double upperRangeValue,
             Color color);
 
-    public void notifyBarSelected(double downRangeValue, double upperRangeValue,
+    public void barSelectedEvent(double downRangeValue, double upperRangeValue,
             Color color);
 
-    public void notifyBarDeselected(double downRangeValue,
+    public void barDeselectedEvent(double downRangeValue,
             double upperRangeValue);
 
-    public void notifyClearBarSelections();
+    public void clearBarSelectionsEvent();
 }

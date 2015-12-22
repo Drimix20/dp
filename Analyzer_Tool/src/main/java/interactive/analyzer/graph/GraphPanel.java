@@ -130,10 +130,10 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                     for (ChartSelectionListener listener : selectionListeners) {
                         if (select) {
                             //chart shape was selected
-                            listener.notifySingleBarSelected(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
+                            listener.singleBarSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
                         } else {
                             //chart shape was deselected
-                            listener.notifyBarDeselected(shape.getLowerBound(), shape.getUpperBound());
+                            listener.barDeselectedEvent(shape.getLowerBound(), shape.getUpperBound());
                         }
                     }
                     //needed to repaint canvas
@@ -161,10 +161,10 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                             for (Shape shapeByDragged : selectionByDragged) {
                                 if (select) {
                                     //chart shape was selected
-                                    listener.notifyBarSelected(shapeByDragged.getLowerBound(), shapeByDragged.getUpperBound(), selectionColor);
+                                    listener.barSelectedEvent(shapeByDragged.getLowerBound(), shapeByDragged.getUpperBound(), selectionColor);
                                 } else {
                                     //chart shape was deselected
-                                    listener.notifyBarDeselected(shapeByDragged.getLowerBound(), shapeByDragged.getUpperBound());
+                                    listener.barDeselectedEvent(shapeByDragged.getLowerBound(), shapeByDragged.getUpperBound());
                                 }
                             }
                         }
@@ -272,7 +272,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
     // <editor-fold defaultstate="collapsed" desc="TableSelectionListener...">
     @Override
-    public void selectedSingleRow(int rowIndex, double value,
+    public void singleRowSelectedEvent(int rowIndex, double value,
             Color color) {
         if (chart == null) {
             return;
@@ -289,7 +289,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     @Override
-    public void selectedMultipleRows(int rowIndex, double value, Color color) {
+    public void multipleRowsSelectedEvent(int rowIndex, double value, Color color) {
         if (chart == null) {
             return;
         }
@@ -305,18 +305,18 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     @Override
-    public void deselectedRow(int rowIndex) {
+    public void rowDeselectedEvent(int rowIndex) {
         //not needed
     }
 
     @Override
-    public void clearAllSelections() {
+    public void clearAllSelectionsEvent() {
         logger.trace("");
         if (chart != null) {
             chart.clearAllSelections();
         }
         for (ChartSelectionListener listener : selectionListeners) {
-            listener.notifyClearBarSelections();
+            listener.clearBarSelectionsEvent();
         }
         updatePaint();
     }

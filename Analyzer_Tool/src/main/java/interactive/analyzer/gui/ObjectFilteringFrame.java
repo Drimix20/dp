@@ -313,7 +313,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_sortingMenuItemActionPerformed
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
-        graphPanel.clearAllSelections();
+        graphPanel.clearAllSelectionsEvent();
 
     }//GEN-LAST:event_clearButtonActionPerformed
 

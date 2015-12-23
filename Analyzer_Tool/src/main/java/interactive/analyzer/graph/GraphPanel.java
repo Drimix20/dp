@@ -274,11 +274,14 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     @Override
     public void singleRowSelectedEvent(int rowIndex, double value,
             Color color) {
+        logger.trace("rowIndex: " + rowIndex);
         if (chart == null) {
             return;
         }
+        boolean binNotFound = true;
         for (Shape shape : chart.getDrawShapes()) {
-            if (shape.isValueInRange(value)) {
+            if (shape.isValueInRange(value) && binNotFound) {
+                binNotFound = false;
                 shape.setSelected(true);
                 shape.setSelectionColor(selectionColor);
             } else {
@@ -289,7 +292,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     @Override
-    public void multipleRowsSelectedEvent(int rowIndex, double value, Color color) {
+    public void multipleRowsSelectedEvent(int rowIndex, double value,
+            Color color) {
+        logger.trace("rowIndex: " + rowIndex);
         if (chart == null) {
             return;
         }
@@ -297,8 +302,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
             if (shape.isValueInRange(value)) {
                 shape.setSelected(true);
                 shape.setSelectionColor(selectionColor);
-            } else {
-                shape.setSelected(false);
+                break;
             }
         }
         updatePaint();
@@ -306,6 +310,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
     @Override
     public void rowDeselectedEvent(int rowIndex) {
+        logger.trace("rowIndex: " + rowIndex);
         //not needed
     }
 

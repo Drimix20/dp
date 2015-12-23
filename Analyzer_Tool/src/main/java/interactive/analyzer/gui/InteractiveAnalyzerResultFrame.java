@@ -343,8 +343,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         int rowIndex = roiLabel - 1;
         jTable1.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
         jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(rowIndex, 0, true)));
-
-        singleRowSelectionInTable(jTable1, tableModel, selectedColumnName);
     }
 
     @Override
@@ -356,8 +354,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         int rowIndex = roiLabel - 1;
         jTable1.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
         jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(rowIndex, 0, true)));
-        //TODO uz neni potreba, pokud se selekce resi v metode ValueChanged
-        multipleRowsSelectionInTable(rowIndex, jTable1, selectedColumnName);
     }
 
     @Override
@@ -633,13 +629,14 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             chart.setColumnName(selectedColumnName);
             calculatedHistogram = Histogram.calculateHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
         }
-        Histogram.printHistogram(calculatedHistogram);
+        //TODO printing histogram
+//        Histogram.printHistogram(calculatedHistogram);
         chartData.setMaxOccurence((int) StatisticsTool.computeMaxValue(calculatedHistogram));
         chartData.setMinOccurence((int) StatisticsTool.computeMinValue(calculatedHistogram));
         chartData.setMeanOccurence((int) StatisticsTool.computeMean(calculatedHistogram));
         chartData.setPairs(Histogram.createHistogramPairsFromHistogram(calculatedHistogram));
         chartData.setBinSize(Histogram.getBinSize());
-        chartData.setNumberOfBins(Histogram.getNumberBins());
+        chartData.setNumberOfBins(Histogram.getBinsNumber());
 
         chart.setColumnName(selectedColumnName);
         chart.loadData(chartData);

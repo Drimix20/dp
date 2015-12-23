@@ -10,7 +10,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -43,7 +42,7 @@ public class HistogramChart implements Chart {
         validateDataSet(dataSet);
         clearAllSelections();
         this.data = dataSet;
-        prepareShapes(!shapes.isEmpty());
+        prepareShapes(data);
     }
 
     private void validateDataSet(HistogramDataSet dataSet) {// <editor-fold defaultstate="collapsed" desc="body">
@@ -88,31 +87,19 @@ public class HistogramChart implements Chart {
      * selection then selection will be visible after sorting
      * @param selectPreviousSelected
      */
-    private void prepareShapes(boolean selectPreviousSelected) {
-        if (data == null || this.data.getHistogramPairs().isEmpty()) {
+    private void prepareShapes(HistogramDataSet data) {
+        shapes = new ArrayList<>();
+        if (data == null || data.getHistogramPairs().isEmpty()) {
             logger.debug("No data for prepare shapes");
             return;
         }
-        List<Shape> oldShape = Collections.unmodifiableList(shapes);
-        shapes = new ArrayList<>();
 
         List<HistogramBin> pairs = this.data.getHistogramPairs();
         int dataSize = pairs.size();
-//        logger.trace("barWidth=" + barWidth);
         for (int i = 0; i < dataSize; i++) {
             HistogramBin bin = pairs.get(i);
             logger.trace(bin);
             Bar bar = new Bar(bin.getID(), bin.getLowerBound(), bin.getUpperBound(), bin.getOccurence());
-
-            if (selectPreviousSelected) {
-                //reselecting selected shapes before sorting
-                for (Shape shape : oldShape) {
-                    if (bar.getID() == shape.getID()) {
-                        bar.setSelected(shape.isSelected());
-                    }
-                }
-            }
-
             shapes.add(bar);
         }
 

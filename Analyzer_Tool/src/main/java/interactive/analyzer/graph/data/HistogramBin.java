@@ -19,6 +19,13 @@ public class HistogramBin {
         this.occurence = occurence;
     }
 
+    public HistogramBin(int id, double lowerBound, double upperBound) {
+        this.ID = id;
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+        this.occurence = 0;
+    }
+
     public int getID() {
         return ID;
     }
@@ -35,13 +42,17 @@ public class HistogramBin {
         return occurence;
     }
 
+    public void incrementOccurence() {
+        this.occurence++;
+    }
+
     public boolean isValueInRange(double value) {
-        return lowerBound <= value && value < upperBound;
+        return lowerBound <= value && value <= upperBound;
     }
 
     @Override
     public String toString() {
-        return "Pair[ id=" + ID + ", lowBound=" + lowerBound + ", upperBound="
+        return "HistogramBin[ id=" + ID + ", lowBound=" + lowerBound + ", upperBound="
                 + upperBound + ", occurence=" + occurence + ']';
     }
 

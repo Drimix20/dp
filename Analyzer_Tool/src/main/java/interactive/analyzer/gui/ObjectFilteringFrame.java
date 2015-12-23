@@ -5,7 +5,6 @@ import interactive.analyzer.graph.HistogramChart;
 import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.GraphPanel;
 import interactive.analyzer.graph.data.HistogramDataSet;
-import interactive.analyzer.graph.data.DataStatistics;
 import interactive.analyzer.graph.data.HistogramBin;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import java.awt.Color;
@@ -94,8 +93,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         Save = new javax.swing.JMenuItem();
-        viewMenu = new javax.swing.JMenu();
-        sortingMenuItem = new javax.swing.JRadioButtonMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Object's filtering");
@@ -246,18 +243,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
         jMenuBar1.add(fileMenu);
 
-        viewMenu.setText("View");
-
-        sortingMenuItem.setText("Sorting");
-        sortingMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sortingMenuItemActionPerformed(evt);
-            }
-        });
-        viewMenu.add(sortingMenuItem);
-
-        jMenuBar1.add(viewMenu);
-
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -299,18 +284,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_SaveActionPerformed
-
-    private void sortingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortingMenuItemActionPerformed
-        if (sortingMenuItem.isSelected()) {
-            HistogramDataSet dataCopy = DataStatistics.createNewInstanceOfData(originChartData);
-            dataCopy.sortHistogramPairs();
-            graphPanel.getChart().loadData(dataCopy);
-            graphPanel.updatePaint();
-        } else {
-            graphPanel.getChart().loadData(originChartData);
-            graphPanel.updatePaint();
-        }
-    }//GEN-LAST:event_sortingMenuItemActionPerformed
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         graphPanel.clearAllSelectionsEvent();
@@ -657,8 +630,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JButton saveButton;
-    private javax.swing.JRadioButtonMenuItem sortingMenuItem;
     private javax.swing.JTextField tagNameField;
-    private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
 }

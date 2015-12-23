@@ -34,8 +34,16 @@ public class HistogramDataSet {
         this.numberOfBins = numberOfBins;
     }
 
+    public int getNumberOfBins() {
+        return numberOfBins;
+    }
+
     public void setBinSize(double binSize) {
         this.binSize = binSize;
+    }
+
+    public double getBinSize() {
+        return binSize;
     }
 
     public int getMinOccurence() {

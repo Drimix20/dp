@@ -101,7 +101,7 @@ public abstract class Shape {
      * @return if is value in range return true otherwise false
      */
     public boolean isValueInRange(double value) {
-        return lowerBound <= value && value < upperBound;
+        return lowerBound <= value && value <= upperBound;
     }
 
     /**

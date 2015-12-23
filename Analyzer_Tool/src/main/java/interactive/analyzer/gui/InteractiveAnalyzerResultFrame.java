@@ -375,10 +375,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         currentSelectionColor = color;
 
         notificationSendViaListener = true;
+        int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
-            int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
             double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
-            if (val >= downRangeValue && val <= upperRangeValue) {
+            if (val > downRangeValue && val <= upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
 
@@ -395,10 +395,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         currentSelectionColor = color;
 
         notificationSendViaListener = true;
+        int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
-            int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
             double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
-            if (val >= downRangeValue && val <= upperRangeValue) {
+            if (val > downRangeValue && val <= upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
 
@@ -417,7 +417,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
             int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
             double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
-            if (val >= downRangeValue && val <= upperRangeValue) {
+            if (val > downRangeValue && val <= upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).removeRowFromSelection(rowIndex);
                 jTable1.removeRowSelectionInterval(rowIndex, rowIndex);
 

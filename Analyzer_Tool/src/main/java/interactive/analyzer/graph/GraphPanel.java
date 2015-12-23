@@ -193,6 +193,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         this.chart = chart;
     }
 
+    // <editor-fold defaultstate="collapsed" desc="Manage ChartSelectionListener...">
     public boolean addChartSelectionListener(ChartSelectionListener listener) {
         return selectionListeners.add(listener);
     }
@@ -204,6 +205,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     public void removeAllChartSelectionListeners() {
         selectionListeners.clear();
     }
+    // </editor-fold>
 
     /**
      * Identify shape on which was clicked performed
@@ -217,6 +219,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         }
         Point p2 = chart.scaleToGraphCanvasCoords(p.getX(), p.getY());
         for (Shape shape : chart.getDrawShapes()) {
+            if (shape.getOccurence() == 0) {
+                continue;
+            }
             if (shape.cross(p2.getX())) {
                 return shape;
             }
@@ -278,10 +283,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         if (chart == null) {
             return;
         }
-        boolean binNotFound = true;
+
         for (Shape shape : chart.getDrawShapes()) {
-            if (shape.isValueInRange(value) && binNotFound) {
-                binNotFound = false;
+            if (shape.isValueInRange(value)) {
                 shape.setSelected(true);
                 shape.setSelectionColor(selectionColor);
             } else {

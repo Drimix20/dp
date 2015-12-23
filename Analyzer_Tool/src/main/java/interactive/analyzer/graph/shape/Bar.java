@@ -71,7 +71,7 @@ public class Bar extends Shape {
             return false;
         }
 
-        return rectangle.getX() < x && x < (rectangle.getX() + rectangle.getWidth());
+        return rectangle.getX() <= x && x <= (rectangle.getX() + rectangle.getWidth());
     }
 
     @Override

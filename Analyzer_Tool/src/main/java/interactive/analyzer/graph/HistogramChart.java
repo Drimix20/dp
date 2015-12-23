@@ -216,9 +216,13 @@ public class HistogramChart implements Chart {
         for (int i = 0; i < shapeSize; i++) {
             double value = pairs.get(i).getOccurence();
             double barHeight = linearStretch((double) chartHeight - 2 * GRAPH_MARGIN, (double) GRAPH_MARGIN, (double) data.getMaxOccurence(), 0, value) - GRAPH_MARGIN;
-            shapes.get(i).setLocationAndSize(0 + GRAPH_MARGIN + barWidth * i, -barHeight - GRAPH_MARGIN, barWidth, barHeight);
-            logger.trace(shapes.get(i));
-            shapes.get(i).draw(g);
+            Shape shape = shapes.get(i);
+            if (shape.getOccurence() == 0) {
+                continue;
+            }
+            shape.setLocationAndSize(0 + GRAPH_MARGIN + barWidth * i, -barHeight - GRAPH_MARGIN, barWidth, barHeight);
+            logger.trace(shape);
+            shape.draw(g);
         }
     }
 
@@ -245,12 +249,16 @@ public class HistogramChart implements Chart {
 
     @Override
     public Point scaleToGraphCanvasCoords(int x, int y) {
-        return new Point(x - margin - GRAPH_MARGIN, y - margin - GRAPH_MARGIN - chartHeight);
+//        return new Point(x - margin - GRAPH_MARGIN, y - margin - GRAPH_MARGIN - chartHeight);
+        return new Point(x - margin, y - margin - chartHeight);
     }
 
     @Override
     public void clearAllSelections() {
         for (Shape shape : shapes) {
+            if (shape.getOccurence() == 0) {
+                continue;
+            }
             shape.setSelected(false);
         }
     }

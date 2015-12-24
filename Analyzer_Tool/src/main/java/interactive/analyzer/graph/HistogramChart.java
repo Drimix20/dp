@@ -249,7 +249,6 @@ public class HistogramChart implements Chart {
 
     @Override
     public Point scaleToGraphCanvasCoords(int x, int y) {
-//        return new Point(x - margin - GRAPH_MARGIN, y - margin - GRAPH_MARGIN - chartHeight);
         return new Point(x - margin, y - margin - chartHeight);
     }
 

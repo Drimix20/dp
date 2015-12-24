@@ -38,12 +38,20 @@ public class HistogramBin {
         return upperBound;
     }
 
+    public void setOccurence(int occurence) {
+        this.occurence = occurence;
+    }
+
     public int getOccurence() {
         return occurence;
     }
 
     public void incrementOccurence() {
         this.occurence++;
+    }
+
+    public void addToOccurence(int occurence) {
+        this.occurence += occurence;
     }
 
     public boolean isValueInRange(double value) {

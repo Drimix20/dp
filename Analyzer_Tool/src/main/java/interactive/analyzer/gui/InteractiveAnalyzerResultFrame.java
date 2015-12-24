@@ -5,9 +5,9 @@ import interactive.analyzer.graph.HistogramChart;
 import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.DataStatistics;
-import interactive.analyzer.graph.data.StatisticsTool;
+import interactive.analyzer.graph.data.HistogramBin;
 import static interactive.analyzer.gui.InteractiveAnalyzerResultFrame.SelectionMode.*;
-import interactive.analyzer.histogram.Histogram;
+import interactive.analyzer.histogram.HistogramImproved;
 import interactive.analyzer.histogram.HistogramOptionDialog;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.result.table.AbstractAfmTableModel;
@@ -18,7 +18,6 @@ import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
-import interactive.analyzer.presenter.Roi;
 import interactive.analyzer.result.table.DecimalPrecisionRenderer;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -51,7 +50,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     //TODO implement export - save as (csv), show as ImageJ's ResultsTable
     //TODO implement as new thread
     //TODO implement setting up values from measurement results
-    //constants
     private static final int CTRL_WITH_LMB_DOWN = CTRL_DOWN_MASK | BUTTON1_DOWN_MASK;
     private static final int SHIFT_WITH_LMB_DOWN = SHIFT_DOWN_MASK | BUTTON1_DOWN_MASK;
 
@@ -621,22 +619,21 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         HistogramOptionDialog histogramDialog = new HistogramOptionDialog(this, true, chartData.getHistogramPairs().size(), chartData.getMinValue(), chartData.getMaxValue());
         histogramDialog.setVisible(true);
 
-        int[] calculatedHistogram;
+        List<HistogramBin> calculatedHistogram;
         if (cumulHistCheckBox.isSelected()) {
             chart.setColumnName(selectedColumnName + " cumulated ");
-            calculatedHistogram = Histogram.calculateCumulatedHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
+            calculatedHistogram = HistogramImproved.calculateCumulatedHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
         } else {
             chart.setColumnName(selectedColumnName);
-            calculatedHistogram = Histogram.calculateHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
+            calculatedHistogram = HistogramImproved.calculateHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
         }
         //TODO printing histogram
 //        Histogram.printHistogram(calculatedHistogram);
-        chartData.setMaxOccurence((int) StatisticsTool.computeMaxValue(calculatedHistogram));
-        chartData.setMinOccurence((int) StatisticsTool.computeMinValue(calculatedHistogram));
-        chartData.setMeanOccurence((int) StatisticsTool.computeMean(calculatedHistogram));
-        chartData.setPairs(Histogram.createHistogramPairsFromHistogram(calculatedHistogram));
-        chartData.setBinSize(Histogram.getBinSize());
-        chartData.setNumberOfBins(Histogram.getBinsNumber());
+        chartData.setMaxOccurence(HistogramImproved.getMaxOccurence());
+        chartData.setMinOccurence(HistogramImproved.getMinOccurence());
+        chartData.setPairs(calculatedHistogram);
+        chartData.setBinSize(HistogramImproved.getBinSize());
+        chartData.setNumberOfBins(HistogramImproved.getBinsNumber());
 
         chart.setColumnName(selectedColumnName);
         chart.loadData(chartData);
@@ -698,7 +695,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                InteractiveAnalyzerResultFrame frame = new InteractiveAnalyzerResultFrame(new InteractiveImageWindow(new ImagePlus(), new ArrayList<Roi>()), Arrays.asList("A", "b", "C", "D"), new AfmAnalyzerTableModel());
+                InteractiveAnalyzerResultFrame frame = new InteractiveAnalyzerResultFrame(new InteractiveImageWindow(new ImagePlus(), Collections.EMPTY_LIST), Arrays.asList("A", "b", "C", "D"), new AfmAnalyzerTableModel());
                 frame.setVisible(true);
             }
         });

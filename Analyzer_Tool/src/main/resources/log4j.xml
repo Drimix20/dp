@@ -4,18 +4,19 @@
     <!-- appender určuje, kam se bude logovat, v tomto případě na konzolu -->
     <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d [%t] | %-5p | %c{1} | %M  - %m%n"/>
+            <param name="ConversionPattern" value="%d [%t] | %-5p | %c{1} | %M - %m%n"/>
         </layout>
     </appender>
 
-    <logger name="interactive.analyzer.gui"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.result.table.AfmAnalyzerResultTable"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.result.table.AfmAnalyzerTableModel"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.result.table.AfmAnalyzerResultFrame"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.result.table.DecimalPrecisionRenderer"><level value="trace"/></logger>
+    <!--<logger name="interactive.analyzer.gui"><level value="info"/></logger>-->
+    <!--<logger name="interactive.analyzer.result.table.AfmAnalyzerResultTable"><level value="trace"/></logger>-->
+    <!--<logger name="interactive.analyzer.result.table.AfmAnalyzerTableModel"><level value="trace"/></logger>-->
+    <logger name="interactive.analyzer.gui.InteractiveAnalyzerResultFrame"><level value="trace"/></logger>
+    <!--<logger name="interactive.analyzer.result.table.DecimalPrecisionRenderer"><level value="trace"/></logger>-->
     <logger name="interactive.analyzer.graph.GraphPanel"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.graph.HistogramChart"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.presenter"><level value="trace"/></logger>
+    <!--<logger name="interactive.analyzer.graph.HistogramChart"><level value="trace"/></logger>-->
+    <logger name="interactive.analyzer.presenter.InteractiveImageWindow"><level value="trace"/></logger>
+    <logger name="interactive.analyzer.histogram.Histogram"><level value="trace"/></logger>
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>
         <priority value="info"/>

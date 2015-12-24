@@ -65,7 +65,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
             throw new IllegalArgumentException("Rois is null");
         }
         if (rois.isEmpty()) {
-            throw new IllegalArgumentException("Rois is null");
+            throw new IllegalArgumentException("Rois is empty");
         }
     }
 
@@ -269,7 +269,8 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     }
 
     @Override
-    public void multipleRowsSelectedEvent(int rowIndex, double value, Color color) {
+    public void multipleRowsSelectedEvent(int rowIndex, double value,
+            Color color) {
         logger.trace("rowIndex: " + rowIndex);
         int labelToSelect = rowIndex + 1;
         overlayManager.addRoiToSelection(labelToSelect, color);

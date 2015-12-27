@@ -11,8 +11,8 @@
         <Size width="200" height="128" />
         <Collapsed>False</Collapsed>
         <Member type="Field">List&lt;ChartSelectionListener&gt; csl</Member>
-        <Member type="Method">void selectedRowIndexIsChanged(int rowIndex, double value)</Member>
         <Member type="Method">void clearAllSelections()</Member>
+        <Member type="Method">public void selectedSingleRow(int rowIndex, double value)</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
@@ -33,16 +33,16 @@
         <Location left="294" top="12" />
         <Size width="162" height="111" />
         <Collapsed>False</Collapsed>
-        <Member type="Method">public void selectedRowIndexIsChanged(int rowIndex, double value)</Member>
+        <Member type="Method">public void selectedSingleRow(int rowIndex, double value)</Member>
         <Member type="Method">public void clearAllSelections()</Member>
       </Entity>
       <Entity type="Class">
         <Name>InteractiveImageWindow</Name>
         <Access>Public</Access>
-        <Location left="10" top="260" />
+        <Location left="10" top="264" />
         <Size width="162" height="179" />
         <Collapsed>False</Collapsed>
-        <Member type="Method">void selectedRowIndexIsChanged(int rowIndex, double value)</Member>
+        <Member type="Method">public void selectedSingleRow(int rowIndex, double value)</Member>
         <Member type="Method">void clearAllSelections()</Member>
         <Member type="Method">void movingSliceAboutAmount()</Member>
         <Member type="Method">void moveToSpecificPosition()</Member>
@@ -89,7 +89,7 @@
         <Size width="70" height="50" />
       </Entity>
       <Entity type="Interface">
-        <Name>RoiSelectedListener</Name>
+        <Name>ImageSelectionListener</Name>
         <Access>Public</Access>
         <Location left="511" top="634" />
         <Size width="162" height="94" />
@@ -145,8 +145,6 @@
         <EndOrientation>Vertical</EndOrientation>
       </Relationship>
       <Relationship type="Dependency" first="1" second="2">
-        <Label>
-        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
@@ -159,7 +157,7 @@
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
           <X>92</X>
-          <Y>196</Y>
+          <Y>200</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>327</X>
@@ -167,8 +165,6 @@
         </BendPoint>
       </Relationship>
       <Relationship type="Dependency" first="0" second="4">
-        <Label>
-        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
       </Relationship>
@@ -181,8 +177,6 @@
         </BendPoint>
       </Relationship>
       <Relationship type="Dependency" first="3" second="10">
-        <Label>
-        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
@@ -203,7 +197,7 @@
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
           <X>40</X>
-          <Y>467</Y>
+          <Y>471</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>267</X>
@@ -211,8 +205,6 @@
         </BendPoint>
       </Relationship>
       <Relationship type="Dependency" first="15" second="13">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
       </Relationship>

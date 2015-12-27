@@ -16,5 +16,7 @@ public interface TableSelectionListener {
 
     public void rowDeselectedEvent(int rowIndex);
 
+    public void redrawAllEvent();
+
     public void clearAllSelectionsEvent();
 }

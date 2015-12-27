@@ -1,11 +1,14 @@
 package interactive.analyzer.gui;
 
-import interactive.analyzer.options.InteractiveAnalyzerConfiguration;
+import interactive.analyzer.options.ResultTableConfiguration;
+import interactive.analyzer.presenter.ImageWindowConfiguration;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
@@ -32,6 +35,10 @@ public class OptionsFrame extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
 
+        defaultStrokeColorThumbnail.setBackground(ImageWindowConfiguration.getStrokeColor());
+        fontColorThumbnail.setBackground(ImageWindowConfiguration.getFontColor());
+        fontBackgroundColorThumbnail.setBackground(ImageWindowConfiguration.getFontBackgroundColor());
+
         // Close the dialog when Esc is pressed
         String cancelName = "cancel";
         InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
@@ -50,7 +57,7 @@ public class OptionsFrame extends javax.swing.JDialog {
     }
 
     private void initDecimalPlacesSpinner() {
-        InteractiveAnalyzerConfiguration instance = InteractiveAnalyzerConfiguration.getInstance();
+        ResultTableConfiguration instance = ResultTableConfiguration.getInstance();
         decimalPlacesSpinner.setValue(instance.getDecimalPlaces());
     }
 
@@ -70,8 +77,23 @@ public class OptionsFrame extends javax.swing.JDialog {
 
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
         decimalPlacesSpinner = new javax.swing.JSpinner();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        strokeWidthSpinner = new javax.swing.JSpinner();
+        jLabel2 = new javax.swing.JLabel();
+        fontSizeSpinner = new javax.swing.JSpinner();
+        fontColorThumbnail = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        selectFontColorButton = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        defaultStrokeColorThumbnail = new javax.swing.JPanel();
+        selectDefaultStrokeColorButton = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        selectFontBackgroundColorButton = new javax.swing.JButton();
+        fontBackgroundColorThumbnail = new javax.swing.JPanel();
 
         setTitle("Interactive Analyzer Options");
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -94,14 +116,175 @@ public class OptionsFrame extends javax.swing.JDialog {
             }
         });
 
-        jLabel1.setText("Decimal places:");
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Table configuration"));
 
         javax.swing.SpinnerNumberModel numbModel = new javax.swing.SpinnerNumberModel();
         numbModel.setStepSize(1);
-        numbModel.setMinimum(new Integer(InteractiveAnalyzerConfiguration.MIN_PLACE));
-        numbModel.setMaximum(new Integer(InteractiveAnalyzerConfiguration.MAX_PLACE));
+        numbModel.setMinimum(new Integer(interactive.analyzer.options.ResultTableConfiguration.MIN_PLACE));
+        numbModel.setMaximum(new Integer(interactive.analyzer.options.ResultTableConfiguration.MAX_PLACE));
         decimalPlacesSpinner.setModel(numbModel);
         this.initDecimalPlacesSpinner();
+
+        jLabel1.setText("Decimal places:");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(decimalPlacesSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(decimalPlacesSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1))
+        );
+
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Image window configuration"));
+
+        jLabel4.setText("Stroke width:");
+
+        strokeWidthSpinner.setValue(ImageWindowConfiguration.getStrokeWidth());
+
+        jLabel2.setText("Font size:");
+
+        fontSizeSpinner.setValue(ImageWindowConfiguration.getFontSize());
+
+        fontColorThumbnail.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout fontColorThumbnailLayout = new javax.swing.GroupLayout(fontColorThumbnail);
+        fontColorThumbnail.setLayout(fontColorThumbnailLayout);
+        fontColorThumbnailLayout.setHorizontalGroup(
+            fontColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 15, Short.MAX_VALUE)
+        );
+        fontColorThumbnailLayout.setVerticalGroup(
+            fontColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 15, Short.MAX_VALUE)
+        );
+
+        jLabel3.setText("Font color:");
+
+        selectFontColorButton.setText("Select");
+        selectFontColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectColorButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Default stroke color:");
+
+        defaultStrokeColorThumbnail.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout defaultStrokeColorThumbnailLayout = new javax.swing.GroupLayout(defaultStrokeColorThumbnail);
+        defaultStrokeColorThumbnail.setLayout(defaultStrokeColorThumbnailLayout);
+        defaultStrokeColorThumbnailLayout.setHorizontalGroup(
+            defaultStrokeColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 15, Short.MAX_VALUE)
+        );
+        defaultStrokeColorThumbnailLayout.setVerticalGroup(
+            defaultStrokeColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 15, Short.MAX_VALUE)
+        );
+
+        selectDefaultStrokeColorButton.setText("Select");
+        selectDefaultStrokeColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectColorButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Font background color:");
+
+        selectFontBackgroundColorButton.setText("Select");
+        selectFontBackgroundColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectColorButtonActionPerformed(evt);
+            }
+        });
+
+        fontBackgroundColorThumbnail.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout fontBackgroundColorThumbnailLayout = new javax.swing.GroupLayout(fontBackgroundColorThumbnail);
+        fontBackgroundColorThumbnail.setLayout(fontBackgroundColorThumbnailLayout);
+        fontBackgroundColorThumbnailLayout.setHorizontalGroup(
+            fontBackgroundColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 15, Short.MAX_VALUE)
+        );
+        fontBackgroundColorThumbnailLayout.setVerticalGroup(
+            fontBackgroundColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 15, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(strokeWidthSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(defaultStrokeColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(selectDefaultStrokeColorButton))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(fontColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(selectFontColorButton))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(fontSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                        .addComponent(fontBackgroundColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(selectFontBackgroundColorButton)))
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(strokeWidthSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(selectDefaultStrokeColorButton)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel5)
+                        .addComponent(defaultStrokeColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fontSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(selectFontColorButton)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel3)
+                        .addComponent(fontColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 13, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(selectFontBackgroundColorButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel6)
+                        .addComponent(fontBackgroundColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -109,15 +292,14 @@ public class OptionsFrame extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                .addComponent(decimalPlacesSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(76, 76, 76))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(cancelButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addComponent(cancelButton))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -127,13 +309,13 @@ public class OptionsFrame extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(decimalPlacesSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cancelButton)
-                    .addComponent(okButton))
+                    .addComponent(okButton)
+                    .addComponent(cancelButton))
                 .addContainerGap())
         );
 
@@ -143,9 +325,14 @@ public class OptionsFrame extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        InteractiveAnalyzerConfiguration instance = InteractiveAnalyzerConfiguration.getInstance();
+        ResultTableConfiguration instance = ResultTableConfiguration.getInstance();
         instance.setDecimalPlaces((int) decimalPlacesSpinner.getValue());
 
+        ImageWindowConfiguration.setStrokeWidth((int) strokeWidthSpinner.getValue());
+        ImageWindowConfiguration.setStrokeColor(defaultStrokeColorThumbnail.getBackground());
+        ImageWindowConfiguration.setFontBackgroundColor(fontBackgroundColorThumbnail.getBackground());
+        ImageWindowConfiguration.setFontSize((int) fontSizeSpinner.getValue());
+        ImageWindowConfiguration.setFontColor(fontColorThumbnail.getBackground());
         doClose(RET_OK);
     }//GEN-LAST:event_okButtonActionPerformed
 
@@ -157,6 +344,24 @@ public class OptionsFrame extends javax.swing.JDialog {
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         doClose(RET_CANCEL);
     }//GEN-LAST:event_closeDialog
+
+    private void selectColorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectColorButtonActionPerformed
+        Object source = evt.getSource();
+        if (source == selectDefaultStrokeColorButton) {
+            logger.trace("selectDefaultStrokeColorButton");
+            defaultStrokeColorThumbnail.setBackground(showColorChooser(defaultStrokeColorThumbnail.getBackground()));
+        } else if (source == selectFontBackgroundColorButton) {
+            logger.trace("selectFontBackgroundColorButton");
+            fontBackgroundColorThumbnail.setBackground(showColorChooser(fontBackgroundColorThumbnail.getBackground()));
+        } else if (source == selectFontColorButton) {
+            logger.trace("selectFontColorButton");
+            fontColorThumbnail.setBackground(showColorChooser(fontBackgroundColorThumbnail.getBackground()));
+        }
+    }//GEN-LAST:event_selectColorButtonActionPerformed
+
+    private Color showColorChooser(Color initialColor) {
+        return JColorChooser.showDialog(null, "Color chooser", initialColor);
+    }
 
     private void doClose(int retStatus) {
         returnStatus = retStatus;
@@ -210,8 +415,23 @@ public class OptionsFrame extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JSpinner decimalPlacesSpinner;
+    private javax.swing.JPanel defaultStrokeColorThumbnail;
+    private javax.swing.JPanel fontBackgroundColorThumbnail;
+    private javax.swing.JPanel fontColorThumbnail;
+    private javax.swing.JSpinner fontSizeSpinner;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JButton okButton;
+    private javax.swing.JButton selectDefaultStrokeColorButton;
+    private javax.swing.JButton selectFontBackgroundColorButton;
+    private javax.swing.JButton selectFontColorButton;
+    private javax.swing.JSpinner strokeWidthSpinner;
     // End of variables declaration//GEN-END:variables
 
     private int returnStatus = RET_CANCEL;

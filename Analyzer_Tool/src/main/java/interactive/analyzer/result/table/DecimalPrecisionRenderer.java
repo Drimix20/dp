@@ -1,6 +1,6 @@
 package interactive.analyzer.result.table;
 
-import interactive.analyzer.options.InteractiveAnalyzerConfiguration;
+import interactive.analyzer.options.ResultTableConfiguration;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import javax.swing.SwingConstants;
@@ -28,12 +28,12 @@ public class DecimalPrecisionRenderer extends DefaultTableCellRenderer {
         if ((value != null) && (value instanceof Number)) {
             numberValue = (Number) value;
             NumberFormat nf = NumberFormat.getNumberInstance();
-            nf.setMinimumFractionDigits(InteractiveAnalyzerConfiguration.getInstance().getDecimalPlaces());
-            nf.setMaximumFractionDigits(InteractiveAnalyzerConfiguration.getInstance().getDecimalPlaces());
+            nf.setMinimumFractionDigits(ResultTableConfiguration.getInstance().getDecimalPlaces());
+            nf.setMaximumFractionDigits(ResultTableConfiguration.getInstance().getDecimalPlaces());
             nf.setRoundingMode(RoundingMode.HALF_UP);
             value = nf.format(numberValue.doubleValue());
 
-            logger.trace("Decimal places " + InteractiveAnalyzerConfiguration.getInstance().getDecimalPlaces());
+            logger.trace("Decimal places " + ResultTableConfiguration.getInstance().getDecimalPlaces());
         }
         super.setValue(value);
     }

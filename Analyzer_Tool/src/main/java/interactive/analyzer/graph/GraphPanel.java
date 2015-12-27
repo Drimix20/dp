@@ -319,6 +319,11 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     @Override
+    public void redrawAllEvent() {
+        updatePaint();
+    }
+
+    @Override
     public void clearAllSelectionsEvent() {
         logger.trace("");
         if (chart != null) {

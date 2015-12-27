@@ -3,10 +3,13 @@ package interactive.analyzer.presenter;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
+import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,9 +24,8 @@ public class OverlayManager {
 
     private static Logger logger = Logger.getLogger(OverlayManager.class);
     private Map<Integer, Roi> roisMap = new HashMap<>();
-//    private List<Roi> rois;
     private ImagePlus img;
-    private int strokeWidth = 1;
+    private BufferedImage originBufferedImage;
 
     public OverlayManager(List<Roi> rois, ImagePlus img) {
         if (rois == null) {
@@ -36,25 +38,20 @@ public class OverlayManager {
             roisMap.put(r.getName(), r);
         }
         this.img = img;
-    }
 
-    public void setStrokeWidth(int width) {
-        if (width < 1) {
-            throw new IllegalArgumentException("Width can not be smaller then 1");
-        }
-        strokeWidth = width;
+        originBufferedImage = img.getBufferedImage();
     }
 
     public void drawRois() {
         logger.trace("");
-        ImageProcessor ip = new ColorProcessor(img.getBufferedImage());
-        ip.setLineWidth(strokeWidth);
+        ImageProcessor ip = new ColorProcessor(originBufferedImage);
+        ip.setLineWidth(ImageWindowConfiguration.getStrokeWidth());
         for (Integer key : roisMap.keySet()) {
             Roi r = roisMap.get(key);
             if (r != null && r.stateChanged()) {
                 Polygon polygon = r.getPolygon();
                 drawName(r.getName() + "", polygon, ip);
-                Color strokeColor = r.isSelected() ? r.getStrokeColor() : InteractiveImageWindow.DEFAULT_STROKE_ROI_COLOR;
+                Color strokeColor = r.isSelected() ? r.getStrokeColor() : ImageWindowConfiguration.getStrokeColor();
                 ip.setColor(strokeColor);
                 ip.drawPolygon(polygon);
             }
@@ -65,12 +62,18 @@ public class OverlayManager {
 
     private void drawName(String name, Polygon p, ImageProcessor ip) {
         validateDrawName(name, p, ip);
-        FontMetrics fontMetrics = ip.getFontMetrics();
+        FontMetrics fontMetrics = createFont();
+        //logger.trace(fontMetrics.getFont().getName() + ", " + fontMetrics.getFont().getStyle() + ", " + fontMetrics.getFont().getSize());
         int centerX = (int) p.getBounds().getCenterX() - fontMetrics.stringWidth(name) / 2;
         int centerY = (int) p.getBounds().getCenterY() + fontMetrics.getHeight() / 2;
 
-        ip.setColor(Color.white);
-        ip.drawString(name, centerX, centerY, Color.DARK_GRAY);
+        ip.setColor(ImageWindowConfiguration.getFontColor());
+        ip.drawString(name, centerX, centerY, ImageWindowConfiguration.getFontBackgroundColor());
+    }
+
+    private FontMetrics createFont() {
+        Font font = new Font(Font.SERIF, Font.PLAIN, ImageWindowConfiguration.getFontSize());
+        return new Canvas().getFontMetrics(font);
     }
 
     private void validateDrawName(String name, Polygon p, ImageProcessor ip) throws IllegalArgumentException {

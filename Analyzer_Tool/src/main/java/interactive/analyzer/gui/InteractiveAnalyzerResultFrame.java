@@ -18,8 +18,10 @@ import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
+import interactive.analyzer.presenter.Roi;
 import interactive.analyzer.result.table.DecimalPrecisionRenderer;
 import java.awt.Color;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
@@ -660,9 +662,15 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         OptionsFrame frame = new OptionsFrame(this, true);
         frame.setLocationRelativeTo(this);
         frame.setVisible(true);
-
         ((AbstractAfmTableModel) tableModel).forceFireDataChanged();
+        notifyRedrawAll();
     }//GEN-LAST:event_optionMeniItemActionPerformed
+
+    private void notifyRedrawAll() {
+        for (TableSelectionListener listener : tableSelectionListeners) {
+            listener.redrawAllEvent();
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -695,7 +703,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                InteractiveAnalyzerResultFrame frame = new InteractiveAnalyzerResultFrame(new InteractiveImageWindow(new ImagePlus(), Collections.EMPTY_LIST), Arrays.asList("A", "b", "C", "D"), new AfmAnalyzerTableModel());
+                InteractiveAnalyzerResultFrame frame = new InteractiveAnalyzerResultFrame(new InteractiveImageWindow(new ImagePlus(), Arrays.asList(new Roi(1, new Polygon(), Color.red, false))), Arrays.asList("A", "b", "C", "D"), new AfmAnalyzerTableModel());
                 frame.setVisible(true);
             }
         });

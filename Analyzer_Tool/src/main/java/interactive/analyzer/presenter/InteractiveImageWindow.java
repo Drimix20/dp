@@ -5,6 +5,7 @@ import ij.gui.ImageCanvas;
 import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import java.awt.Color;
+import java.awt.Point;
 import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import java.awt.event.MouseAdapter;
@@ -145,12 +146,6 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         canvas.addMouseListener(new MouseAdapter() {
 
             @Override
-            public void mousePressed(MouseEvent e) {
-                logger.trace("Pressed on image: " + e.getX() + ", " + e.getY());
-                super.mousePressed(e);
-            }
-
-            @Override
             public void mouseReleased(MouseEvent e) {
                 logger.trace("Released on image: " + e.getX() + ", " + e.getY());
                 super.mousePressed(e);
@@ -167,18 +162,6 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
             }
 
             @Override
-            public void mouseMoved(MouseEvent e) {
-                logger.trace("Moved mouse on image: " + e.getX() + ", " + e.getY());
-                super.mousePressed(e);
-            }
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                logger.trace("Dragged mouse on image: " + e.getX() + ", " + e.getY());
-                super.mousePressed(e);
-            }
-
-            @Override
             public void mouseClicked(MouseEvent e) {
                 ij.gui.Roi selectionRoi = showingImg.getRoi();
 
@@ -190,8 +173,9 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
                     printSelectedRois(multipleSelection);
                     notifyMultipleSelectionRoi(multipleSelection);
                 } else {
+                    Point cursorLoc = showingImg.getCanvas().getCursorLoc();
                     int modifiersEx = e.getModifiersEx();
-                    Roi selectedRoi = overlayManager.getRoiFromPoint(e.getPoint());
+                    Roi selectedRoi = overlayManager.getRoiFromPoint(cursorLoc);
                     if (selectedRoi == null) {
                         logger.trace("No roi is selected by click");
                         return;
@@ -282,6 +266,11 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         logger.trace("rowIndex: " + rowIndex);
         int labelToSelect = rowIndex + 1;
         overlayManager.deselectRoi(labelToSelect, DEFAULT_STROKE_ROI_COLOR);
+        overlayManager.drawRois();
+    }
+
+    @Override
+    public void redrawAllEvent() {
         overlayManager.drawRois();
     }
 

@@ -14,9 +14,9 @@ public class TableUtils {
     public static AfmAnalyzerTableModel convertResultTableToInteractiveResultTable(
             ResultsTable resultsTable) {
 
-        String[] headings = mergeArrays(new String[]{"id"}, resultsTable.getHeadings());
+        String[] headings = mergeArrays(new String[]{"id", "Selection"}, resultsTable.getHeadings());
         int rowCounter = resultsTable.getCounter();
-        int columnCounter = resultsTable.getHeadings().length + 1;
+        int columnCounter = resultsTable.getHeadings().length + 2;
 
         Object[][] data = new Object[rowCounter][columnCounter];
         for (int row = 0; row < rowCounter; row++) {
@@ -24,6 +24,8 @@ public class TableUtils {
             for (int col = 0; col < columnCounter; col++) {
                 if (col == 0) {
                     data[row][col] = row + 1;
+                } else if (col == 1) {
+                    data[row][col] = null;
                 } else {
                     data[row][col] = resultsTable.getValue(headings[col], row);
                 }

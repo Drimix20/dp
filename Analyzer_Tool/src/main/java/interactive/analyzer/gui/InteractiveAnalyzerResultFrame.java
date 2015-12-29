@@ -1,6 +1,7 @@
 package interactive.analyzer.gui;
 
-import ij.ImagePlus;
+import ij.IJ;
+import interactive.analyzer.exporter.TextTableExporter;
 import interactive.analyzer.graph.HistogramChart;
 import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.data.HistogramDataSet;
@@ -20,6 +21,8 @@ import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
 import interactive.analyzer.presenter.Roi;
 import interactive.analyzer.result.table.DecimalPrecisionRenderer;
+import interactive.analyzer.result.table.TableColorSelectionManager;
+import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -139,7 +142,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             return Collections.EMPTY_LIST;
         }
         List<String> columnNames = new ArrayList<>();
-        for (int i = 1; i < columnCount; i++) {
+        for (int i = 2; i < columnCount; i++) {
             columnNames.add(tableModel.getColumnName(i));
         }
         return columnNames;
@@ -476,7 +479,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         cumulHistCheckBox = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        saveAsMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         optionMeniItem = new javax.swing.JMenuItem();
 
@@ -548,10 +551,14 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         );
 
         jMenu1.setText("Export");
-        jMenu1.setEnabled(false);
 
-        jMenuItem1.setText("Save as...");
-        jMenu1.add(jMenuItem1);
+        saveAsMenuItem.setText("Save as...");
+        saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveAsMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(saveAsMenuItem);
 
         jMenuBar1.add(jMenu1);
 
@@ -656,6 +663,11 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         notifyRedrawAll();
     }//GEN-LAST:event_optionMeniItemActionPerformed
 
+    private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
+        TextTableExporter exporter = new TextTableExporter();
+        exporter.export(jTable1, TagManager.getInstance(), TableColorSelectionManager.getInstance());
+    }//GEN-LAST:event_saveAsMenuItemActionPerformed
+
     private void clearTableSelectionAndNotifyListeners() {
         clearTableSelection();
         for (TableSelectionListener listener : tableSelectionListeners) {
@@ -699,8 +711,13 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
-                InteractiveAnalyzerResultFrame frame = new InteractiveAnalyzerResultFrame(new InteractiveImageWindow(new ImagePlus(), Arrays.asList(new Roi(1, new Polygon(), Color.red, false))), Arrays.asList("A", "b", "C", "D"), new AfmAnalyzerTableModel());
+                InteractiveImageWindow iiw = new InteractiveImageWindow(IJ.openImage("http://imagej.nih.gov/ij/images/blobs.gif"), Arrays.asList(new Roi(1, new Polygon(), Color.red, false)));
+                AfmAnalyzerTableModel model = new AfmAnalyzerTableModel(Arrays.asList("A", "b", "C", "D"));
+                Object[][] values = new Object[][]{{1, 2, 3, 4}, {2, 10, 6, 9}};
+                model.setValues(values);
+                InteractiveAnalyzerResultFrame frame = new InteractiveAnalyzerResultFrame(iiw, Arrays.asList("A", "b", "C", "D"), model);
                 frame.setVisible(true);
             }
         });
@@ -714,11 +731,11 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JMenuItem optionMeniItem;
+    private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JButton showHistogram;
     // End of variables declaration//GEN-END:variables
 }

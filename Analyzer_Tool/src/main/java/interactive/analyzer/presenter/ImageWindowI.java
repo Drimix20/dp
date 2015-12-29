@@ -31,6 +31,12 @@ public interface ImageWindowI extends ChartSelectionListener {
     public void setTitle(String title);
 
     /**
+     * Get image path
+     * @return image path
+     */
+    public String getImagePath();
+
+    /**
      * Set ImageWindow visible or hidden
      * @param visible if true make ImageWindow visible else hidden
      */

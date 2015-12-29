@@ -1,5 +1,6 @@
 package interactive.analyzer.result.table;
 
+import interactive.analyzer.options.ResultTableConfiguration;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
@@ -17,6 +18,8 @@ import org.apache.log4j.Logger;
 public class AfmAnalyzerResultTable extends JTable {
 
     private static Logger logger = Logger.getLogger(AfmAnalyzerResultTable.class);
+    private static int ID_COLUMN_INDEX = 0;
+    private static int SELECTION_COLUMN_INDEX = 1;
 
     private List<String> headerTooltips = new ArrayList<>();
     private TableColorSelectionManager selectionManager;
@@ -111,12 +114,23 @@ public class AfmAnalyzerResultTable extends JTable {
         //Get component for current row
         Component comp = super.prepareRenderer(renderer, row, column);
 
+        if (ResultTableConfiguration.colorEntireRow()) {
+            colorRow(row, comp);
+        } else if (column == SELECTION_COLUMN_INDEX) {
+            colorRow(row, comp);
+        } else {
+            comp.setBackground(Color.white);
+        }
+
+        return comp;
+    }
+
+    private void colorRow(int row, Component comp) {
         Color selectionColor = null;
         //row can be in selected range
         if (selectionManager != null) {
             selectionColor = selectionManager.getColorForRow(row);
         }
-
         if (selectionColor == null && isRowSelected(row)) {
             //selection performed by click on table row
             selectionColor = DEFAULT_SELECTION_COLOR;
@@ -126,7 +140,6 @@ public class AfmAnalyzerResultTable extends JTable {
             selectionColor = DEFAULT_BACKGROUND_ROW_COLOR;
         }
         comp.setBackground(selectionColor);
-        return comp;
     }
 
     private void rowBounds(int row) throws IllegalArgumentException {

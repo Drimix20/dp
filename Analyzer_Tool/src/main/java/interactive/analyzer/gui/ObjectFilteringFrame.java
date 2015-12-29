@@ -10,7 +10,7 @@ import interactive.analyzer.graph.data.HistogramBin;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.selection.CircleIcon;
 import interactive.analyzer.selection.JListElement;
-import interactive.analyzer.selection.SelectionCellRenderer;
+import interactive.analyzer.selection.ListCellRendererWithColorIcon;
 import interactive.analyzer.selection.Tag;
 import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
@@ -277,7 +277,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
         jSplitPane.setRightComponent(jPanel1);
 
-        ListCellRenderer renderer = new SelectionCellRenderer();
+        ListCellRenderer renderer = new ListCellRendererWithColorIcon();
         tagsJList.setCellRenderer(renderer);
         tagsJList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {

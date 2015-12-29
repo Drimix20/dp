@@ -11,7 +11,7 @@ import javax.swing.ListCellRenderer;
  *
  * @author Drimal
  */
-public class SelectionCellRenderer implements ListCellRenderer {
+public class ListCellRendererWithColorIcon implements ListCellRenderer {
 
     protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 

@@ -10,26 +10,26 @@ public class ResultTableConfiguration {
     public static int MAX_PLACE = 30;
     public static int INIT_PLACE = 3;
 
-    private int decimalPlaces = INIT_PLACE;
+    private static int decimalPlaces = INIT_PLACE;
+    private static boolean colorEntireRow;
 
     private ResultTableConfiguration() {
     }
 
-    public static ResultTableConfiguration getInstance() {
-        return InteractiveAnalyzerConfigurationHolder.INSTANCE;
-    }
-
-    private static class InteractiveAnalyzerConfigurationHolder {
-
-        private static final ResultTableConfiguration INSTANCE = new ResultTableConfiguration();
-    }
-
-    public int getDecimalPlaces() {
+    public static int getDecimalPlaces() {
         return decimalPlaces;
     }
 
-    public void setDecimalPlaces(int decimalPlaces) {
-        this.decimalPlaces = decimalPlaces;
+    public static void setDecimalPlaces(int decimalPlaces) {
+        ResultTableConfiguration.decimalPlaces = decimalPlaces;
+    }
+
+    public static boolean colorEntireRow() {
+        return colorEntireRow;
+    }
+
+    public static void setColorEntireRow(boolean colorizedEntireRow) {
+        ResultTableConfiguration.colorEntireRow = colorizedEntireRow;
     }
 
 }

@@ -10,6 +10,7 @@ import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -114,6 +115,11 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     @Override
     public boolean isVisible() {
         return imageStackWindow.isVisible();
+    }
+
+    @Override
+    public String getImagePath() {
+        return showingImg.getFileInfo().directory + File.separator + showingImg.getFileInfo().fileName;
     }
 
     /**

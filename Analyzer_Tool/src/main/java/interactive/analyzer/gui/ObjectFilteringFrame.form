@@ -328,7 +328,7 @@
               </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JList(getTagListData(tagManager.getTags()))"/>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ListCellRenderer renderer = new SelectionCellRenderer();&#xa;tagsJList.setCellRenderer(renderer);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ListCellRenderer renderer = new interactive.analyzer.selection.ListCellRendererWithColorIcon();&#xa;tagsJList.setCellRenderer(renderer);"/>
               </AuxValues>
             </Component>
           </SubComponents>

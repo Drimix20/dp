@@ -28,12 +28,10 @@ public class DecimalPrecisionRenderer extends DefaultTableCellRenderer {
         if ((value != null) && (value instanceof Number)) {
             numberValue = (Number) value;
             NumberFormat nf = NumberFormat.getNumberInstance();
-            nf.setMinimumFractionDigits(ResultTableConfiguration.getInstance().getDecimalPlaces());
-            nf.setMaximumFractionDigits(ResultTableConfiguration.getInstance().getDecimalPlaces());
+            nf.setMinimumFractionDigits(ResultTableConfiguration.getDecimalPlaces());
+            nf.setMaximumFractionDigits(ResultTableConfiguration.getDecimalPlaces());
             nf.setRoundingMode(RoundingMode.HALF_UP);
             value = nf.format(numberValue.doubleValue());
-
-            logger.trace("Decimal places " + ResultTableConfiguration.getInstance().getDecimalPlaces());
         }
         super.setValue(value);
     }

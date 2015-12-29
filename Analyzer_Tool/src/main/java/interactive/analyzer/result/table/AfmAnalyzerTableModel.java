@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class AfmAnalyzerTableModel extends AbstractAfmTableModel {
+public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     private Logger logger = Logger.getLogger(AfmAnalyzerTableModel.class);
 

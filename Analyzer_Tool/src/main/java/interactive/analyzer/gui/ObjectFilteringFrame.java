@@ -1,5 +1,6 @@
 package interactive.analyzer.gui;
 
+import ij.IJ;
 import interactive.analyzer.file.tools.ImageFileFilter;
 import interactive.analyzer.graph.HistogramChart;
 import interactive.analyzer.graph.Chart;
@@ -7,11 +8,20 @@ import interactive.analyzer.graph.GraphPanel;
 import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.HistogramBin;
 import interactive.analyzer.listeners.ChartSelectionListener;
+import interactive.analyzer.selection.CircleIcon;
+import interactive.analyzer.selection.JListElement;
+import interactive.analyzer.selection.SelectionCellRenderer;
+import interactive.analyzer.selection.Tag;
+import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
+import javax.swing.ListCellRenderer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 
@@ -21,22 +31,25 @@ import org.apache.log4j.Logger;
  */
 public class ObjectFilteringFrame extends javax.swing.JFrame {
 
-    //TODO dynamic resize margins due to label
+    //TODO axis are not correct when new column in table is selected
     private static Logger logger = Logger.getLogger(ObjectFilteringFrame.class);
     private static final Color DEFAULT_SELECTION_COLOR = Color.red;
 
-    private HistogramDataSet originChartData;
+    private TagManager tagManager;
     private Color currentSelectionColor = Color.red;
 
     /**
      * Creates new frame of ObjectFilteringFrame
      */
     public ObjectFilteringFrame() {
+        tagManager = TagManager.getInstance();
+        tagManager.addTag(Color.magenta, "Name1", "Desc");
         initComponents();
         graphPanel.setSelectionColor(currentSelectionColor);
-        colorThumbnail.setBackground(DEFAULT_SELECTION_COLOR);
+        tagColorThumbnail.setBackground(DEFAULT_SELECTION_COLOR);
         this.setLocationRelativeTo(null);
-        logger.trace("Frame width=" + getWidth() + ", height=" + getHeight());
+        logger.trace("Frame width=" + getWidth() + ", height=" + getHeight() + javax.swing.UIManager.getLookAndFeel());
+
     }
 
     public Color getCurrentSelectionColor() {
@@ -45,7 +58,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
     public void addChart(Chart chart) {
         graphPanel.setChart(chart);
-        originChartData = chart.getData();
         graphPanel.updatePaint();
     }
 
@@ -76,19 +88,22 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
         jSeparator1 = new javax.swing.JSeparator();
         graphPanel = new interactive.analyzer.graph.GraphPanel();
+        jSplitPane = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         tagNameField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        colorThumbnail = new javax.swing.JPanel();
+        tagColorThumbnail = new javax.swing.JPanel();
         colorChooserButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
-        deleteButton = new javax.swing.JButton();
-        saveButton = new javax.swing.JButton();
-        addTagButton = new javax.swing.JButton();
+        tagDescriptionArea = new javax.swing.JTextArea();
+        saveTagButton = new javax.swing.JButton();
+        deleteTagButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tagsJList = new javax.swing.JList(getTagListData(tagManager.getTags()));
         clearButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
@@ -110,8 +125,11 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         );
         graphPanelLayout.setVerticalGroup(
             graphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 249, Short.MAX_VALUE)
+            .addGap(0, 251, Short.MAX_VALUE)
         );
+
+        jSplitPane.setDividerLocation(90);
+        jSplitPane.setOneTouchExpandable(true);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Tags"));
 
@@ -121,16 +139,16 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
         jLabel3.setText("Color:");
 
-        colorThumbnail.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        tagColorThumbnail.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        javax.swing.GroupLayout colorThumbnailLayout = new javax.swing.GroupLayout(colorThumbnail);
-        colorThumbnail.setLayout(colorThumbnailLayout);
-        colorThumbnailLayout.setHorizontalGroup(
-            colorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout tagColorThumbnailLayout = new javax.swing.GroupLayout(tagColorThumbnail);
+        tagColorThumbnail.setLayout(tagColorThumbnailLayout);
+        tagColorThumbnailLayout.setHorizontalGroup(
+            tagColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 25, Short.MAX_VALUE)
         );
-        colorThumbnailLayout.setVerticalGroup(
-            colorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        tagColorThumbnailLayout.setVerticalGroup(
+            tagColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 23, Short.MAX_VALUE)
         );
 
@@ -141,9 +159,48 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             }
         });
 
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jScrollPane2.setViewportView(jTextArea2);
+        tagDescriptionArea.setColumns(15);
+        tagDescriptionArea.setRows(3);
+        tagDescriptionArea.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                //saveTagButton.setEnabled(true);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                //saveTagButton.setEnabled(true);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                saveTagButton.setEnabled(true);
+            }
+        });
+        jScrollPane2.setViewportView(tagDescriptionArea);
+
+        saveTagButton.setText("Save");
+        saveTagButton.setEnabled(false);
+        saveTagButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveTagButtonActionPerformed(evt);
+            }
+        });
+
+        deleteTagButton.setText("Delete");
+        deleteTagButton.setEnabled(false);
+        deleteTagButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteTagButtonActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Add new");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addNewTagButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -151,20 +208,34 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tagNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(colorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(colorChooserButton))
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tagNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1))
+                        .addGap(32, 32, 32))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel3)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(tagColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(colorChooserButton))))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                         .addComponent(jLabel2)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGap(0, 59, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(saveTagButton)
+                .addGap(18, 18, 18)
+                .addComponent(deleteTagButton)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -176,28 +247,19 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(tagNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(colorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(colorChooserButton))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2)))
+                            .addComponent(tagColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(colorChooserButton)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(saveTagButton)
+                    .addComponent(deleteTagButton)
+                    .addComponent(jButton1)))
         );
-
-        deleteButton.setText("Delete");
-
-        saveButton.setText("Save");
-
-        addTagButton.setText("Add");
-
-        clearButton.setText("Clear");
-        clearButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clearButtonActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -206,30 +268,32 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(addTagButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(saveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(clearButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(clearButton)
-                        .addGap(18, 18, 18)
-                        .addComponent(addTagButton)
-                        .addGap(18, 18, 18)
-                        .addComponent(saveButton)
-                        .addGap(18, 18, 18)
-                        .addComponent(deleteButton))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
+
+        jSplitPane.setRightComponent(jPanel1);
+
+        ListCellRenderer renderer = new SelectionCellRenderer();
+        tagsJList.setCellRenderer(renderer);
+        tagsJList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                valueChangedJListListener(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tagsJList);
+
+        jSplitPane.setLeftComponent(jScrollPane1);
+
+        clearButton.setText("Clear all selections");
+        clearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButtonActionPerformed(evt);
+            }
+        });
 
         fileMenu.setText("File");
 
@@ -250,17 +314,24 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator1)
+            .addComponent(jSplitPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(11, 11, 11)
+                .addComponent(jSplitPane)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(clearButton)
+                .addContainerGap())
         );
 
         pack();
@@ -285,45 +356,171 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_SaveActionPerformed
 
-    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
-        graphPanel.clearAllSelectionsEvent();
+    private void colorChooserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooserButtonActionPerformed
+        Color c = JColorChooser.showDialog(null,
+                "Color chooser", DEFAULT_SELECTION_COLOR);
+        if (c != null) {
+            tagColorThumbnail.setBackground(c);
+            saveTagButton.setEnabled(true);
+        }
+        setCurrentSelectionColor(c);
+    }//GEN-LAST:event_colorChooserButtonActionPerformed
 
+    private void valueChangedJListListener(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_valueChangedJListListener
+        if (evt.getValueIsAdjusting()) {
+            return;
+        }
+        if (!tagsJList.isSelectionEmpty()) {
+            if (tagsJList.getSelectedIndices().length > 1) {
+                deleteTagButton.setEnabled(false);
+                saveTagButton.setEnabled(false);
+            } else {
+                deleteTagButton.setEnabled(true);
+                saveTagButton.setEnabled(true);
+            }
+
+            JListElement selectedElem = (JListElement) tagsJList.getSelectedValue();
+            Tag t = tagManager.getTagById(selectedElem.getId());
+            if (t == null) {
+                logger.trace("No tag selected");
+                return;
+            }
+            tagColorThumbnail.setBackground(t.getColor());
+            tagNameField.setText(t.getName());
+            tagDescriptionArea.setText(t.getDescription());
+            setCurrentSelectionColor(t.getColor());
+        } else {
+            deleteTagButton.setEnabled(false);
+            saveTagButton.setEnabled(false);
+        }
+    }//GEN-LAST:event_valueChangedJListListener
+
+    private void setCurrentSelectionColor(Color color) {
+        currentSelectionColor = color;
+        if (graphPanel != null) {
+            graphPanel.setSelectionColor(color);
+        }
+    }
+
+    private void saveTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveTagButtonActionPerformed
+        if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to save changes?")) {
+            String tagName = tagNameField.getText();
+            Color tagColor = tagColorThumbnail.getBackground();
+            String tagDescription = tagDescriptionArea.getText();
+
+            if (!validateTag(tagColor, tagName, tagDescription)) {
+                IJ.showMessage("Object filtering frame", "Tag name and color must be set. Description is optioanl");
+                return;
+            }
+
+            int selectedIndex = tagsJList.getSelectedIndex();
+            JListElement e = (JListElement) tagsJList.getSelectedValue();
+            Color c = tagManager.getTagColor(e.getId());
+            Tag tag = new Tag(tagColor, tagName, tagDescription);
+            tag.setId(e.getId());
+            tagManager.editTag(tag);
+
+            if (graphPanel != null) {
+                graphPanel.changeSelectionColor(c, tagColor);
+            }
+
+            setCurrentSelectionColor(tagColor);
+            updateTagJList();
+            tagsJList.setSelectedIndex(selectedIndex);
+        }
+    }//GEN-LAST:event_saveTagButtonActionPerformed
+
+    private void addNewTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addNewTagButtonActionPerformed
+        String tagName = tagNameField.getText();
+        Color tagColor = tagColorThumbnail.getBackground();
+        String tagDescription = tagDescriptionArea.getText();
+
+        if (!validateTag(tagColor, tagName, tagName)) {
+            IJ.showMessage("Object filtering frame", "Tag name and color must be set. Description is optional.");
+            return;
+        }
+
+        if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to add new tag?")) {
+            tagManager.addTag(tagColor, tagName, tagDescription);
+            updateTagJList();
+            emptyFormular();
+        }
+    }//GEN-LAST:event_addNewTagButtonActionPerformed
+
+    private void deleteTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteTagButtonActionPerformed
+        if (!tagsJList.isSelectionEmpty()) {
+            if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to delete selected tag?")) {
+                Tag t = tagManager.getTagById(((JListElement) tagsJList.getSelectedValue()).getId());
+                if (t == null) {
+                    return;
+                }
+                tagManager.removeTag(t);
+
+                emptyFormular();
+                updateTagJList();
+
+                if (graphPanel != null) {
+                    graphPanel.deselectShapeWithColor(t.getColor());
+                }
+                t = null;
+
+                deleteTagButton.setEnabled(false);
+                saveTagButton.setEnabled(false);
+            }
+        }
+    }//GEN-LAST:event_deleteTagButtonActionPerformed
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to delete all selections?")) {
+            if (graphPanel != null) {
+                graphPanel.clearAllSelectionsEvent();
+            }
+            tagManager.clearAllTags();
+            emptyFormular();
+            updateTagJList();
+        }
     }//GEN-LAST:event_clearButtonActionPerformed
 
-    private void colorChooserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooserButtonActionPerformed
-        currentSelectionColor = JColorChooser.showDialog(null,
-                "Color chooser", DEFAULT_SELECTION_COLOR);
-        colorThumbnail.setBackground(currentSelectionColor);
-        graphPanel.setSelectionColor(currentSelectionColor);
-    }//GEN-LAST:event_colorChooserButtonActionPerformed
+    private void emptyFormular() {
+        tagColorThumbnail.setBackground(currentSelectionColor);
+        tagNameField.setText("");
+        tagDescriptionArea.setText("");
+    }
+
+    private void updateTagJList() {
+        tagsJList.setListData(getTagListData(tagManager.getTags()));
+        tagsJList.repaint();
+    }
+
+    private boolean validateTag(Color color, String name, String desc) {
+        boolean isValid = true;
+        if (color == null) {
+            isValid = false;
+        }
+        if (name == null || name.isEmpty()) {
+            isValid = false;
+        }
+        if (desc == null) {
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    private JListElement[] getTagListData(List<Tag> tags) {
+        JListElement elements[] = new JListElement[tags.size()];
+        int i = 0;
+        for (Tag t : tags) {
+            elements[i] = new JListElement(t.getId(), t.getName(), new CircleIcon(t.getColor()));
+            i++;
+        }
+
+        return elements;
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ObjectFilteringFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ObjectFilteringFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ObjectFilteringFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ObjectFilteringFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -613,23 +810,26 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Save;
-    private javax.swing.JButton addTagButton;
     private javax.swing.JButton clearButton;
     private javax.swing.JButton colorChooserButton;
-    private javax.swing.JPanel colorThumbnail;
-    private javax.swing.JButton deleteButton;
+    private javax.swing.JButton deleteTagButton;
     private javax.swing.JMenu fileMenu;
     private interactive.analyzer.graph.GraphPanel graphPanel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextArea jTextArea2;
-    private javax.swing.JButton saveButton;
+    private javax.swing.JSplitPane jSplitPane;
+    private javax.swing.JButton saveTagButton;
+    private javax.swing.JPanel tagColorThumbnail;
+    private javax.swing.JTextArea tagDescriptionArea;
     private javax.swing.JTextField tagNameField;
+    private javax.swing.JList tagsJList;
     // End of variables declaration//GEN-END:variables
 }

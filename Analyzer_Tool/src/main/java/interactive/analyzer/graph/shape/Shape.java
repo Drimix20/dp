@@ -151,4 +151,7 @@ public abstract class Shape {
      @return true if x coordinate is in shape otherwise false
      */
     public abstract boolean cross(double x);
+
+    @Override
+    public abstract String toString();
 }

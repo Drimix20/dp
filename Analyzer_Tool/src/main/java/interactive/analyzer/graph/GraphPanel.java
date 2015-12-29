@@ -4,6 +4,7 @@ import interactive.analyzer.file.tools.ImageFileFilter;
 import interactive.analyzer.graph.shape.Shape;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
+import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -34,17 +35,19 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
     private Graphics2D graphics2D;
     private BufferedImage paintImage;
-    private boolean mousePressed = false;
     private Chart chart;
-    private boolean draggedSelection = false;
     private Color selectionColor;
     private List<Shape> selectionByDragged;
     private List<ChartSelectionListener> selectionListeners;
 
+    private boolean mousePressed = false;
+    private boolean draggedSelection = false;
+    private boolean deselectionModeIsOn;
+
     private ImageFileFilter[] filefilters = new ImageFileFilter[]{
         new ImageFileFilter("png"),
         new ImageFileFilter("jpg"),
-        new ImageFileFilter("gif"),};
+        new ImageFileFilter("gif")};
 
     public GraphPanel() {
         selectionListeners = new ArrayList<>();
@@ -77,11 +80,10 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                logger.trace("" + e.getPoint());
                 if (mousePressed) {
                     draggedSelection = true;
                 }
-                boolean deselectionModeIsOn = false;
+                deselectionModeIsOn = false;
                 if (e.getModifiersEx() == MouseEvent.BUTTON3_DOWN_MASK) {
                     deselectionModeIsOn = true;
                 }
@@ -102,23 +104,11 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                     }
                 }
             }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                //logger.trace("" + e.getPoint());
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                logger.trace("" + e.getPoint());
-            }
         });
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                logger.trace("" + e.getPoint());
-
                 logger.trace("mousePressed: " + mousePressed);
                 Shape shape = getShapeAtPoint(e.getPoint());
                 if (shape != null) {
@@ -127,15 +117,14 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                     shape.setSelected(select);
                     shape.setSelectionColor(selectionColor);
 
-                    for (ChartSelectionListener listener : selectionListeners) {
-                        if (select) {
-                            //chart shape was selected
-                            listener.singleBarSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
-                        } else {
-                            //chart shape was deselected
-                            listener.barDeselectedEvent(shape.getLowerBound(), shape.getUpperBound());
-                        }
+                    if (select) {
+                        //chart shape was selected
+                        notifySingleBarSelected(shape, selectionColor);
+                    } else {
+                        //chart shape was deselected
+                        notifyBarDeselected(shape);
                     }
+
                     //needed to repaint canvas
                     updatePaint();
                 }
@@ -143,7 +132,6 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                logger.trace("" + e.getPoint());
                 mousePressed = true;
             }
 
@@ -152,24 +140,17 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                 logger.trace("" + e.getPoint());
                 mousePressed = false;
                 //multiple selection by mouse dragged
-                Shape shape = getShapeAtPoint(e.getPoint());
-                if (shape != null) {
-                    if (draggedSelection) {
-                        boolean select = shape.isSelected();
-
-                        for (ChartSelectionListener listener : selectionListeners) {
-                            for (Shape shapeByDragged : selectionByDragged) {
-                                if (select) {
-                                    //chart shape was selected
-                                    listener.barSelectedEvent(shapeByDragged.getLowerBound(), shapeByDragged.getUpperBound(), selectionColor);
-                                } else {
-                                    //chart shape was deselected
-                                    listener.barDeselectedEvent(shapeByDragged.getLowerBound(), shapeByDragged.getUpperBound());
-                                }
-                            }
+                if (draggedSelection) {
+                    for (Shape shapeByDragged : selectionByDragged) {
+                        if (deselectionModeIsOn) {
+                            //chart shape was deselected
+                            notifyBarDeselected(shapeByDragged);
+                        } else {
+                            //chart shape was selected
+                            notifyBarSelected(shapeByDragged, selectionColor);
                         }
-                        selectionByDragged = new ArrayList<>();
                     }
+                    selectionByDragged = new ArrayList<>();
                 }
 
                 draggedSelection = false;
@@ -183,6 +164,62 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
     public void setSelectionColor(Color selectionColor) {
         this.selectionColor = selectionColor;
+    }
+
+    public void changeSelectionColor(Color oldC, Color newC) {
+        if (chart == null) {
+            return;
+        }
+        for (Shape shape : chart.getDrawShapes()) {
+            if (shape.getSelectionColor().equals(oldC)) {
+                shape.setSelectionColor(newC);
+                notifyBarSelected(shape, newC);
+            }
+        }
+        updatePaint();
+    }
+
+    public void deselectShapeWithColor(Color color) {
+        if (chart == null) {
+            return;
+        }
+        for (Shape shape : chart.getDrawShapes()) {
+            if (shape.getSelectionColor().equals(color)) {
+                shape.setSelected(false);
+                notifyBarDeselected(shape);
+            }
+        }
+        updatePaint();
+    }
+
+    public void notifySingleBarSelected(Shape shape, Color selectionColor) {
+        if (shape == null || selectionColor == null) {
+            throw new IllegalArgumentException("Shape or color is null");
+        }
+        logger.trace("Single bar selected: " + shape);
+        for (ChartSelectionListener listener : selectionListeners) {
+            listener.singleBarSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
+        }
+    }
+
+    public void notifyBarSelected(Shape shape, Color selectionColor) {
+        if (shape == null || selectionColor == null) {
+            throw new IllegalArgumentException("Shape or color is null");
+        }
+        logger.trace("Multiple bar selected: " + shape);
+        for (ChartSelectionListener listener : selectionListeners) {
+            listener.barSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
+        }
+    }
+
+    public void notifyBarDeselected(Shape shape) {
+        if (shape == null) {
+            throw new IllegalArgumentException("Shape is null");
+        }
+        logger.trace("Bar deselected: " + shape);
+        for (ChartSelectionListener listener : selectionListeners) {
+            listener.barDeselectedEvent(shape.getLowerBound(), shape.getUpperBound());
+        }
     }
 
     /**
@@ -328,6 +365,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         logger.trace("");
         if (chart != null) {
             chart.clearAllSelections();
+            TagManager.getInstance().clearAllTags();
         }
         for (ChartSelectionListener listener : selectionListeners) {
             listener.clearBarSelectionsEvent();

@@ -1,8 +1,9 @@
 package interactive.analyzer.result.table;
 
 import java.awt.Color;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  *
@@ -10,14 +11,22 @@ import java.util.Map;
  */
 public class TableColorSelectionManager {
 
-    private Map<Color, ColorizedTableSelection> colorSelectionMap = new HashMap<>();
+    private static TableColorSelectionManager instance = null;
+    private ConcurrentMap<Color, ColorizedTableSelection> colorSelectionMap;
 
-    public TableColorSelectionManager() {
-        colorSelectionMap = new HashMap<>();
+    private TableColorSelectionManager() {
+        colorSelectionMap = new ConcurrentHashMap<>();
+    }
+
+    public synchronized static TableColorSelectionManager getInstance() {
+        if (instance == null) {
+            instance = new TableColorSelectionManager();
+        }
+        return instance;
     }
 
     public void setColorSelectionMap(
-            Map<Color, ColorizedTableSelection> colorSelectionMap) {
+            ConcurrentMap<Color, ColorizedTableSelection> colorSelectionMap) {
         this.colorSelectionMap = colorSelectionMap;
     }
 
@@ -94,7 +103,7 @@ public class TableColorSelectionManager {
     }
 
     public void deleteAllSelections() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap.clear();
     }
 
     public Color getColorForRow(int row) {

@@ -8,12 +8,12 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author Drimal
  */
-public abstract class AbstractAfmTableModel extends AbstractTableModel {
+public abstract class AbstractInteractiveTableModel extends AbstractTableModel {
 
     protected String[] columnNames;
     protected Object[][] data;
 
-    public AbstractAfmTableModel() {
+    public AbstractInteractiveTableModel() {
         columnNames = new String[0];
         data = new Object[0][0];
     }

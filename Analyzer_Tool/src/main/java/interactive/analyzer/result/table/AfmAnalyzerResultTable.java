@@ -16,10 +16,7 @@ import org.apache.log4j.Logger;
  */
 public class AfmAnalyzerResultTable extends JTable {
 
-    //TODO implement funcionality to changing header text(see http://codewizpt.blogspot.cz/2011/03/change-jtable-column-header-text.html)
-    //TODO implement functionality for set tooltip headers
-    //TODO maybe will be needed List<MeasurementResult>
-    private Logger logger = Logger.getLogger(AfmAnalyzerResultTable.class);
+    private static Logger logger = Logger.getLogger(AfmAnalyzerResultTable.class);
 
     private List<String> headerTooltips = new ArrayList<>();
     private TableColorSelectionManager selectionManager;
@@ -28,7 +25,7 @@ public class AfmAnalyzerResultTable extends JTable {
     private static final Color DEFAULT_SELECTION_COLOR = Color.red;//new Color(187, 207, 229);
 
     public AfmAnalyzerResultTable() {
-        selectionManager = new TableColorSelectionManager();
+        selectionManager = TableColorSelectionManager.getInstance();
     }
 
     public List<String> getTooltips() {
@@ -101,6 +98,7 @@ public class AfmAnalyzerResultTable extends JTable {
 
     @Override
     public void clearSelection() {
+        logger.trace("");
         if (selectionManager != null) {
             selectionManager.deleteAllSelections();
         }

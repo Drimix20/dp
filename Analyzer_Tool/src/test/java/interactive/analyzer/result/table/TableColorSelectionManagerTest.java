@@ -1,8 +1,8 @@
 package interactive.analyzer.result.table;
 
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -14,17 +14,17 @@ import org.junit.Test;
  */
 public class TableColorSelectionManagerTest {
 
-    Map<Color, ColorizedTableSelection> colorSelectionMap;
+    ConcurrentMap<Color, ColorizedTableSelection> colorSelectionMap;
     private TableColorSelectionManager manager;
 
     @Test
     public void testGetSelectionFromMap() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(3);
         colorSelectionMap.put(Color.red, cts);
-        manager = new TableColorSelectionManager();
+        manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
         ColorizedTableSelection selectionFromMap = manager.getSelectionFromMap(3);
@@ -33,12 +33,12 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testAddRowToColorSelection() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(3);
         colorSelectionMap.put(Color.red, cts);
-        manager = new TableColorSelectionManager();
+        manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
         manager.addRowToColorSelection(Color.red, 2);
@@ -47,12 +47,12 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testAddRowsToColorSelection() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(3);
         colorSelectionMap.put(Color.red, cts);
-        manager = new TableColorSelectionManager();
+        manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
         manager.addRowsToColorSelection(Color.red, 2, 4);
@@ -62,13 +62,13 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testRemoveRowFromSelection() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(2);
         cts.addRow(3);
         colorSelectionMap.put(Color.red, cts);
-        manager = new TableColorSelectionManager();
+        manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
         manager.removeRowFromSelection(2);
@@ -79,12 +79,12 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testRemoveNonetExistsRowFromSelection() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(3);
         colorSelectionMap.put(Color.red, cts);
-        manager = new TableColorSelectionManager();
+        manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
         manager.removeRowFromSelection(2);
@@ -94,13 +94,13 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testRemoveRowFromColorSelection() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(2);
         cts.addRow(3);
         colorSelectionMap.put(Color.red, cts);
-        manager = new TableColorSelectionManager();
+        manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
         manager.removeRowFromColorSelection(Color.red, 2);
@@ -111,13 +111,13 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testRemoveRowsFromColorSelection() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(2);
         cts.addRow(3);
         colorSelectionMap.put(Color.red, cts);
-        manager = new TableColorSelectionManager();
+        manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
         manager.removeRowsFromColorSelection(Color.red, 2, 3);
@@ -128,13 +128,13 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testDeleteAllSelections() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(2);
         cts.addRow(3);
         colorSelectionMap.put(Color.red, cts);
-        manager = new TableColorSelectionManager();
+        manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
         manager.deleteAllSelections();
@@ -143,13 +143,13 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testGetColorForRow() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(2);
         cts.addRow(3);
         colorSelectionMap.put(Color.red, cts);
-        manager = new TableColorSelectionManager();
+        manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
         Color colorForRow = manager.getColorForRow(3);
@@ -158,12 +158,12 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testGetNonExistsColorForRow() {
-        colorSelectionMap = new HashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(2);
         cts.addRow(3);
         colorSelectionMap.put(Color.red, cts);
-        manager = new TableColorSelectionManager();
+        manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
         Color colorForRow = manager.getColorForRow(1);

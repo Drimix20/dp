@@ -10,7 +10,7 @@ import static interactive.analyzer.gui.InteractiveAnalyzerResultFrame.SelectionM
 import interactive.analyzer.histogram.HistogramImproved;
 import interactive.analyzer.histogram.HistogramOptionDialog;
 import interactive.analyzer.listeners.ChartSelectionListener;
-import interactive.analyzer.result.table.AbstractAfmTableModel;
+import interactive.analyzer.result.table.AbstractInteractiveTableModel;
 import interactive.analyzer.result.table.AbstractMeasurementResult;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
@@ -52,6 +52,11 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     //TODO implement export - save as (csv), show as ImageJ's ResultsTable
     //TODO implement as new thread
     //TODO implement setting up values from measurement results
+    enum SelectionMode {
+
+        SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, CLEAR_SELECTIONS_IN_TABLE, NONE;
+    }
+
     private static final int CTRL_WITH_LMB_DOWN = CTRL_DOWN_MASK | BUTTON1_DOWN_MASK;
     private static final int SHIFT_WITH_LMB_DOWN = SHIFT_DOWN_MASK | BUTTON1_DOWN_MASK;
 
@@ -67,11 +72,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private Color currentSelectionColor = Color.RED;
 
     private SelectionMode selectionMode = NONE;
-    private boolean clearTable = false;
     private boolean notificationSendViaListener = false;
-    private boolean shiftIsDown = false;
-    private boolean ctrlIsDown = false;
-    private boolean justButton1IsDown = true;
 
     /**
      * Base constructor. TableModel is automatically set up in initComponents to default
@@ -99,7 +100,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
      */
     public InteractiveAnalyzerResultFrame(ImageWindowI interactiveImageWindow,
             List<String> tableHeaderTooltips,
-            AbstractAfmTableModel tableModel) {
+            AbstractInteractiveTableModel tableModel) {
         this.tableHeaderTooltips = tableHeaderTooltips;
         this.tableModel = tableModel;
         this.interactiveImageWindow = interactiveImageWindow;
@@ -116,7 +117,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
      */
     public InteractiveAnalyzerResultFrame(ImageWindowI interactiveImageWindow,
             JTable table,
-            AbstractAfmTableModel tableModel) {
+            AbstractInteractiveTableModel tableModel) {
         this.jTable1 = table;
         this.tableModel = tableModel;
         this.interactiveImageWindow = interactiveImageWindow;
@@ -131,7 +132,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
      * @return list of column names
      */
     private List<String> getColumnNamesFromTableModel(
-            AbstractAfmTableModel tableModel) {
+            AbstractInteractiveTableModel tableModel) {
         int columnCount = tableModel.getColumnCount();
         if (columnCount == 0) {
             logger.trace("No columns in tableModel");
@@ -257,7 +258,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
     private void singleRowSelectionInTable(JTable jTable, TableModel tableModel,
             String selectedColumnName) {
-        clearTable = false;
         int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
 
         if (columnIndex == -1) {
@@ -275,7 +275,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
     private void multipleRowsSelectionInTable(int rowIndex, JTable jTable,
             String selectedColumnName) {
-        clearTable = false;
         int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
 
         if (columnIndex == -1) {
@@ -600,11 +599,11 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         if (jTable1.getSelectedRowCount() == 0) {
             //no row is selected so compute chart from all rows
             logger.trace("Show data for whole table");
-            columnData = ((AbstractAfmTableModel) tableModel).getColumnData(selectedColumnName);
+            columnData = ((AbstractInteractiveTableModel) tableModel).getColumnData(selectedColumnName);
         } else {
             //compute chart from selected rows
             logger.trace("Show data for selected rows: [" + jTable1.getSelectedRows() + "]");
-            columnData = ((AbstractAfmTableModel) tableModel).getColumnData(selectedColumnName, jTable1.getSelectedRows());
+            columnData = ((AbstractInteractiveTableModel) tableModel).getColumnData(selectedColumnName, jTable1.getSelectedRows());
         }
 
         if (objectFilteringFrame == null) {
@@ -629,8 +628,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             chart.setColumnName(selectedColumnName);
             calculatedHistogram = HistogramImproved.calculateHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
         }
-        //TODO printing histogram
-//        Histogram.printHistogram(calculatedHistogram);
         chartData.setMaxOccurence(HistogramImproved.getMaxOccurence());
         chartData.setMinOccurence(HistogramImproved.getMinOccurence());
         chartData.setPairs(calculatedHistogram);
@@ -651,20 +648,20 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         clearTableSelectionAndNotifyListeners();
     }//GEN-LAST:event_clearSelectionsButtonActionPerformed
 
+    private void optionMeniItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionMeniItemActionPerformed
+        OptionsFrame frame = new OptionsFrame(this, true);
+        frame.setLocationRelativeTo(this);
+        frame.setVisible(true);
+        jTable1.repaint();
+        notifyRedrawAll();
+    }//GEN-LAST:event_optionMeniItemActionPerformed
+
     private void clearTableSelectionAndNotifyListeners() {
         clearTableSelection();
         for (TableSelectionListener listener : tableSelectionListeners) {
             listener.clearAllSelectionsEvent();
         }
     }
-
-    private void optionMeniItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionMeniItemActionPerformed
-        OptionsFrame frame = new OptionsFrame(this, true);
-        frame.setLocationRelativeTo(this);
-        frame.setVisible(true);
-        ((AbstractAfmTableModel) tableModel).forceFireDataChanged();
-        notifyRedrawAll();
-    }//GEN-LAST:event_optionMeniItemActionPerformed
 
     private void notifyRedrawAll() {
         for (TableSelectionListener listener : tableSelectionListeners) {
@@ -724,9 +721,4 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private javax.swing.JMenuItem optionMeniItem;
     private javax.swing.JButton showHistogram;
     // End of variables declaration//GEN-END:variables
-
-    enum SelectionMode {
-
-        SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, CLEAR_SELECTIONS_IN_TABLE, NONE;
-    }
 }

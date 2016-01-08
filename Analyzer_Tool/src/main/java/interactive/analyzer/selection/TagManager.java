@@ -10,8 +10,8 @@ import java.util.List;
  */
 public class TagManager {
 
-    private List<Tag> tags;
     private static TagManager instance = null;
+    private List<Tag> tags;
     private int idCounter;
 
     private TagManager() {
@@ -19,21 +19,21 @@ public class TagManager {
         tags = new ArrayList<>();
     }
 
-    public synchronized static TagManager getInstance() {
+    public static TagManager getInstance() {
         if (instance == null) {
             instance = new TagManager();
         }
         return instance;
     }
 
-    public synchronized List<Tag> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 
     /**
      * Clear container holds all saved tags
      */
-    public synchronized void clearAllTags() {
+    public void clearAllTags() {
         tags.clear();
     }
 
@@ -42,7 +42,7 @@ public class TagManager {
      * @param id
      * @return tag on specific id or null if id is out of range or no tag is on index
      */
-    public synchronized Tag getTagById(int id) {
+    public Tag getTagById(int id) {
         for (Tag t : tags) {
             if (t.getId() == id) {
                 return t;
@@ -74,28 +74,30 @@ public class TagManager {
         return null;
     }
 
-    public synchronized void addTag(Color color, String name, String description) {
+    public int addTag(Color color, String name, String description) {
         validateColor(color);
         validateName(name);
         validateDescription(description);
+
+        idCounter++;
+
         Tag tag = new Tag(color, name, description);
         tag.setId(idCounter);
         tags.add(tag);
 
-        idCounter++;
+        return tag.getId();
     }
 
-    public synchronized void editTag(Tag tag) {
+    public void editTag(Tag tag) {
         validateTag(tag);
 
-        int index = tags.indexOf(tag);
-        Tag t = tags.get(index);
+        Tag t = tags.get(tag.getId());
         t.setColor(tag.getColor());
         t.setName(tag.getName());
         t.setDescription(tag.getDescription());
     }
 
-    public synchronized void removeTag(Tag tag) {
+    public void removeTag(Tag tag) {
         tags.remove(tag);
     }
 

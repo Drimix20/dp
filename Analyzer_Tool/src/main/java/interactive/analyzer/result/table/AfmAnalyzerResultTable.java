@@ -18,14 +18,12 @@ import org.apache.log4j.Logger;
 public class AfmAnalyzerResultTable extends JTable {
 
     private static Logger logger = Logger.getLogger(AfmAnalyzerResultTable.class);
-    private static int ID_COLUMN_INDEX = 0;
-    private static int SELECTION_COLUMN_INDEX = 1;
+    public static int ID_COLUMN_INDEX = 0;
+    public static int SELECTION_COLUMN_INDEX = 1;
 
     private List<String> headerTooltips = new ArrayList<>();
     private TableColorSelectionManager selectionManager;
     private static final Color DEFAULT_BACKGROUND_ROW_COLOR = Color.WHITE;
-    //TODO configure default selection color
-    private static final Color DEFAULT_SELECTION_COLOR = Color.red;//new Color(187, 207, 229);
 
     public AfmAnalyzerResultTable() {
         selectionManager = TableColorSelectionManager.getInstance();
@@ -103,7 +101,7 @@ public class AfmAnalyzerResultTable extends JTable {
     public void clearSelection() {
         logger.trace("");
         if (selectionManager != null) {
-            selectionManager.deleteAllSelections();
+            selectionManager.clearAllSelections();
         }
         super.clearSelection();
     }
@@ -115,9 +113,9 @@ public class AfmAnalyzerResultTable extends JTable {
         Component comp = super.prepareRenderer(renderer, row, column);
 
         if (ResultTableConfiguration.colorEntireRow()) {
-            colorRow(row, comp);
+            colorComponent(row, comp);
         } else if (column == SELECTION_COLUMN_INDEX) {
-            colorRow(row, comp);
+            colorComponent(row, comp);
         } else {
             comp.setBackground(Color.white);
         }
@@ -125,15 +123,12 @@ public class AfmAnalyzerResultTable extends JTable {
         return comp;
     }
 
-    private void colorRow(int row, Component comp) {
+    private void colorComponent(int row, Component comp) {
         Color selectionColor = null;
-        //row can be in selected range
-        if (selectionManager != null) {
-            selectionColor = selectionManager.getColorForRow(row);
-        }
+        selectionColor = selectionManager.getColorForRow(row);
         if (selectionColor == null && isRowSelected(row)) {
             //selection performed by click on table row
-            selectionColor = DEFAULT_SELECTION_COLOR;
+            selectionColor = selectionManager.getCurrentSelectionColor();
         }
         if (selectionColor == null) {
             //row is not selected

@@ -137,7 +137,7 @@ public class TableColorSelectionManagerTest {
         manager = TableColorSelectionManager.getInstance();
         manager.setColorSelectionMap(colorSelectionMap);
 
-        manager.deleteAllSelections();
+        manager.clearAllSelections();
         assertEquals("Map should be empty", 0, manager.getColorSelectionMap().size());
     }
 

@@ -111,8 +111,6 @@ public class HistogramDataSet {
     }
 
     public List<HistogramBin> getHistogramPairs() {
-//        TODO no sorting of results
-//        Collections.sort(histogramPairs, new HistogramBinComparator());
         return histogramPairs;
     }
 

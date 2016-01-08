@@ -8,14 +8,16 @@ import interactive.analyzer.graph.GraphPanel;
 import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.HistogramBin;
 import interactive.analyzer.listeners.ChartSelectionListener;
+import interactive.analyzer.listeners.ManageTagListener;
+import interactive.analyzer.result.table.TableColorSelectionManager;
 import interactive.analyzer.selection.CircleIcon;
 import interactive.analyzer.selection.JListElement;
-import interactive.analyzer.selection.ListCellRendererWithColorIcon;
 import interactive.analyzer.selection.Tag;
 import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
@@ -36,24 +38,42 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     private static final Color DEFAULT_SELECTION_COLOR = Color.red;
 
     private TagManager tagManager;
-    private Color currentSelectionColor = Color.red;
+    private TableColorSelectionManager selectionManager;
+    private List<ManageTagListener> tagListeners;
 
     /**
      * Creates new frame of ObjectFilteringFrame
      */
     public ObjectFilteringFrame() {
+        tagListeners = new ArrayList<>();
+        selectionManager = TableColorSelectionManager.getInstance();
         tagManager = TagManager.getInstance();
         tagManager.addTag(Color.magenta, "Name1", "Desc");
         initComponents();
-        graphPanel.setSelectionColor(currentSelectionColor);
+
+        graphPanel.setSelectionColor(selectionManager.getCurrentSelectionColor());
         tagColorThumbnail.setBackground(DEFAULT_SELECTION_COLOR);
         this.setLocationRelativeTo(null);
         logger.trace("Frame width=" + getWidth() + ", height=" + getHeight() + javax.swing.UIManager.getLookAndFeel());
 
     }
 
+    // <editor-fold defaultstate="collapsed" desc="Manage ManageTagListener...">
+    public boolean addManageTagListener(ManageTagListener listener) {
+        return tagListeners.add(listener);
+    }
+
+    public boolean removeManageTagListener(ManageTagListener listener) {
+        return tagListeners.remove(listener);
+    }
+
+    public void removeAllManageTagListeners() {
+        tagListeners.clear();
+    }
+    // </editor-fold>
+
     public Color getCurrentSelectionColor() {
-        return currentSelectionColor;
+        return selectionManager.getCurrentSelectionColor();
     }
 
     public void addChart(Chart chart) {
@@ -103,7 +123,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         deleteTagButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tagsJList = new javax.swing.JList(getTagListData(tagManager.getTags()));
+        tagsJList = new javax.swing.JList(getTagListData(TagManager.getInstance().getTags()));
         clearButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
@@ -277,7 +297,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
         jSplitPane.setRightComponent(jPanel1);
 
-        ListCellRenderer renderer = new ListCellRendererWithColorIcon();
+        ListCellRenderer renderer = new interactive.analyzer.selection.ListCellRendererWithColorIcon();
         tagsJList.setCellRenderer(renderer);
         tagsJList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -380,7 +400,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             }
 
             JListElement selectedElem = (JListElement) tagsJList.getSelectedValue();
-            Tag t = tagManager.getTagById(selectedElem.getId());
+            Tag t = TagManager.getInstance().getTagById(selectedElem.getId());
             if (t == null) {
                 logger.trace("No tag selected");
                 return;
@@ -396,7 +416,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_valueChangedJListListener
 
     private void setCurrentSelectionColor(Color color) {
-        currentSelectionColor = color;
+        selectionManager.setCurrentSelectionColor(color);
         if (graphPanel != null) {
             graphPanel.setSelectionColor(color);
         }
@@ -415,10 +435,10 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
             int selectedIndex = tagsJList.getSelectedIndex();
             JListElement e = (JListElement) tagsJList.getSelectedValue();
-            Color c = tagManager.getTagColor(e.getId());
+            Color c = TagManager.getInstance().getTagColor(e.getId());
             Tag tag = new Tag(tagColor, tagName, tagDescription);
             tag.setId(e.getId());
-            tagManager.editTag(tag);
+            TagManager.getInstance().editTag(tag);
 
             if (graphPanel != null) {
                 graphPanel.changeSelectionColor(c, tagColor);
@@ -441,20 +461,24 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         }
 
         if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to add new tag?")) {
-            tagManager.addTag(tagColor, tagName, tagDescription);
+            int id = TagManager.getInstance().addTag(tagColor, tagName, tagDescription);
             updateTagJList();
             emptyFormular();
+
+            for (ManageTagListener listener : tagListeners) {
+                listener.newTagCreatedEvent(id, tagColor);
+            }
         }
     }//GEN-LAST:event_addNewTagButtonActionPerformed
 
     private void deleteTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteTagButtonActionPerformed
         if (!tagsJList.isSelectionEmpty()) {
             if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to delete selected tag?")) {
-                Tag t = tagManager.getTagById(((JListElement) tagsJList.getSelectedValue()).getId());
+                Tag t = TagManager.getInstance().getTagById(((JListElement) tagsJList.getSelectedValue()).getId());
                 if (t == null) {
                     return;
                 }
-                tagManager.removeTag(t);
+                TagManager.getInstance().removeTag(t);
 
                 emptyFormular();
                 updateTagJList();
@@ -475,20 +499,20 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             if (graphPanel != null) {
                 graphPanel.clearAllSelectionsEvent();
             }
-            tagManager.clearAllTags();
+            TagManager.getInstance().clearAllTags();
             emptyFormular();
             updateTagJList();
         }
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void emptyFormular() {
-        tagColorThumbnail.setBackground(currentSelectionColor);
+        tagColorThumbnail.setBackground(selectionManager.getCurrentSelectionColor());
         tagNameField.setText("");
         tagDescriptionArea.setText("");
     }
 
     private void updateTagJList() {
-        tagsJList.setListData(getTagListData(tagManager.getTags()));
+        tagsJList.setListData(getTagListData(TagManager.getInstance().getTags()));
         tagsJList.repaint();
     }
 

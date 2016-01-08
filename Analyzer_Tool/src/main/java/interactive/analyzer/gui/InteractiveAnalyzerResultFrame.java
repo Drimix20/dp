@@ -7,7 +7,7 @@ import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.DataStatistics;
 import interactive.analyzer.graph.data.HistogramBin;
-import static interactive.analyzer.gui.InteractiveAnalyzerResultFrame.SelectionMode.*;
+import static interactive.analyzer.gui.InteractiveAnalyzerResultFrame.TableSelectionMode.*;
 import interactive.analyzer.histogram.HistogramImproved;
 import interactive.analyzer.histogram.HistogramOptionDialog;
 import interactive.analyzer.listeners.ChartSelectionListener;
@@ -16,12 +16,14 @@ import interactive.analyzer.result.table.AbstractMeasurementResult;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.listeners.ImageSelectionListener;
+import interactive.analyzer.listeners.ManageTagListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
 import interactive.analyzer.presenter.Roi;
 import interactive.analyzer.result.table.DecimalPrecisionRenderer;
 import interactive.analyzer.result.table.TableColorSelectionManager;
+import interactive.analyzer.selection.Tag;
 import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.awt.Polygon;
@@ -47,15 +49,14 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelectionListener, ChartSelectionListener {
+public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelectionListener, ChartSelectionListener, ManageTagListener {
 
     private static Logger logger = Logger.getLogger(InteractiveAnalyzerResultFrame.class);
 
     //TODO not show other window after recomputation is performed
     //TODO implement export - save as (csv), show as ImageJ's ResultsTable
     //TODO implement as new thread
-    //TODO implement setting up values from measurement results
-    enum SelectionMode {
+    enum TableSelectionMode {
 
         SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, CLEAR_SELECTIONS_IN_TABLE, NONE;
     }
@@ -72,9 +73,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private List<TableSelectionListener> tableSelectionListeners = new ArrayList<>();
     private ObjectFilteringFrame objectFilteringFrame;
     private Chart chart;
-    private Color currentSelectionColor = Color.RED;
+    private TableColorSelectionManager selectionManager;
 
-    private SelectionMode selectionMode = NONE;
+    private TableSelectionMode selectionMode = NONE;
     private boolean notificationSendViaListener = false;
 
     /**
@@ -91,8 +92,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         this.interactiveImageWindow = interactiveImageWindow;
         this.tableColumnNames = tableColumnNames;
         this.tableHeaderTooltips = tableHeaderTooltips;
-        initComponents();
         selectedColumnName = tableColumnNames.get(0);
+        selectionManager = TableColorSelectionManager.getInstance();
+        initComponents();
     }
 
     /**
@@ -109,6 +111,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         this.interactiveImageWindow = interactiveImageWindow;
         this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
         selectedColumnName = tableColumnNames.get(0);
+        selectionManager = TableColorSelectionManager.getInstance();
         initComponents();
     }
 
@@ -126,6 +129,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         this.interactiveImageWindow = interactiveImageWindow;
         this.tableColumnNames = getColumnNamesFromTableModel(tableModel);
         selectedColumnName = tableColumnNames.get(0);
+        selectionManager = TableColorSelectionManager.getInstance();
         initComponents();
     }
 
@@ -146,14 +150,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             columnNames.add(tableModel.getColumnName(i));
         }
         return columnNames;
-    }
-
-    private Color getCurrentSelectionColor() {
-        if (objectFilteringFrame == null) {
-            return Color.RED;
-        } else {
-            return objectFilteringFrame.getCurrentSelectionColor();
-        }
     }
 
     /**
@@ -272,8 +268,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         clearTableSelection();
         int rowIndex = jTable.getSelectionModel().getLeadSelectionIndex();
-        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(currentSelectionColor, rowIndex);
-        notifySingleRowSelected(rowIndex, columnValue, currentSelectionColor);
+        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(selectionManager.getCurrentSelectionColor(), rowIndex
+        );
+        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
+        notifySingleRowSelected(rowIndex, columnValue, selectionManager.getCurrentSelectionColor());
     }
 
     private void multipleRowsSelectionInTable(int rowIndex, JTable jTable,
@@ -286,8 +284,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         }
 
         double columnValue = (Double) jTable1.getValueAt(rowIndex, columnIndex);
-        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(currentSelectionColor, rowIndex);
-        notifyMultipleRowsSelected(rowIndex, columnValue, currentSelectionColor);
+        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(selectionManager.getCurrentSelectionColor(), rowIndex);
+        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
+        notifyMultipleRowsSelected(rowIndex, columnValue, selectionManager.getCurrentSelectionColor());
     }
 
     /**
@@ -344,6 +343,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         int rowIndex = roiLabel - 1;
         jTable1.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
         jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(rowIndex, 0, true)));
     }
 
@@ -355,6 +355,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         int rowIndex = roiLabel - 1;
         jTable1.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
         jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(rowIndex, 0, true)));
     }
 
@@ -374,8 +375,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         logger.trace("Single selection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue + ", color=" + color);
         clearTableSelection();
         notifyClearAll();
-        currentSelectionColor = color;
+        selectionManager.setCurrentSelectionColor(color);
 
+        int lastRowIndex = 0;
         notificationSendViaListener = true;
         int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
@@ -384,8 +386,14 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
 
+                addSelectionIdToRow(color, rowIndex);
+
                 notifyMultipleRowsSelected(rowIndex, val, color);
+                lastRowIndex = rowIndex;
             }
+        }
+        if (lastRowIndex != -1) {
+            jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(lastRowIndex, 0, true)));
         }
         jTable1.repaint();
     }
@@ -394,8 +402,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     public void barSelectedEvent(double downRangeValue, double upperRangeValue,
             Color color) {
         logger.trace("selection notification received from ObjectFilteringFrame: downR=" + downRangeValue + " , upper=" + upperRangeValue + ", color=" + color);
-        currentSelectionColor = color;
+        selectionManager.setCurrentSelectionColor(color);
 
+        int lastRowIndex = -1;
         notificationSendViaListener = true;
         int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
@@ -404,10 +413,26 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
 
+                addSelectionIdToRow(color, rowIndex);
+
                 notifyMultipleRowsSelected(rowIndex, val, color);
+                lastRowIndex = rowIndex;
             }
         }
+        if (lastRowIndex != -1) {
+            jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(lastRowIndex, 0, true)));
+        }
         jTable1.repaint();
+    }
+
+    private void addSelectionIdToRow(Color color, int rowIndex) {
+        Tag t = TagManager.getInstance().getTagByColor(color);
+        logger.trace(t);
+        if (t == null) {
+            setValueToSelectionColumn(tableModel, null, rowIndex);
+        } else {
+            setValueToSelectionColumn(tableModel, t.getId(), rowIndex);
+        }
     }
 
     @Override
@@ -422,6 +447,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             if (val > downRangeValue && val <= upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).removeRowFromSelection(rowIndex);
                 jTable1.removeRowSelectionInterval(rowIndex, rowIndex);
+                //Row is deselected and selection id is removed
+                setValueToSelectionColumn(tableModel, null, rowIndex);
 
                 notifyRowDeselected(rowIndex);
             }
@@ -435,10 +462,31 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     }
     // </editor-fold>
 
+    @Override
+    public void newTagCreatedEvent(int id, Color color) {
+        TableModel model = jTable1.getModel();
+        for (int row = 0; row < model.getRowCount(); row++) {
+            Color rowColor = TableColorSelectionManager.getInstance().getColorForRow(row);
+            if (rowColor != null && rowColor.equals(color)) {
+                setValueToSelectionColumn(model, id, row);
+            }
+        }
+    }
+
     private void clearTableSelection() {
         selectionMode = CLEAR_SELECTIONS_IN_TABLE;
         jTable1.clearSelection();
+        //remove all selection in selection column
+        for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
+            setValueToSelectionColumn(tableModel, null, rowIndex);
+        }
+        TableColorSelectionManager.getInstance().clearAllSelections();
         jTable1.repaint();
+    }
+
+    private void setValueToSelectionColumn(TableModel model, Object value,
+            int rowIndex) {
+        model.setValueAt(value, rowIndex, AfmAnalyzerResultTable.SELECTION_COLUMN_INDEX);
     }
 
     /**
@@ -484,7 +532,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         optionMeniItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("AFM Analyzer Results");
+        setTitle("Interactive Analyzer - Results");
 
         jTable1.setModel(getTableModelInstance());
         //set DecimalPrecisonRenderer for all columns but first. First column is column with RowID
@@ -615,6 +663,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         if (objectFilteringFrame == null) {
             objectFilteringFrame = new ObjectFilteringFrame();
+            objectFilteringFrame.addManageTagListener((ManageTagListener) this);
             objectFilteringFrame.addChartSelectionListener(this);
             objectFilteringFrame.addChartSelectionListener((ChartSelectionListener) interactiveImageWindow);
             this.addTableSelectionListener((TableSelectionListener) objectFilteringFrame.getGraphPanel());

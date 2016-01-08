@@ -13,6 +13,7 @@ public class TableColorSelectionManager {
 
     private static TableColorSelectionManager instance = null;
     private ConcurrentMap<Color, ColorizedTableSelection> colorSelectionMap;
+    private Color currentSelectionColor = Color.red;
 
     private TableColorSelectionManager() {
         colorSelectionMap = new ConcurrentHashMap<>();
@@ -23,6 +24,14 @@ public class TableColorSelectionManager {
             instance = new TableColorSelectionManager();
         }
         return instance;
+    }
+
+    public Color getCurrentSelectionColor() {
+        return currentSelectionColor;
+    }
+
+    public void setCurrentSelectionColor(Color currentSelectionColor) {
+        this.currentSelectionColor = currentSelectionColor;
     }
 
     public void setColorSelectionMap(
@@ -102,7 +111,7 @@ public class TableColorSelectionManager {
         }
     }
 
-    public void deleteAllSelections() {
+    public void clearAllSelections() {
         colorSelectionMap.clear();
     }
 

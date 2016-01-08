@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
+import interactive.analyzer.result.table.TableColorSelectionManager;
 import java.awt.Color;
 import java.awt.Point;
 import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
@@ -34,29 +35,25 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     private String stackTitle = "Interactive Analyzer window";
 
     private static List<ImageSelectionListener> roiSelectedListeners;
-    private ExtendedImageStackWindow imageStackWindow;
+    private ImagePlus duplicatedImp;
     private OverlayManager overlayManager;
     private List<Roi> rois;
-    private ImagePlus showingImg;
 
     public InteractiveImageWindow(ImagePlus imp, List<Roi> rois) {
         validate(imp, rois);
         roiSelectedListeners = new ArrayList<>();
 
         //create custom image window implementation
-        ImagePlus duplicatedImp = imp.duplicate();
+        duplicatedImp = imp.duplicate();
         duplicatedImp.setTitle(stackTitle + "-" + imp.getTitle());
         duplicatedImp.setOverlay(null);
-        imageStackWindow = new ExtendedImageStackWindow(duplicatedImp);
-        imageStackWindow.setTitle(stackTitle + "-" + imp.getTitle());
-        imageStackWindow.setVisible(false);
-        showingImg = duplicatedImp;
 
         this.rois = rois;
-        overlayManager = new OverlayManager(this.rois, showingImg);
+        overlayManager = new OverlayManager(this.rois, duplicatedImp);
         overlayManager.drawRois();
 
-        registerMouseListenerToImageCanvas(imageStackWindow.getCanvas());
+        duplicatedImp.show();
+        registerMouseListenerToImageCanvas(duplicatedImp.getCanvas());
     }
 
     private void validate(ImagePlus img, List<Roi> rois) {
@@ -114,12 +111,12 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
     @Override
     public boolean isVisible() {
-        return imageStackWindow.isVisible();
+        return duplicatedImp.isVisible();
     }
 
     @Override
     public String getImagePath() {
-        return showingImg.getFileInfo().directory + File.separator + showingImg.getFileInfo().fileName;
+        return duplicatedImp.getFileInfo().directory + File.separator + duplicatedImp.getFileInfo().fileName;
     }
 
     /**
@@ -155,13 +152,13 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
             public void mouseReleased(MouseEvent e) {
                 logger.trace("Released on image: " + e.getX() + ", " + e.getY());
                 super.mousePressed(e);
-                ij.gui.Roi selectionRoi = showingImg.getRoi();
+                ij.gui.Roi selectionRoi = duplicatedImp.getRoi();
 
                 if (selectionRoi != null) {
                     logger.trace("Selection done by other roi");
                     overlayManager.deselectAll();
                     notifyClearAllSelections();
-                    List<Roi> multipleSelection = overlayManager.selectRoisInSelection(selectionRoi.getPolygon(), DEFAULT_ROI_SELECTION_COLOR);
+                    List<Roi> multipleSelection = overlayManager.selectRoisInSelection(selectionRoi.getPolygon(), TableColorSelectionManager.getInstance().getCurrentSelectionColor());
                     printSelectedRois(multipleSelection);
                     notifyMultipleSelectionRoi(multipleSelection);
                 }
@@ -169,7 +166,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                ij.gui.Roi selectionRoi = showingImg.getRoi();
+                ij.gui.Roi selectionRoi = duplicatedImp.getRoi();
 
                 if (selectionRoi != null) {
                     logger.trace("Selection done by other roi");
@@ -179,7 +176,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
                     printSelectedRois(multipleSelection);
                     notifyMultipleSelectionRoi(multipleSelection);
                 } else {
-                    Point cursorLoc = showingImg.getCanvas().getCursorLoc();
+                    Point cursorLoc = duplicatedImp.getCanvas().getCursorLoc();
                     int modifiersEx = e.getModifiersEx();
                     Roi selectedRoi = overlayManager.getRoiFromPoint(cursorLoc);
                     if (selectedRoi == null) {
@@ -233,13 +230,13 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
     @Override
     public void setImageVisible(boolean visible) {
-        int size = imageStackWindow.getStackSize();
-        if (size == 0) {
+        int size = duplicatedImp.getStackSize();
+        if (visible) {
             logger.debug("Numb of images is 0. No images will be shown");
-            imageStackWindow.setVisible(false);
+            duplicatedImp.show();
         } else {
             logger.debug("Images will be displayed");
-            imageStackWindow.setVisible(visible);
+            duplicatedImp.hide();
         }
     }
 
@@ -247,9 +244,9 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     @Override
     public void singleRowSelectedEvent(int rowIndex, double value,
             Color color) {
-        if (showingImg.getRoi() != null) {
+        if (duplicatedImp.getRoi() != null) {
             ij.gui.Roi imageR = null;
-            showingImg.setRoi(imageR);
+            duplicatedImp.setRoi(imageR);
         }
         logger.trace("rowIndex: " + rowIndex);
         int labelToSelect = rowIndex + 1;

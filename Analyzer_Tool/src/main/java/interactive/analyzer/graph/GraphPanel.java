@@ -4,7 +4,6 @@ import interactive.analyzer.file.tools.ImageFileFilter;
 import interactive.analyzer.graph.shape.Shape;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
-import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -365,7 +364,6 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         logger.trace("");
         if (chart != null) {
             chart.clearAllSelections();
-            TagManager.getInstance().clearAllTags();
         }
         for (ChartSelectionListener listener : selectionListeners) {
             listener.clearBarSelectionsEvent();

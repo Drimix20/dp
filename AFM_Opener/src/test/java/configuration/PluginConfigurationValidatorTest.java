@@ -1,6 +1,7 @@
 package configuration;
 
-import configuration.parser.PluginConfigurationValidator;
+import afm.opener.configuration.PluginConfiguration;
+import afm.opener.configuration.parser.PluginConfigurationValidator;
 import ij.IJ;
 import java.io.File;
 import static org.junit.Assert.assertTrue;

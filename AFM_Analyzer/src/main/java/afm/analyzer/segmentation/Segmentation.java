@@ -15,7 +15,7 @@ import ij.process.ImageProcessor;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import selector.ChannelContainer;
+import afm.opener.selector.ChannelContainer;
 
 /**
  *

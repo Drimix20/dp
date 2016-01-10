@@ -1,8 +1,9 @@
 package configuration;
 
-import configuration.parser.XmlPluginConfigurationParser;
-import configuration.xml.elements.ConfigurationXmlRootElement;
-import configuration.xml.elements.DimensionTagsConfiguration;
+import afm.opener.configuration.PluginConfiguration;
+import afm.opener.configuration.parser.XmlPluginConfigurationParser;
+import afm.opener.configuration.xml.elements.ConfigurationXmlRootElement;
+import afm.opener.configuration.xml.elements.DimensionTagsConfiguration;
 import ij.IJ;
 import java.io.File;
 import static org.junit.Assert.assertEquals;

@@ -1,6 +1,10 @@
 package writer.tags.sorter;
 
-import configuration.xml.elements.TagConfiguration;
+import afm.opener.writer.tags.sorter.MultipleComparator;
+import afm.opener.writer.tags.sorter.CategoryTagsDescriptionSorter;
+import afm.opener.writer.tags.sorter.DecimalIDTagsDescriptionSorter;
+import afm.opener.writer.tags.sorter.TagsDescriptionSorter;
+import afm.opener.configuration.xml.elements.TagConfiguration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

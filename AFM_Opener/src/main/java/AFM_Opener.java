@@ -1,12 +1,12 @@
 
-import gui.AfmOpenerFrame;
+import afm.opener.gui.AfmOpenerFrame;
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.PlugIn;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import javax.swing.SwingUtilities;
-import selector.ChannelContainer;
+import afm.opener.selector.ChannelContainer;
 
 /**
  * Main class serve to run plugin in Fiji menu
@@ -41,6 +41,7 @@ public class AFM_Opener implements PlugIn {
         return afmOpenerRunnable.getSelectedChannels();
     }
 
+    @Override
     public void run(String arg) {
         SwingUtilities.invokeLater(new Runnable() {
 
@@ -55,9 +56,6 @@ public class AFM_Opener implements PlugIn {
 
     /**
      * Execution method used to call plugin in other plugin
-     *
-     * @param disposeAfterOpen
-     * @return
      */
     public void execute() {
         afmOpenerRunnable = new AfmOpenerRunnable(latch, disposeAfterOpen, showImages);

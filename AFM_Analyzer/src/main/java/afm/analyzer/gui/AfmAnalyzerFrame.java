@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
-import selector.ChannelContainer;
+import afm.opener.selector.ChannelContainer;
 
 /**
  *

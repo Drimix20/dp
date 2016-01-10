@@ -3,7 +3,7 @@ package afm.analyzer.scalings;
 import afm.analyzer.scalings.types.IdentityImageDataScaler;
 import afm.analyzer.scalings.types.ImageDataScaler;
 import afm.analyzer.scalings.types.UnsupportedScalingType;
-import configuration.PluginConfiguration;
+import afm.opener.configuration.PluginConfiguration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import metadata.decoder.ChannelMetadata;

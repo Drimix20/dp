@@ -7,7 +7,7 @@ import interactive.analyzer.selection.ImageSegments;
 import interactive.analyzer.selection.ExtendedRoi;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import selector.ChannelContainer;
+import afm.opener.selector.ChannelContainer;
 
 /**
  *

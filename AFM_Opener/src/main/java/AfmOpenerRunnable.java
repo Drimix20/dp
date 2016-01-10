@@ -1,8 +1,8 @@
 
-import gui.AfmOpenerFrame;
+import afm.opener.gui.AfmOpenerFrame;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import selector.ChannelContainer;
+import afm.opener.selector.ChannelContainer;
 
 class AfmOpenerRunnable implements Runnable {
 

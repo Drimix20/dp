@@ -3,7 +3,7 @@ package afm.analyzer.scalings;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import importer.ImageLoader;
+import afm.opener.importer.ImageLoader;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import metadata.decoder.ChannelMetadata;
 import metadata.decoder.MetadataDecoder;
-import selector.ChannelContainer;
+import afm.opener.selector.ChannelContainer;
 
 /**
  *

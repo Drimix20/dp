@@ -221,6 +221,22 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         }
     }
 
+    public void setBarBackgroundColor(Color color) {
+        if (chart != null) {
+            for (Shape shape : chart.getDrawShapes()) {
+                shape.setBgColor(color);
+            }
+        }
+    }
+
+    public void setBarBorderColor(Color color) {
+        if (chart != null) {
+            for (Shape shape : chart.getDrawShapes()) {
+                shape.setBorderColor(color);
+            }
+        }
+    }
+
     /**
      * Set chart which will be displayed in graph panel
      * @param chart

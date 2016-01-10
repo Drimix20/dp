@@ -7,7 +7,6 @@ import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.result.table.TableColorSelectionManager;
 import java.awt.Color;
 import java.awt.Point;
-import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,21 +17,17 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
- * TODO not valid desc of class
- * Extended implementation of StackWindow for AFM analyzer.
+ * Interactive Image window which allow add ImageSelectionListener to opened image
  * @author Drimal
  */
 public class InteractiveImageWindow implements ImageWindowI, TableSelectionListener {
 
     private static Logger logger = Logger.getLogger(InteractiveImageWindow.class);
 
-    public static final Color DEFAULT_STROKE_ROI_COLOR = Color.YELLOW;
+    public static final Color DEFAULT_STROKE_ROI_COLOR = ImageWindowConfiguration.getStrokeColor();
     public static final Color DEFAULT_ROI_SELECTION_COLOR = Color.CYAN;
 
-    private static final int CTRL_WITH_LMB_DOWN = CTRL_DOWN_MASK | BUTTON1_DOWN_MASK;
-    private static final int LMB_DOWN = BUTTON1_DOWN_MASK;
-
-    private String stackTitle = "Interactive Analyzer window";
+    private String frameTitle = "Interactive Analyzer - Image window";
 
     private static List<ImageSelectionListener> roiSelectedListeners;
     private ImagePlus duplicatedImp;
@@ -45,7 +40,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
         //create custom image window implementation
         duplicatedImp = imp.duplicate();
-        duplicatedImp.setTitle(stackTitle + "-" + imp.getTitle());
+        duplicatedImp.setTitle(frameTitle + ":" + imp.getTitle());
         duplicatedImp.setOverlay(null);
 
         this.rois = rois;
@@ -106,7 +101,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
      */
     @Override
     public void setTitle(String title) {
-        stackTitle = title;
+        frameTitle = title;
     }
 
     @Override

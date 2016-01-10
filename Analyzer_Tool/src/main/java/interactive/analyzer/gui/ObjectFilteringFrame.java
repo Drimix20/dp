@@ -9,6 +9,7 @@ import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.HistogramBin;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.listeners.ManageTagListener;
+import interactive.analyzer.options.ObjectFilteringConfiguration;
 import interactive.analyzer.result.table.TableColorSelectionManager;
 import interactive.analyzer.selection.CircleIcon;
 import interactive.analyzer.selection.JListElement;
@@ -33,9 +34,8 @@ import org.apache.log4j.Logger;
  */
 public class ObjectFilteringFrame extends javax.swing.JFrame {
 
-    //TODO axis are not correct when new column in table is selected
     private static Logger logger = Logger.getLogger(ObjectFilteringFrame.class);
-    private static final Color DEFAULT_SELECTION_COLOR = Color.red;
+    private static final int DIALOG_OK_STATUS = 1;
 
     private TagManager tagManager;
     private TableColorSelectionManager selectionManager;
@@ -52,7 +52,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         initComponents();
 
         graphPanel.setSelectionColor(selectionManager.getCurrentSelectionColor());
-        tagColorThumbnail.setBackground(DEFAULT_SELECTION_COLOR);
+        tagColorThumbnail.setBackground(selectionManager.getCurrentSelectionColor());
         this.setLocationRelativeTo(null);
         logger.trace("Frame width=" + getWidth() + ", height=" + getHeight() + javax.swing.UIManager.getLookAndFeel());
 
@@ -128,6 +128,8 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         Save = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
+        optionsMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Object's filtering");
@@ -327,6 +329,18 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
         jMenuBar1.add(fileMenu);
 
+        editMenu.setText("Edit");
+
+        optionsMenuItem.setText("Options");
+        optionsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionsMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(optionsMenuItem);
+
+        jMenuBar1.add(editMenu);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -378,7 +392,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
     private void colorChooserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooserButtonActionPerformed
         Color c = JColorChooser.showDialog(null,
-                "Color chooser", DEFAULT_SELECTION_COLOR);
+                "Color chooser", selectionManager.getCurrentSelectionColor());
         if (c != null) {
             tagColorThumbnail.setBackground(c);
             saveTagButton.setEnabled(true);
@@ -504,6 +518,18 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             updateTagJList();
         }
     }//GEN-LAST:event_clearButtonActionPerformed
+
+    private void optionsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionsMenuItemActionPerformed
+        ObjectFilteringOptionsDialog dialog = new ObjectFilteringOptionsDialog(this, true);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        int returnStatus = dialog.getReturnStatus();
+        if (returnStatus == DIALOG_OK_STATUS && graphPanel != null) {
+            graphPanel.setBarBorderColor(ObjectFilteringConfiguration.getBarBorderColor());
+            graphPanel.setBarBackgroundColor(ObjectFilteringConfiguration.getBarBackgroundColor());
+            graphPanel.updatePaint();
+        }
+    }//GEN-LAST:event_optionsMenuItemActionPerformed
 
     private void emptyFormular() {
         tagColorThumbnail.setBackground(selectionManager.getCurrentSelectionColor());
@@ -837,6 +863,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     private javax.swing.JButton clearButton;
     private javax.swing.JButton colorChooserButton;
     private javax.swing.JButton deleteTagButton;
+    private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
     private interactive.analyzer.graph.GraphPanel graphPanel;
     private javax.swing.JButton jButton1;
@@ -850,6 +877,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSplitPane jSplitPane;
+    private javax.swing.JMenuItem optionsMenuItem;
     private javax.swing.JButton saveTagButton;
     private javax.swing.JPanel tagColorThumbnail;
     private javax.swing.JTextArea tagDescriptionArea;

@@ -217,9 +217,9 @@ public class HistogramChart implements Chart {
             double value = pairs.get(i).getOccurence();
             double barHeight = linearStretch((double) chartHeight - 2 * GRAPH_MARGIN, (double) GRAPH_MARGIN, (double) data.getMaxOccurence(), 0, value) - GRAPH_MARGIN;
             Shape shape = shapes.get(i);
-            if (shape.getOccurence() == 0) {
-                continue;
-            }
+//            if (shape.getOccurence() == 0) {
+//                continue;
+//            }
             shape.setLocationAndSize(0 + GRAPH_MARGIN + barWidth * i, -barHeight - GRAPH_MARGIN, barWidth, barHeight);
             logger.trace(shape);
             shape.draw(g);

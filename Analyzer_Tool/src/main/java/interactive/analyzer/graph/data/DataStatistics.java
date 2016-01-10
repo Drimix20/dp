@@ -19,8 +19,8 @@ public class DataStatistics {
 
         HistogramDataSet dataSet = new HistogramDataSet();
 
-        double minValue = Integer.MAX_VALUE;
-        double maxValue = Integer.MIN_VALUE;
+        double minValue = Double.MAX_VALUE;
+        double maxValue = Double.MIN_VALUE;
         double sum = 0;
         for (Object cd : columnData) {
             double value = (double) cd;
@@ -71,12 +71,21 @@ public class DataStatistics {
         StringBuilder sb = new StringBuilder();
         int i = 1;
         for (HistogramBin pair : pairs) {
-            sb.append("dataset.addValue(")
-                    .append(pair.getOccurence())
-                    .append(", series1,\"").append(i).append("\");");
+//            sb.append("dataset.addValue(")
+//                    .append(pair.getOccurence())
+//                    .append(", series1,\"").append(i).append("\");");
+            sb.append(pair.getOccurence()).append(' ');
             i++;
         }
-//        System.out.println(sb.toString());
+        System.out.println(sb.toString());
+    }
+
+    public static void printData(Object[] data) {
+        String msg = "";
+        for (int i = 0; i < data.length; i++) {
+            msg += data[i] + ",";
+        }
+        System.out.println(msg);
     }
 
 }

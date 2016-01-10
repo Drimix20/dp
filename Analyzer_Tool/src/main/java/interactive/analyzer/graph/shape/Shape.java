@@ -17,7 +17,7 @@ public abstract class Shape {
 
     private boolean isSelected;
     private Color bgColor = new Color(0, 0, 139);
-    private Color borderColor = Color.WHITE;
+    private Color borderColor = Color.BLACK;
     private Color selectionColor = Color.RED;
 
     public Shape(int ID, double lowerBound, double upperBound, int occurence) {

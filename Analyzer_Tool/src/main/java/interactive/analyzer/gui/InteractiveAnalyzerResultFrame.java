@@ -53,7 +53,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
     private static Logger logger = Logger.getLogger(InteractiveAnalyzerResultFrame.class);
 
-    //TODO not show other window after recomputation is performed
     //TODO implement export - save as (csv), show as ImageJ's ResultsTable
     //TODO implement as new thread
     enum TableSelectionMode {
@@ -182,7 +181,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             jTable1 = new AfmAnalyzerResultTable();
             jTable1.setColumnSelectionAllowed(false);
             jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-            //jTable1.setDefaultRenderer(Object.class, new DecimalPrecisionRenderer());
             jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
                 @Override
@@ -382,7 +380,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
             double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
-            if (val > downRangeValue && val <= upperRangeValue) {
+            if (val >= downRangeValue && val < upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
 
@@ -409,7 +407,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
             double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
-            if (val > downRangeValue && val <= upperRangeValue) {
+            if (val >= downRangeValue && val < upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
 
@@ -444,7 +442,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
             int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
             double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
-            if (val > downRangeValue && val <= upperRangeValue) {
+            if (val >= downRangeValue && val < upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).removeRowFromSelection(rowIndex);
                 jTable1.removeRowSelectionInterval(rowIndex, rowIndex);
                 //Row is deselected and selection id is removed
@@ -660,6 +658,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             logger.trace("Show data for selected rows: [" + jTable1.getSelectedRows() + "]");
             columnData = ((AbstractInteractiveTableModel) tableModel).getColumnData(selectedColumnName, jTable1.getSelectedRows());
         }
+        DataStatistics.printData(columnData);
 
         if (objectFilteringFrame == null) {
             objectFilteringFrame = new ObjectFilteringFrame();
@@ -678,19 +677,21 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         List<HistogramBin> calculatedHistogram;
         if (cumulHistCheckBox.isSelected()) {
-            chart.setColumnName(selectedColumnName + " cumulated ");
+            chart.setColumnName(selectedColumnName + " cumulated");
             calculatedHistogram = HistogramImproved.calculateCumulatedHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
         } else {
             chart.setColumnName(selectedColumnName);
             calculatedHistogram = HistogramImproved.calculateHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
         }
+
+        DataStatistics.PairsToString(calculatedHistogram);
+
         chartData.setMaxOccurence(HistogramImproved.getMaxOccurence());
         chartData.setMinOccurence(HistogramImproved.getMinOccurence());
         chartData.setPairs(calculatedHistogram);
         chartData.setBinSize(HistogramImproved.getBinSize());
         chartData.setNumberOfBins(HistogramImproved.getBinsNumber());
 
-        chart.setColumnName(selectedColumnName);
         chart.loadData(chartData);
         objectFilteringFrame.addChart(chart);
         objectFilteringFrame.getGraphPanel().updatePaint();

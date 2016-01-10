@@ -53,8 +53,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
     private static Logger logger = Logger.getLogger(InteractiveAnalyzerResultFrame.class);
 
-    //TODO implement export - save as (csv), show as ImageJ's ResultsTable
-    //TODO implement as new thread
     enum TableSelectionMode {
 
         SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, CLEAR_SELECTIONS_IN_TABLE, NONE;
@@ -501,7 +499,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     public void setAnalyzerValues(
             Map<String, List<AbstractMeasurementResult>> analyzerResultValues) {
         this.analyzerValues = analyzerResultValues;
-        //TODO class will setting results
         List<String> keySet = new ArrayList<>(analyzerResultValues.keySet());
         ((AfmAnalyzerTableModel) tableModel).setValues(analyzerValues.get(keySet.get(0)));
     }
@@ -715,7 +712,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
     private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
         TextTableExporter exporter = new TextTableExporter();
-        exporter.export(jTable1, TagManager.getInstance(), TableColorSelectionManager.getInstance());
+        exporter.export(interactiveImageWindow.getImageTitle(), jTable1, TagManager.getInstance(), TableColorSelectionManager.getInstance());
     }//GEN-LAST:event_saveAsMenuItemActionPerformed
 
     private void clearTableSelectionAndNotifyListeners() {

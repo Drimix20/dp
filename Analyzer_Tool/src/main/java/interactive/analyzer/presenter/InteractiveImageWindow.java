@@ -31,6 +31,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
     private static List<ImageSelectionListener> roiSelectedListeners;
     private ImagePlus duplicatedImp;
+    private String imageName;
     private OverlayManager overlayManager;
     private List<Roi> rois;
 
@@ -40,7 +41,8 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
         //create custom image window implementation
         duplicatedImp = imp.duplicate();
-        duplicatedImp.setTitle(frameTitle + ":" + imp.getTitle());
+        imageName = imp.getTitle();
+        duplicatedImp.setTitle(frameTitle + ":" + imageName);
         duplicatedImp.setOverlay(null);
 
         this.rois = rois;
@@ -102,6 +104,11 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     @Override
     public void setTitle(String title) {
         frameTitle = title;
+    }
+
+    @Override
+    public String getImageTitle() {
+        return imageName;
     }
 
     @Override

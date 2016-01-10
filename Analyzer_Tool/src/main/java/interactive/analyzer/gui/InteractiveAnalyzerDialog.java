@@ -260,7 +260,6 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
 
     private void checkSelectedChoices() {
         logger.debug("Check selected choices");
-        //TODO parse selected window to ResultTable due to line 475 in IJ.java (renameResults)
         boolean cancel = false;
         if (resultTableChoice.getSelectedItem().equals("NONE")) {
             IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "Select results table.");

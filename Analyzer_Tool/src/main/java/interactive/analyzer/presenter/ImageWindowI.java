@@ -31,6 +31,11 @@ public interface ImageWindowI extends ChartSelectionListener {
     public void setTitle(String title);
 
     /**
+     * Return name of image opened in interactive image window
+     */
+    public String getImageTitle();
+
+    /**
      * Get image path
      * @return image path
      */

@@ -13,6 +13,9 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.JFileChooser;
 import org.apache.log4j.Logger;
 import afm.opener.selector.ChannelContainer;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.measure.Calibration;
 
 /**
  *
@@ -38,7 +41,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             throw new IllegalArgumentException("Count down latch is null");
         }
         initComponents();
-        selectedChannelContainer = new ArrayList<ChannelContainer>();
+        selectedChannelContainer = new ArrayList<>();
         this.latch = latch;
         this.disposeAfterOpen = disposeAfterOpen;
         this.showLoadedImages = showLoadedImages;
@@ -50,7 +53,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     }
 
     private void resetDataStructures() {
-        selectedChannelContainer = new ArrayList<ChannelContainer>();
+        selectedChannelContainer = new ArrayList<>();
     }
 
     public void showLoadedImages(boolean showLoadedImages) {
@@ -79,6 +82,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         selectAll = new javax.swing.JCheckBox();
         showInStack = new javax.swing.JCheckBox();
         exportTagsCheckbox = new javax.swing.JCheckBox();
+        calibrateImageCheckbox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("AFM Opener");
@@ -141,6 +145,13 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         exportTagsCheckbox.setMaximumSize(new java.awt.Dimension(198, 24));
         exportTagsCheckbox.setPreferredSize(new java.awt.Dimension(198, 24));
 
+        calibrateImageCheckbox.setSelected(true);
+        calibrateImageCheckbox.setText("Calibrate image:                           ");
+        calibrateImageCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        calibrateImageCheckbox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        calibrateImageCheckbox.setMaximumSize(new java.awt.Dimension(198, 24));
+        calibrateImageCheckbox.setPreferredSize(new java.awt.Dimension(198, 24));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -162,7 +173,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
                                         .addComponent(OpenButton)
                                         .addGap(18, 18, 18)
                                         .addComponent(cancelButton))
-                                    .addComponent(exportTagsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(exportTagsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(calibrateImageCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 5, Short.MAX_VALUE))
                     .addComponent(selectAll, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -190,7 +202,9 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
                 .addComponent(showInStack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exportTagsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(calibrateImageCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cancelButton)
                     .addComponent(OpenButton))
@@ -232,11 +246,21 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
     private void OpenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenButtonActionPerformed
         logger.info("Loading images...");
+
+        if (selectedChannelContainer.isEmpty()) {
+            IJ.showMessage("No image selected to open");
+            return;
+        }
+
         ImageLoader loader = new ImageLoader();
         List<ChannelContainer> loadedImages = loader.loadImages(selectedChannelContainer);
 
         showLoadedImages(loadedImages, showLoadedImages);
         disposeAfmOpener(disposeAfterOpen);
+
+        if (calibrateImageCheckbox.isSelected()) {
+            calibrateImages(loadedImages);
+        }
 
         if (exportTagsCheckbox.isSelected()) {
             TagsExporter tagsExporter = new ImageTagsExporter();
@@ -248,10 +272,58 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         logger.info("Images were loaded");
     }//GEN-LAST:event_OpenButtonActionPerformed
 
+    private void calibrateImages(List<ChannelContainer> loadedImages) {
+        for (ChannelContainer cc : loadedImages) {
+            double uLength = (double) cc.getGeneralMetadata().getTagValue(32834);
+            double vLength = (double) cc.getGeneralMetadata().getTagValue(32835);
+
+            ImagePlus imagePlus = cc.getImagePlus();
+            int imgWidth = imagePlus.getWidth();
+            int imgHeight = imagePlus.getHeight();
+
+            Calibration cal = imagePlus.getCalibration();
+            logger.trace("ImageWidth: " + uLength * Math.pow(10, 9));
+            double pixelWidth = uLength / imgWidth * Math.pow(10, 9);
+            cal.pixelWidth = pixelWidth;
+            double pixelHeight = vLength / imgHeight * Math.pow(10, 9);
+            cal.pixelHeight = pixelHeight;
+            double pixelDepth = uLength / imgWidth * Math.pow(10, 9);
+            cal.pixelDepth = pixelDepth;
+            logger.trace("pixelWidth: " + pixelWidth + ", pixelHeight: " + pixelHeight + ", pixelDepth:" + pixelDepth);
+            cal.setUnit("nm");
+
+            //TODO calibration of 32-bit image cannot be done
+//            double min = imagePlus.getProcessor().getMin();
+//            double max = imagePlus.getProcessor().getMax();
+//
+//            IntensityCalibrator ic = new IntensityCalibrator(cc);
+//            int calibrationType = Calibration.STRAIGHT_LINE;
+//            if (imagePlus.getType() != ImagePlus.GRAY32) {
+//                calibrationType = Calibration.STRAIGHT_LINE;
+//            }
+//            double[] parameters = ic.computeCalibrationFunctionInNanometer(min, max, Calibration.STRAIGHT_LINE);
+//            logger.trace("Calibration function parameters " + Arrays.toString(parameters));
+//            if (parameters != null) {
+//                cal.setFunction(calibrationType, parameters, "nm");
+//            } else {
+//                logger.trace("Parameters of calibration funcition are null");
+//            }
+            cc.getImagePlus().setCalibration(cal);
+
+//            IJ.run(imagePlus, "Calibration Bar...", "location=[Upper Right] fill=White label=Black number=5 decimal=0 font=12 zoom=1.3 overlay");
+            IJ.run(imagePlus, "Scale Bar...", "width=50 height=5 font=18 color=Black background=White location=[Lower Right] overlay");
+        }
+    }
+
     private void showLoadedImages(List<ChannelContainer> loadedImages,
             boolean show) {
         if (showLoadedImages) {
             AfmOpenerImagePresenter presenter = new AfmOpenerImagePresenter();
+            if (loadedImages.size() == 1) {
+                IJ.showMessage("One image cannot be opened in stack");
+                showInStack.setSelected(false);
+            }
+
             presenter.showAsStack(showInStack.isSelected());
             presenter.show(loadedImages);
         }
@@ -287,6 +359,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton OpenButton;
     private javax.swing.JButton SelectButton;
+    private javax.swing.JCheckBox calibrateImageCheckbox;
     private javax.swing.JButton cancelButton;
     private javax.swing.JCheckBox exportTagsCheckbox;
     private javax.swing.JScrollPane imageOptionPanel;

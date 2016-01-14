@@ -12,7 +12,6 @@ public class ExportedTagsSaveFileChooser extends JFileChooser {
 
     private enum SupportedFileTypes {
 
-        //TODO add new enum type for supported files
         CSV_TYPE("File CSV (.csv)", "csv");
 
         private String description;

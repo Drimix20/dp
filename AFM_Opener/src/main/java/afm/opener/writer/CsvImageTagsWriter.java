@@ -37,7 +37,7 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
 
     public CsvImageTagsWriter() {
         tagDescriptionSorterList = new ArrayList<>();
-        tagsInImage = new TreeSet<Integer>(Arrays.asList(new Integer[]{
+        tagsInImage = new TreeSet<>(Arrays.asList(new Integer[]{
             256, 257, 258, 259, 262, 273, 277, 278, 279, 320, 339, 32768, 32769, 32770, 32771, 32772, 32773, 32774,
             32775, 32776, 32777, 32784, 32785, 32786, 32787, 32788, 32789, 32790, 32791, 32816, 32817, 32818, 32819,
             32820, 32821, 32822, 32823, 32824, 32825, 32826, 32827, 32828, 32829, 32830, 32832, 32833, 32834, 32835,
@@ -48,6 +48,7 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
             33028, 33029, 33056, 33057, 33058, 33072, 33073, 33074, 33075, 33076, 33077}));
     }
 
+    @Override
     public void setTagsDescription(List<TagConfiguration> tagsDescription) {
         this.tagConfigList = tagsDescription;
     }
@@ -124,13 +125,12 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
         logger.debug("Write extended header");
         StringBuilder stringBuilder = new StringBuilder("");
 
-        if (channels.size() == 0) {
+        if (channels.isEmpty()) {
             logger.error("No tags to export");
             return;
         }
         prepareHeaderFromTagsDescription(stringBuilder, channels.get(0).getChannelMetadata(), tagsInImage);
 
-        //TODO sometimes is empty string instead of null value when tag does not exist
         for (ChannelContainer container : channels) {
             ChannelMetadata metadata = container.getChannelMetadata();
             stringBuilder.append("\"").append(metadata.getFilePath()).append("\"").append(DELIMETR);
@@ -231,7 +231,7 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
             if (!tag.getOffsetHexadecimal().isEmpty()) {
                 List<Integer> lookingForOffsetTags = lookingForOffsetTags(metadata, tag.getDecimalID(), Integer.decode(tag.getOffsetHexadecimal()), numberOfSlots);
                 for (Integer tagDecimal : lookingForOffsetTags) {
-                    sb.append(DELIMETR).append("\"").append("0x" + Integer.toHexString(tagDecimal)).append("\"");
+                    sb.append(DELIMETR).append("\"").append("0x").append(Integer.toHexString(tagDecimal)).append("\"");
                 }
             }
         }

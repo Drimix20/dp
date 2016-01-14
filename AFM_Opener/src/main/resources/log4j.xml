@@ -8,7 +8,7 @@
         </layout>
     </appender>
     <!-- tento appender loguje do denně rotovaného souboru  v adresáři určeném obsahem systémové property catalina.base-->
-    <appender name="FILE" class="org.apache.log4j.FileAppender">
+<!--    <appender name="FILE" class="org.apache.log4j.FileAppender">
 
         <param name="file" value="c:\\Users\\Drimal\\log.out"/>
         <param name="immediateFlush" value="true"/>
@@ -18,11 +18,13 @@
         <layout class="org.apache.log4j.PatternLayout">
             <param name="conversionPattern" value="%m%n"/>
         </layout>
-    </appender>
+    </appender>-->
+
+    <logger name="afm.opener.configuration.parser"><level value="trace"/></logger>
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>
-        <priority value="all"/>
+        <priority value="INFO"/>
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
+        <!--<appender-ref ref="FILE"/>-->
     </root>
 </log4j:configuration>

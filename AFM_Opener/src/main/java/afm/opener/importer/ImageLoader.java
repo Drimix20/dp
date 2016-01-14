@@ -19,7 +19,10 @@ public class ImageLoader {
         for (int i = 0; i < channels.size(); i++) {
             ChannelContainer currentChannelContainer = channels.get(i);
             File file = currentChannelContainer.getFile();
-            currentChannelContainer.setImagePlus(loadChannelOfSpecificPossition(file, currentChannelContainer.getChannelIndex()));
+
+            ImagePlus imp = loadChannelOfSpecificPossition(file, currentChannelContainer.getChannelIndex());
+
+            currentChannelContainer.setImagePlus(imp);
         }
 
         return channels;

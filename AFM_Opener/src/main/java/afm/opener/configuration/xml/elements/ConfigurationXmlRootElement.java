@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Drimal
  */
 @XmlRootElement(name = "configuration")
-@XmlAccessorType(XmlAccessType.PROPERTY)//TODO use field instead of property and delete setters
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class ConfigurationXmlRootElement {
 
     private int numberOfSlotsTag;

@@ -319,7 +319,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             boolean show) {
         if (showLoadedImages) {
             AfmOpenerImagePresenter presenter = new AfmOpenerImagePresenter();
-            if (loadedImages.size() == 1) {
+            if (loadedImages.size() == 1 && showInStack.isSelected()) {
                 IJ.showMessage("One image cannot be opened in stack");
                 showInStack.setSelected(false);
             }

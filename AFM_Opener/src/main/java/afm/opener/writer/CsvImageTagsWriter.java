@@ -138,6 +138,12 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
             //iterate all tags from image
             for (TagConfiguration tag : tagConfigList) {
                 int tagId = tag.getDecimalID();
+
+                if (tag.getCategory().equals("general")) {
+                    metadata = container.getGeneralMetadata();
+                } else if (tag.getCategory().equals("channel")) {
+                    metadata = container.getChannelMetadata();
+                }
                 Object tagValue = metadata.getTagValue(tagId);
                 stringBuilder.append("\"").append(substituteNewLineBySemicolon(tagValue)).append("\"").append(DELIMETR);
                 if (!tag.getOffsetHexadecimal().isEmpty()) {

@@ -38,9 +38,9 @@ public class ImageTagsExporter implements TagsExporter {
 
             FileFilter selectedFilter = fileChooser.getFileFilter();
             ImageTagsWriter tagsWriter = getWriterInstance(selectedFilter);
-            tagsWriter.addTagsDescriptionSorter(new CategoryTagsDescriptionSorter());
-            tagsWriter.addTagsDescriptionSorter(new DecimalIDTagsDescriptionSorter());
             if (tagsWriter != null) {
+                tagsWriter.addTagsDescriptionSorter(new CategoryTagsDescriptionSorter());
+                tagsWriter.addTagsDescriptionSorter(new DecimalIDTagsDescriptionSorter());
                 tagsWriter.setTagsDescription(tagsConfig);
                 tagsWriter.dumpTagsIntoFile(channels, file.getParent(), file.getName());
             }

@@ -16,7 +16,7 @@ public class TableColorSelectionManager {
     private Color currentSelectionColor = Color.red;
 
     private TableColorSelectionManager() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
     }
 
     public synchronized static TableColorSelectionManager getInstance() {

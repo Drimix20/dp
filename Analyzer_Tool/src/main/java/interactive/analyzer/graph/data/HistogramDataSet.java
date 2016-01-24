@@ -27,7 +27,7 @@ public class HistogramDataSet {
     private double meanValue = -1;
 
     public HistogramDataSet() {
-        histogramPairs = new ArrayList<>();
+        histogramPairs = new ArrayList<HistogramBin>();
     }
 
     public void setNumberOfBins(int numberOfBins) {

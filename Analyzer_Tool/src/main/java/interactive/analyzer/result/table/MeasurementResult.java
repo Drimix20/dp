@@ -28,8 +28,9 @@ public class MeasurementResult extends AbstractMeasurementResult {
         return resultsMap.get(key);
     }
 
+    @Override
     public List<Integer> getRoiKeys() {
-        return new ArrayList<>(resultsMap.keySet());
+        return new ArrayList<Integer>(resultsMap.keySet());
     }
 
     @Override

@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 public class OverlayManager {
 
     private static Logger logger = Logger.getLogger(OverlayManager.class);
-    private Map<Integer, Roi> roisMap = new HashMap<>();
+    private Map<Integer, Roi> roisMap = new HashMap<Integer, Roi>();
     private ImagePlus img;
     private BufferedImage originBufferedImage;
 
@@ -95,7 +95,7 @@ public class OverlayManager {
         }
         validateColor(strokeColor);
         logger.trace("Select all rois in selection");
-        List<Roi> selectedRois = new ArrayList<>();
+        List<Roi> selectedRois = new ArrayList<Roi>();
         for (Integer key : roisMap.keySet()) {
             Roi r = roisMap.get(key);
             //Check if selectionRoi polygon intersects with someone roi in list

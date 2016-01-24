@@ -37,7 +37,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
     public InteractiveImageWindow(ImagePlus imp, List<Roi> rois) {
         validate(imp, rois);
-        roiSelectedListeners = new ArrayList<>();
+        roiSelectedListeners = new ArrayList<ImageSelectionListener>();
 
         //create custom image window implementation
         duplicatedImp = imp.duplicate();

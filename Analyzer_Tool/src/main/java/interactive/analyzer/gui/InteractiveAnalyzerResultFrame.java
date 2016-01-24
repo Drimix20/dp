@@ -67,7 +67,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private List<String> tableColumnNames;
     private String selectedColumnName;
     private Map<String, List<AbstractMeasurementResult>> analyzerValues;
-    private List<TableSelectionListener> tableSelectionListeners = new ArrayList<>();
+    private List<TableSelectionListener> tableSelectionListeners = new ArrayList<TableSelectionListener>();
     private ObjectFilteringFrame objectFilteringFrame;
     private Chart chart;
     private TableColorSelectionManager selectionManager;
@@ -142,7 +142,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             logger.trace("No columns in tableModel");
             return Collections.EMPTY_LIST;
         }
-        List<String> columnNames = new ArrayList<>();
+        List<String> columnNames = new ArrayList<String>();
         for (int i = 2; i < columnCount; i++) {
             columnNames.add(tableModel.getColumnName(i));
         }
@@ -377,7 +377,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         notificationSendViaListener = true;
         int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
-            double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
+            double val = (Double) tableModel.getValueAt(rowIndex, columnIndex);
             if (val >= downRangeValue && val < upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
@@ -404,7 +404,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         notificationSendViaListener = true;
         int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
-            double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
+            double val = (Double) tableModel.getValueAt(rowIndex, columnIndex);
             if (val >= downRangeValue && val < upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
@@ -439,7 +439,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         notificationSendViaListener = true;
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
             int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
-            double val = (double) tableModel.getValueAt(rowIndex, columnIndex);
+            double val = (Double) tableModel.getValueAt(rowIndex, columnIndex);
             if (val >= downRangeValue && val < upperRangeValue) {
                 ((AfmAnalyzerResultTable) jTable1).removeRowFromSelection(rowIndex);
                 jTable1.removeRowSelectionInterval(rowIndex, rowIndex);
@@ -499,7 +499,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     public void setAnalyzerValues(
             Map<String, List<AbstractMeasurementResult>> analyzerResultValues) {
         this.analyzerValues = analyzerResultValues;
-        List<String> keySet = new ArrayList<>(analyzerResultValues.keySet());
+        List<String> keySet = new ArrayList<String>(analyzerResultValues.keySet());
         ((AfmAnalyzerTableModel) tableModel).setValues(analyzerValues.get(keySet.get(0)));
     }
 

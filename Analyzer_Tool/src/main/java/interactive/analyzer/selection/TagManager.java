@@ -16,7 +16,7 @@ public class TagManager {
 
     private TagManager() {
         idCounter = 0;
-        tags = new ArrayList<>();
+        tags = new ArrayList<Tag>();
     }
 
     public static TagManager getInstance() {

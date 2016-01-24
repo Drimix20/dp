@@ -15,7 +15,7 @@ public class ColorizedTableSelection {
     private Color color;
 
     public ColorizedTableSelection(Color color) {
-        rows = new HashSet<>();
+        rows = new HashSet<Integer>();
         this.color = color;
     }
 

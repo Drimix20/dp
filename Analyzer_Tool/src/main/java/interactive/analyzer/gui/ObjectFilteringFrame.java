@@ -44,7 +44,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
      * Creates new frame of ObjectFilteringFrame
      */
     public ObjectFilteringFrame() {
-        tagListeners = new ArrayList<>();
+        tagListeners = new ArrayList<ManageTagListener>();
         selectionManager = TableColorSelectionManager.getInstance();
         initComponents();
 

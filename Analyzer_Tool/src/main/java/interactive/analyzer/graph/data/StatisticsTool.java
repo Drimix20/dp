@@ -71,12 +71,12 @@ public class StatisticsTool {
 
         if (tmp.length % 2 == 0) {
             //even length
-            double numb1 = (double) tmp[(middleLength - 1)];
-            double numb2 = (double) tmp[middleLength];
+            double numb1 = (Double) tmp[(middleLength - 1)];
+            double numb2 = (Double) tmp[middleLength];
             return (numb1 + numb2) / 2;
         } else {
             // odd length
-            return (double) tmp[(middleLength - 1)];
+            return (Double) tmp[(middleLength - 1)];
         }
     }
 

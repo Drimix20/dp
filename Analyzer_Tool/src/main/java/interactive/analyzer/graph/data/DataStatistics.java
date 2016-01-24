@@ -23,7 +23,7 @@ public class DataStatistics {
         double maxValue = Double.MIN_VALUE;
         double sum = 0;
         for (Object cd : columnData) {
-            double value = (double) cd;
+            double value = (Double) cd;
             if (value < minValue) {
                 minValue = value;
             }
@@ -57,7 +57,7 @@ public class DataStatistics {
         newInstance.setMaxOccurence(data.getMaxOccurence());
         newInstance.setMinOccurence(data.getMinOccurence());
 
-        List<HistogramBin> newPairs = new ArrayList<>();
+        List<HistogramBin> newPairs = new ArrayList<HistogramBin>();
         for (HistogramBin pair : data.getHistogramPairs()) {
             newPairs.add(createNewInstanceOfHistPair(pair));
         }

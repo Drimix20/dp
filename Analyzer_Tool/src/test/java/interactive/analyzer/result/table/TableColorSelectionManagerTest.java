@@ -19,7 +19,7 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testGetSelectionFromMap() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(3);
@@ -33,7 +33,7 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testAddRowToColorSelection() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(3);
@@ -47,7 +47,7 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testAddRowsToColorSelection() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(3);
@@ -62,7 +62,7 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testRemoveRowFromSelection() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(2);
@@ -79,7 +79,7 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testRemoveNonetExistsRowFromSelection() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(3);
@@ -94,7 +94,7 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testRemoveRowFromColorSelection() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(2);
@@ -111,7 +111,7 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testRemoveRowsFromColorSelection() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(2);
@@ -128,7 +128,7 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testDeleteAllSelections() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(2);
@@ -143,7 +143,7 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testGetColorForRow() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(1);
         cts.addRow(2);
@@ -158,7 +158,7 @@ public class TableColorSelectionManagerTest {
 
     @Test
     public void testGetNonExistsColorForRow() {
-        colorSelectionMap = new ConcurrentHashMap<>();
+        colorSelectionMap = new ConcurrentHashMap<Color, ColorizedTableSelection>();
         ColorizedTableSelection cts = new ColorizedTableSelection(Color.red);
         cts.addRow(2);
         cts.addRow(3);

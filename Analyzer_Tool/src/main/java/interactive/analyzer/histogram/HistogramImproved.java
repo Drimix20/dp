@@ -71,7 +71,7 @@ public class HistogramImproved {
         validate(data, numBins);
         maxOccurence = Integer.MIN_VALUE;
         minOccurence = Integer.MAX_VALUE;
-        List<HistogramBin> binList = new ArrayList<>();
+        List<HistogramBin> binList = new ArrayList<HistogramBin>();
         binsNumber = numBins;
         minValue = min;
         maxValue = max + 1;//TODO Zkontrolovat, jestli je to tak v poradku - max hodnoda +1 , aby maximalni hodnota spadla do binu s indexem (numbBins - 1)
@@ -88,7 +88,7 @@ public class HistogramImproved {
             int binIndex = getBinIndexBasedOnValue(d);
             HistogramBin bin = binList.get(binIndex);
             if (bin != null) {
-                if (bin.isValueInRange((double) d)) {
+                if (bin.isValueInRange((Double) d)) {
                     bin.incrementOccurence();
                 }
                 int occurence = bin.getOccurence();
@@ -117,7 +117,7 @@ public class HistogramImproved {
         validate(data, numBins);
 
         List<HistogramBin> calculateHistogram = calculateHistogram(data, min, max, numBins);
-        List<HistogramBin> cumulatedHist = new ArrayList<>();
+        List<HistogramBin> cumulatedHist = new ArrayList<HistogramBin>();
 
         int occurencePrevious = calculateHistogram.get(0).getOccurence();
         cumulatedHist.add(calculateHistogram.get(0));
@@ -130,7 +130,7 @@ public class HistogramImproved {
     }
 
     private static int getBinIndexBasedOnValue(Object d) {
-        int binIndex = (int) (((double) d - minValue) / binSize);
+        int binIndex = (int) (((Double) d - minValue) / binSize);
         binIndex = (binIndex > (binsNumber - 1)) ? (binsNumber - 1) : binIndex;
         return binIndex;
     }

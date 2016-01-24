@@ -39,7 +39,7 @@ public class InteractiveAnalyzer {
             throw new IllegalArgumentException("Image can't be null");
         }
 
-        List<Roi> rois = new ArrayList<>();
+        List<Roi> rois = new ArrayList<Roi>();
         for (ij.gui.Roi r : roiManager.getRoisAsArray()) {
             rois.add(new Roi(parseRoiLabel(r.getName()), r.getPolygon(), Color.CYAN, false));
         }

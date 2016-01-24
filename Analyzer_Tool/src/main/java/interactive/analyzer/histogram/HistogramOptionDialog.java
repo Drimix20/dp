@@ -228,13 +228,13 @@ public class HistogramOptionDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        numbBins = (int) binsSpinner.getValue();
+        numbBins = (Integer) binsSpinner.getValue();
         if (useDataMinAndMaxCheckbox.isSelected()) {
             xMinValue = xMinTable;
             xMaxValue = xMaxTable;
         } else {
-            xMinValue = (double) xMinSpinner.getValue();
-            xMaxValue = (double) xMaxSpinner.getValue();
+            xMinValue = (Double) xMinSpinner.getValue();
+            xMaxValue = (Double) xMaxSpinner.getValue();
         }
 
         doClose(RET_OK);

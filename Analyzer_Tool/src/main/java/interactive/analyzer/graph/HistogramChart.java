@@ -34,7 +34,7 @@ public class HistogramChart implements Chart {
     private HistogramDataSet data;
 
     public HistogramChart() {
-        shapes = new ArrayList<>();
+        shapes = new ArrayList<Shape>();
     }
 
     @Override
@@ -88,7 +88,7 @@ public class HistogramChart implements Chart {
      * @param selectPreviousSelected
      */
     private void prepareShapes(HistogramDataSet data) {
-        shapes = new ArrayList<>();
+        shapes = new ArrayList<Shape>();
         if (data == null || data.getHistogramPairs().isEmpty()) {
             logger.debug("No data for prepare shapes");
             return;

@@ -338,13 +338,13 @@ public class OptionsFrame extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        ResultTableConfiguration.setDecimalPlaces((int) decimalPlacesSpinner.getValue());
+        ResultTableConfiguration.setDecimalPlaces((Integer) decimalPlacesSpinner.getValue());
         ResultTableConfiguration.setColorEntireRow(colorizedRowCheckBox.isSelected());
 
-        ImageWindowConfiguration.setStrokeWidth((int) strokeWidthSpinner.getValue());
+        ImageWindowConfiguration.setStrokeWidth((Integer) strokeWidthSpinner.getValue());
         ImageWindowConfiguration.setStrokeColor(defaultStrokeColorThumbnail.getBackground());
         ImageWindowConfiguration.setFontBackgroundColor(fontBackgroundColorThumbnail.getBackground());
-        ImageWindowConfiguration.setFontSize((int) fontSizeSpinner.getValue());
+        ImageWindowConfiguration.setFontSize((Integer) fontSizeSpinner.getValue());
         ImageWindowConfiguration.setFontColor(fontColorThumbnail.getBackground());
         doClose(RET_OK);
     }//GEN-LAST:event_okButtonActionPerformed

@@ -49,8 +49,8 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         new ImageFileFilter("gif")};
 
     public GraphPanel() {
-        selectionListeners = new ArrayList<>();
-        selectionByDragged = new ArrayList<>();
+        selectionListeners = new ArrayList<ChartSelectionListener>();
+        selectionByDragged = new ArrayList<Shape>();
         paintImage = new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR);
 
         addComponentListener(new ComponentAdapter() {
@@ -149,7 +149,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                             notifyBarSelected(shapeByDragged, selectionColor);
                         }
                     }
-                    selectionByDragged = new ArrayList<>();
+                    selectionByDragged = new ArrayList<Shape>();
                 }
 
                 draggedSelection = false;

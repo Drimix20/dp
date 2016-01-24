@@ -21,7 +21,7 @@ public class AfmAnalyzerResultTable extends JTable {
     public static int ID_COLUMN_INDEX = 0;
     public static int SELECTION_COLUMN_INDEX = 1;
 
-    private List<String> headerTooltips = new ArrayList<>();
+    private List<String> headerTooltips = new ArrayList<String>();
     private TableColorSelectionManager selectionManager;
     private static final Color DEFAULT_BACKGROUND_ROW_COLOR = Color.WHITE;
 

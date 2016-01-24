@@ -512,6 +512,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenuItem1 = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = createTableInstance();
         jPanel1 = new javax.swing.JPanel();
@@ -525,6 +526,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         saveAsMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         optionMeniItem = new javax.swing.JMenuItem();
+        helpMenu = new javax.swing.JMenu();
+        showHelpMenuItem = new javax.swing.JMenuItem();
+
+        jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Interactive Analyzer - Results");
@@ -617,6 +622,18 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         jMenuBar1.add(jMenu2);
 
+        helpMenu.setText("Help");
+
+        showHelpMenuItem.setText("Show help");
+        showHelpMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showHelpMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(showHelpMenuItem);
+
+        jMenuBar1.add(helpMenu);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -671,6 +688,11 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         HistogramDataSet chartData = DataStatistics.computeDataSetFromTable(columnData);
         HistogramOptionDialog histogramDialog = new HistogramOptionDialog(this, true, chartData.getHistogramPairs().size(), chartData.getMinValue(), chartData.getMaxValue());
         histogramDialog.setVisible(true);
+        int returnStatus = histogramDialog.getReturnStatus();
+
+        if (returnStatus == 0) {
+            return;
+        }
 
         List<HistogramBin> calculatedHistogram;
         if (cumulHistCheckBox.isSelected()) {
@@ -714,6 +736,12 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         TextTableExporter exporter = new TextTableExporter();
         exporter.export(interactiveImageWindow.getImageTitle(), jTable1, TagManager.getInstance(), TableColorSelectionManager.getInstance());
     }//GEN-LAST:event_saveAsMenuItemActionPerformed
+
+    private void showHelpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showHelpMenuItemActionPerformed
+        HelpJFrame frame = new HelpJFrame("helpPage.html");
+        frame.setLocationRelativeTo(this);
+        frame.setVisible(true);
+    }//GEN-LAST:event_showHelpMenuItemActionPerformed
 
     private void clearTableSelectionAndNotifyListeners() {
         clearTableSelection();
@@ -774,15 +802,18 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private javax.swing.JButton clearSelectionsButton;
     private javax.swing.JComboBox columnComboBox;
     private javax.swing.JCheckBox cumulHistCheckBox;
+    private javax.swing.JMenu helpMenu;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JMenuItem optionMeniItem;
     private javax.swing.JMenuItem saveAsMenuItem;
+    private javax.swing.JMenuItem showHelpMenuItem;
     private javax.swing.JButton showHistogram;
     // End of variables declaration//GEN-END:variables
 }

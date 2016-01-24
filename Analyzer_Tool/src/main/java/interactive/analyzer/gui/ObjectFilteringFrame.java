@@ -37,7 +37,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     private static Logger logger = Logger.getLogger(ObjectFilteringFrame.class);
     private static final int DIALOG_OK_STATUS = 1;
 
-    private TagManager tagManager;
     private TableColorSelectionManager selectionManager;
     private List<ManageTagListener> tagListeners;
 
@@ -47,8 +46,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     public ObjectFilteringFrame() {
         tagListeners = new ArrayList<>();
         selectionManager = TableColorSelectionManager.getInstance();
-        tagManager = TagManager.getInstance();
-        tagManager.addTag(Color.magenta, "Name1", "Desc");
         initComponents();
 
         graphPanel.setSelectionColor(selectionManager.getCurrentSelectionColor());

@@ -21,8 +21,6 @@ public class Analyzer_Tool implements PlugIn {
 
             @Override
             public void run() {
-                preparationForDevelop();
-
                 InteractiveAnalyzerDialog dialog = new InteractiveAnalyzerDialog();
                 dialog.setLocationRelativeTo(null);
                 dialog.setVisible(true);
@@ -40,6 +38,7 @@ public class Analyzer_Tool implements PlugIn {
         // start ImageJ
         new ImageJ();
 
+        preparationForDevelop();
         // run the plugin
         IJ.runPlugIn(clazz.getName(), "");
     }
@@ -50,7 +49,10 @@ public class Analyzer_Tool implements PlugIn {
         //Convert stack slices into separated images
         IJ.run(imp, "Stack to Images", "");
         //Retrieve height image
-        ImagePlus heightImg = WindowManager.getImage("thyroglobulin-0002");
+        ImagePlus origin = WindowManager.getImage("thyroglobulin-0002");
+        origin.setTitle("thyroglobulin-0002-origin");
+        ImagePlus heightImg = origin.duplicate();
+        heightImg.show();
         //Threshold height image by triangle method
         IJ.setAutoThreshold(heightImg, "Triangle");
         Prefs.blackBackground = false;

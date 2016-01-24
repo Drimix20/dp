@@ -15,7 +15,7 @@ public class TagManager {
     private int idCounter;
 
     private TagManager() {
-        idCounter = 1;
+        idCounter = 0;
         tags = new ArrayList<>();
     }
 

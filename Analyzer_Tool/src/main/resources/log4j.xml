@@ -8,15 +8,17 @@
         </layout>
     </appender>
 
-    <!--<logger name="interactive.analyzer.gui"><level value="info"/></logger>-->
-    <!--<logger name="interactive.analyzer.result.table.AfmAnalyzerResultTable"><level value="trace"/></logger>-->
+<!--    <logger name="interactive.analyzer.gui.ObjectFilteringFrame"><level value="trace"/></logger>
+    <logger name="interactive.analyzer.result.table.AfmAnalyzerResultTable"><level value="trace"/></logger>-->
     <!--<logger name="interactive.analyzer.result.table.AfmAnalyzerTableModel"><level value="trace"/></logger>-->
-    <logger name="interactive.analyzer.gui.InteractiveAnalyzerResultFrame"><level value="trace"/></logger>
+    <!--<logger name="interactive.analyzer.gui.InteractiveAnalyzerResultFrame"><level value="trace"/></logger>-->
     <!--<logger name="interactive.analyzer.result.table.DecimalPrecisionRenderer"><level value="trace"/></logger>-->
-    <logger name="interactive.analyzer.graph.GraphPanel"><level value="trace"/></logger>
+    <!--<logger name="interactive.analyzer.graph.GraphPanel"><level value="trace"/></logger>-->
     <!--<logger name="interactive.analyzer.graph.HistogramChart"><level value="trace"/></logger>-->
-    <logger name="interactive.analyzer.presenter.InteractiveImageWindow"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.histogram.Histogram"><level value="trace"/></logger>
+<!--    <logger name="interactive.analyzer.presenter.InteractiveImageWindow"><level value="trace"/></logger>
+    <logger name="interactive.analyzer.presenter.OverlayManager"><level value="trace"/></logger>
+    <logger name="interactive.analyzer.histogram.Histogram"><level value="trace"/></logger>-->
+    <logger name="interactive.analyzer.histogram.HistogramImproved"><level value="trace"/></logger>
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>
         <priority value="info"/>

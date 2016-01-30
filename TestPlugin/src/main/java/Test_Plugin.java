@@ -1,15 +1,10 @@
 
 import ij.*;
-import ij.gui.Roi;
-import ij.macro.Interpreter;
-import ij.measure.Measurements;
-import ij.measure.ResultsTable;
-import ij.plugin.filter.ParticleAnalyzer;
+import ij.measure.Calibration;
 import ij.plugin.filter.PlugInFilter;
-import ij.plugin.frame.RoiManager;
 import ij.process.ImageProcessor;
-import java.awt.Frame;
-import results.table.ExtendedResultsTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import results.table.ExtendedTextPanel;
 
 /**
@@ -18,6 +13,7 @@ import results.table.ExtendedTextPanel;
  */
 public class Test_Plugin implements PlugInFilter {
 
+    private static Logger logger = LoggerFactory.getLogger(Test_Plugin.class);
     private ExtendedTextPanel etp;
     private ImagePlus imp;
 
@@ -46,78 +42,87 @@ public class Test_Plugin implements PlugInFilter {
     }
 
     public void run(ImageProcessor ip) {
-        ImagePlus imp2 = IJ.openImage("http://imagej.nih.gov/ij/images/blobs.gif");
-        ImagePlus imp3 = IJ.openImage("C:\\Users\\Drimal\\Downloads\\testData\\Cell_Colony.jpg");
+        logger.info("Running plugin");
+        Calibration c = imp.getCalibration();
 
-        ImageStack stack = new ImageStack(imp2.getWidth(), imp2.getHeight());
-        stack.addSlice("Blobs", imp2.getProcessor());
-        stack.addSlice("Cell_colony", imp3.getProcessor());
-        new ImagePlus("stack", stack).show();
+        System.out.println("unit: " + c.getUnit());
+        System.out.println("pixel width: " + c.pixelWidth);
+        System.out.println("pixel height: " + c.pixelHeight);
+        IJ.error("Error bro");
+        c.setUnit("nm");
+        c.pixelWidth = 1.242;
+        c.pixelHeight = 1.242;
+        imp.setCalibration(c);
 
-        ResultsTable resultsTable = new ExtendedResultsTable();
-        //create new instance of my roiManager and set to don't show window
-        RoiManager roiManager = new RoiManager(true);
-        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE, Measurements.ADD_TO_OVERLAY | Measurements.RECT, resultsTable,
-                0, Double.POSITIVE_INFINITY, 0, 1);
-        ParticleAnalyzer.setRoiManager(roiManager);
-        ParticleAnalyzer.setLineWidth(1);
-        analyzer.analyze(imp, ip);
-
-        resultsTable.show("Results2");
-        int numberOfRows = resultsTable.size();
-        String[] headings = resultsTable.getHeadings();
-        int bxIndex = resultsTable.getColumnIndex(headings[0]);
-        int byIndex = resultsTable.getColumnIndex(headings[1]);
-        int widthIndex = resultsTable.getColumnIndex(headings[2]);
-        int heightIndex = resultsTable.getColumnIndex(headings[3]);
-        for (int i = 0; i < numberOfRows; i++) {
-            System.out.println(
-                    "id=" + (i + 1)
-                    + ", bx=" + resultsTable.getValueAsDouble(bxIndex, i)
-                    + ", by=" + resultsTable.getValueAsDouble(byIndex, i)
-                    + ", width=" + resultsTable.getValueAsDouble(widthIndex, i)
-                    + ", height=" + resultsTable.getValueAsDouble(heightIndex, i)
-            );
-        }
-
-        Roi[] roisAsArray = roiManager.getRoisAsArray();
-        System.out.println("RoisAsArray.size: " + roisAsArray.length);
-
-        int[] selectedIndexes = new int[roisAsArray.length];
-        for (int i = 0; i < roisAsArray.length; i++) {
-            selectedIndexes[i] = i;
-        }
-        roiManager.setSelectedIndexes(selectedIndexes);
-        roiManager.runCommand("Delete");
-        for (int i = 0; i < roisAsArray.length; i++) {
-            ExtendedRoi extRoi = new ExtendedRoi(roisAsArray[i].getPolygon(), Roi.TRACED_ROI);
-            extRoi.setLabel(i + 1);
-            roiManager.addRoi(extRoi);
-        }
-
-//        ExtendedRoi extRoi = new ExtendedRoi(roisAsArray[0].getPolygon(), Roi.TRACED_ROI);
-//        roiManager.select(0);
+        imp.updateAndDraw();
+//        ImagePlus imp2 = IJ.openImage("http://imagej.nih.gov/ij/images/blobs.gif");
+//        ImagePlus imp3 = IJ.openImage("C:\\Users\\Drimal\\Downloads\\testData\\Cell_Colony.jpg");
+//
+//        ImageStack stack = new ImageStack(imp2.getWidth(), imp2.getHeight());
+//        stack.addSlice("Blobs", imp2.getProcessor());
+//        stack.addSlice("Cell_colony", imp3.getProcessor());
+//        new ImagePlus("stack", stack).show();
+//
+//        ResultsTable resultsTable = new ExtendedResultsTable();
+//        //create new instance of my roiManager and set to don't show window
+//        RoiManager roiManager = new RoiManager(true);
+//        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE, Measurements.ADD_TO_OVERLAY | Measurements.RECT, resultsTable,
+//                0, Double.POSITIVE_INFINITY, 0, 1);
+//        ParticleAnalyzer.setRoiManager(roiManager);
+//        ParticleAnalyzer.setLineWidth(1);
+//        analyzer.analyze(imp, ip);
+//
+//        resultsTable.show("Results2");
+//        int numberOfRows = resultsTable.size();
+//        String[] headings = resultsTable.getHeadings();
+//        int bxIndex = resultsTable.getColumnIndex(headings[0]);
+//        int byIndex = resultsTable.getColumnIndex(headings[1]);
+//        int widthIndex = resultsTable.getColumnIndex(headings[2]);
+//        int heightIndex = resultsTable.getColumnIndex(headings[3]);
+//        for (int i = 0; i < numberOfRows; i++) {
+//            System.out.println(
+//                    "id=" + (i + 1)
+//                    + ", bx=" + resultsTable.getValueAsDouble(bxIndex, i)
+//                    + ", by=" + resultsTable.getValueAsDouble(byIndex, i)
+//                    + ", width=" + resultsTable.getValueAsDouble(widthIndex, i)
+//                    + ", height=" + resultsTable.getValueAsDouble(heightIndex, i)
+//            );
+//        }
+//
+//        Roi[] roisAsArray = roiManager.getRoisAsArray();
+//        System.out.println("RoisAsArray.size: " + roisAsArray.length);
+//
+//        int[] selectedIndexes = new int[roisAsArray.length];
+//        for (int i = 0; i < roisAsArray.length; i++) {
+//            selectedIndexes[i] = i;
+//        }
+//        roiManager.setSelectedIndexes(selectedIndexes);
 //        roiManager.runCommand("Delete");
-//        roiManager.addRoi(extRoi);
+//        for (int i = 0; i < roisAsArray.length; i++) {
+//            ExtendedRoi extRoi = new ExtendedRoi(roisAsArray[i].getPolygon(), Roi.TRACED_ROI);
+//            extRoi.setLabel(i + 1);
+//            roiManager.addRoi(extRoi);
+//        }
     }
 
-    private RoiManager instantiateRoiManager() {
-        RoiManager manager = null;
-        if (Macro.getOptions() != null && Interpreter.isBatchMode()) {
-            manager = Interpreter.getBatchModeRoiManager();
-        }
-        if (manager == null) {
-            Frame frame = WindowManager.getFrame("ROI Manager");
-            if (frame == null) {
-                IJ.run("ROI Manager...");
-            }
-            frame = WindowManager.getFrame("ROI Manager");
-            if (frame == null || !(frame instanceof RoiManager)) {
-                return null;
-            }
-            manager = (RoiManager) frame;
-        }
-        return manager;
-    }
-
+//    private RoiManager instantiateRoiManager() {
+//        RoiManager manager = null;
+//        if (Macro.getOptions() != null && Interpreter.isBatchMode()) {
+//            manager = Interpreter.getBatchModeRoiManager();
+//        }
+//        if (manager == null) {
+//            Frame frame = WindowManager.getFrame("ROI Manager");
+//            if (frame == null) {
+//                IJ.run("ROI Manager...");
+//            }
+//            frame = WindowManager.getFrame("ROI Manager");
+//            if (frame == null || !(frame instanceof RoiManager)) {
+//                return null;
+//            }
+//            manager = (RoiManager) frame;
+//        }
+//        return manager;
+//    }
+//-2147483648.00
+//2147483648.00
 }

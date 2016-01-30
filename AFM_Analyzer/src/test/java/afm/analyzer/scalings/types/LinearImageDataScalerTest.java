@@ -1,5 +1,7 @@
 package afm.analyzer.scalings.types;
 
+import scaler.module.types.ImageDataScaler;
+import scaler.module.types.LinearImageDataScaler;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 

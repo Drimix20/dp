@@ -2,7 +2,7 @@ package afm.analyzer.measurements;
 
 import interactive.analyzer.result.table.AbstractMeasurementResult;
 import interactive.analyzer.result.table.MeasurementResult;
-import afm.analyzer.scalings.ScalerModule;
+import scaler.module.ScalerModule;
 import interactive.analyzer.selection.ImageSegments;
 import interactive.analyzer.selection.ExtendedRoi;
 import ij.gui.Roi;

@@ -1,6 +1,6 @@
 package afm.opener.common;
 
-import afm.opener.configuration.PluginConfiguration;
+import configuration.module.PluginConfiguration;
 import afm.opener.gui.ChannelListElement;
 import java.awt.BorderLayout;
 import java.awt.Color;

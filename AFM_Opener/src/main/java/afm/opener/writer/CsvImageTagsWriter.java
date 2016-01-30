@@ -1,7 +1,7 @@
 package afm.opener.writer;
 
-import afm.opener.configuration.PluginConfiguration;
-import afm.opener.configuration.xml.elements.TagConfiguration;
+import configuration.module.PluginConfiguration;
+import configuration.module.xml.elements.TagConfiguration;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;

@@ -1,6 +1,6 @@
 package afm.opener.writer.tags.sorter;
 
-import afm.opener.configuration.xml.elements.TagConfiguration;
+import configuration.module.xml.elements.TagConfiguration;
 import java.util.Comparator;
 
 /**

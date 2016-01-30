@@ -1,6 +1,6 @@
 package afm.analyzer.measurements;
 
-import afm.analyzer.scalings.ScalerModule;
+import scaler.module.ScalerModule;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;

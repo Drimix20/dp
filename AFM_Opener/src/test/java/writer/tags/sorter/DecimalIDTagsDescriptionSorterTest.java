@@ -2,7 +2,7 @@ package writer.tags.sorter;
 
 import afm.opener.writer.tags.sorter.DecimalIDTagsDescriptionSorter;
 import afm.opener.writer.tags.sorter.TagsDescriptionSorter;
-import afm.opener.configuration.xml.elements.TagConfiguration;
+import configuration.module.xml.elements.TagConfiguration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

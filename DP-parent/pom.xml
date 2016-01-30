@@ -6,7 +6,8 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>../MetadataDecoder</module>
+        <module>ScalerModule</module>
+        <module>ConfigurationModule</module>
         <module>../AFM_Opener</module>
         <module>../Analyzer_Tool</module>
         <module>../AFM_Analyzer</module>

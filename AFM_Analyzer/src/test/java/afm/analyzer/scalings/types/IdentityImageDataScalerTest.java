@@ -1,5 +1,7 @@
 package afm.analyzer.scalings.types;
 
+import scaler.module.types.IdentityImageDataScaler;
+import scaler.module.types.ImageDataScaler;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 

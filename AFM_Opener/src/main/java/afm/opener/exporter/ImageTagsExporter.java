@@ -1,9 +1,9 @@
 package afm.opener.exporter;
 
-import afm.opener.configuration.PluginConfiguration;
+import configuration.module.PluginConfiguration;
 import afm.opener.writer.ImageTagsWriter;
 import afm.opener.writer.CsvImageTagsWriter;
-import afm.opener.configuration.xml.elements.TagConfiguration;
+import configuration.module.xml.elements.TagConfiguration;
 import java.io.File;
 import java.util.List;
 import javax.swing.JFileChooser;

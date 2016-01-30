@@ -8,7 +8,8 @@ import static com.sun.media.jai.codec.TIFFField.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public class MetadataDecoder implements Decoder {
 
-    private Logger logger = Logger.getLogger(MetadataDecoder.class);
+    private Logger logger = LoggerFactory.getLogger(MetadataDecoder.class);
 
     public List<ChannelMetadata> decodeMetadata(List<File> files) throws Exception {
         List<ChannelMetadata> channels = new ArrayList<ChannelMetadata>();
@@ -58,7 +59,8 @@ public class MetadataDecoder implements Decoder {
         return channels;
     }
 
-    private ChannelMetadata decodeTiffDirectory(String fileName, TIFFDirectory tiffDirectory) {
+    private ChannelMetadata decodeTiffDirectory(String fileName,
+            TIFFDirectory tiffDirectory) {
         ChannelMetadata metadata = new ChannelMetadata(fileName);
         metadata.setIFD("" + tiffDirectory.getIFDOffset());
 

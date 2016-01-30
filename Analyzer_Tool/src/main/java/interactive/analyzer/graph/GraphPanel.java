@@ -22,7 +22,8 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,7 +31,7 @@ import org.apache.log4j.Logger;
  */
 public class GraphPanel extends JPanel implements TableSelectionListener {
 
-    private static Logger logger = Logger.getLogger(GraphPanel.class);
+    private static Logger logger = LoggerFactory.getLogger(GraphPanel.class);
 
     private Graphics2D graphics2D;
     private BufferedImage paintImage;

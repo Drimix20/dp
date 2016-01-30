@@ -14,7 +14,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import metadata.decoder.ChannelMetadata;
 import metadata.decoder.MetadataProperties;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,7 +23,7 @@ import org.apache.log4j.Logger;
  */
 public class PropertiesWriter implements Writer {
 
-    Logger logger = Logger.getLogger(PropertiesWriter.class);
+    Logger logger = LoggerFactory.getLogger(PropertiesWriter.class);
     private static final String NEW_LINE = "\n";
     private String delimetr = "\t";
     private File outputFile;

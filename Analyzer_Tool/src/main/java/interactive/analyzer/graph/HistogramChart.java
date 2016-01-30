@@ -11,7 +11,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,7 +21,7 @@ import org.apache.log4j.Logger;
 public class HistogramChart implements Chart {
 
     //TODO do clean up
-    private Logger logger = Logger.getLogger(HistogramChart.class);
+    private Logger logger = LoggerFactory.getLogger(HistogramChart.class);
     private static final int TEXT_MARGIN = 3;
     private static final int GRAPH_MARGIN = 3;
 
@@ -98,7 +99,7 @@ public class HistogramChart implements Chart {
         int dataSize = pairs.size();
         for (int i = 0; i < dataSize; i++) {
             HistogramBin bin = pairs.get(i);
-            logger.trace(bin);
+            logger.trace(bin.toString());
             Bar bar = new Bar(bin.getID(), bin.getLowerBound(), bin.getUpperBound(), bin.getOccurence());
             shapes.add(bar);
         }
@@ -221,7 +222,7 @@ public class HistogramChart implements Chart {
 //                continue;
 //            }
             shape.setLocationAndSize(0 + GRAPH_MARGIN + barWidth * i, -barHeight - GRAPH_MARGIN, barWidth, barHeight);
-            logger.trace(shape);
+            logger.trace(shape.toString());
             shape.draw(g);
         }
     }

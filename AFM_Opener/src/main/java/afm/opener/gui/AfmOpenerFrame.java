@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import javax.swing.JFileChooser;
-import org.apache.log4j.Logger;
 import afm.opener.selector.ChannelContainer;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Calibration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,7 +24,7 @@ import ij.measure.Calibration;
  */
 public class AfmOpenerFrame extends javax.swing.JFrame {
 
-    private Logger logger = Logger.getLogger(AfmOpenerFrame.class);
+    private Logger logger = LoggerFactory.getLogger(AfmOpenerFrame.class);
     private final CountDownLatch latch;
     private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
     private List<ChannelContainer> selectedChannelContainer;

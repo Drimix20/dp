@@ -8,10 +8,11 @@ import java.io.File;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
-import org.apache.log4j.Logger;
 import afm.opener.selector.ChannelContainer;
 import afm.opener.writer.tags.sorter.CategoryTagsDescriptionSorter;
 import afm.opener.writer.tags.sorter.DecimalIDTagsDescriptionSorter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,7 +20,7 @@ import afm.opener.writer.tags.sorter.DecimalIDTagsDescriptionSorter;
  */
 public class ImageTagsExporter implements TagsExporter {
 
-    private static Logger logger = Logger.getLogger(ImageTagsExporter.class);
+    private static Logger logger = LoggerFactory.getLogger(ImageTagsExporter.class);
 
     @Override
     public void exportImageTags(List<ChannelContainer> channels,

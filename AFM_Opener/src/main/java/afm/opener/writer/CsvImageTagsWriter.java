@@ -15,10 +15,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import metadata.decoder.ChannelMetadata;
 import metadata.writer.MetadataWriter;
-import org.apache.log4j.Logger;
 import afm.opener.selector.ChannelContainer;
 import afm.opener.writer.tags.sorter.MultipleComparator;
 import afm.opener.writer.tags.sorter.TagsDescriptionSorter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,7 +27,7 @@ import afm.opener.writer.tags.sorter.TagsDescriptionSorter;
  */
 public class CsvImageTagsWriter implements ImageTagsWriter {
 
-    private Logger logger = Logger.getLogger(CsvImageTagsWriter.class);
+    private Logger logger = LoggerFactory.getLogger(CsvImageTagsWriter.class);
     private static final String NEW_LINE = "\n";
     private String DELIMETR = ",";
     private Set<Integer> tagsInImage;

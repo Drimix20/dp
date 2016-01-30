@@ -3,7 +3,6 @@ package interactive.analyzer.presenter;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Polygon;
-import java.util.Objects;
 
 /**
  *
@@ -92,10 +91,7 @@ public class Roi {
         if (this.name != other.name) {
             return false;
         }
-        if (!Objects.equals(this.polygon, other.polygon)) {
-            return false;
-        }
-        return true;
+        return this.polygon.equals(other.polygon);
     }
 
     @Override

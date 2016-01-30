@@ -2,7 +2,6 @@ package interactive.analyzer.result.table;
 
 import java.awt.Color;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -86,8 +85,8 @@ public class ColorizedTableSelection {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 79 * hash + Objects.hashCode(this.color);
+        int hash = 7;
+        hash = 67 * hash + (this.color != null ? this.color.hashCode() : 0);
         return hash;
     }
 
@@ -100,7 +99,7 @@ public class ColorizedTableSelection {
             return false;
         }
         final ColorizedTableSelection other = (ColorizedTableSelection) obj;
-        if (!Objects.equals(this.color, other.color)) {
+        if (this.color != other.color && (this.color == null || !this.color.equals(other.color))) {
             return false;
         }
         return true;

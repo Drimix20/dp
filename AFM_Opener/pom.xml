@@ -62,6 +62,7 @@
             <groupId>DP</groupId>
             <artifactId>MetadataDecoder</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <classifier>plugin</classifier>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -93,6 +94,32 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+            <!-- Package into jar required dependencies becase ImageJ/Fiji does not contain any other libs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>DP:MetadataDecoder</include>
+                                    <include>DP:ConfigurationModule</include>
+                                    <include>DP:ScalerModule</include>
+                                </includes>
+                            </artifactSet>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>plugin</shadedClassifierName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Plugin for running jar file -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -108,7 +135,7 @@
                     <mainClass>AFM_Opener</mainClass>
                 </configuration>
             </plugin>
-            <!-- Plugin for copy tags.xml from resources dir -->
+            <!-- Plugin for copy afmPluginConfiguration.xml from resources dir -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.7</version>

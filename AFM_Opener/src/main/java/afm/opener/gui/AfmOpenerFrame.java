@@ -19,6 +19,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import java.util.Arrays;
+import javax.swing.DefaultComboBoxModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             throw new IllegalArgumentException("Count down latch is null");
         }
         initComponents();
+        calibrationUnitComboBox.setModel(new DefaultComboBoxModel(LengthUnit.retrieveAbbreviations()));
         selectedChannelContainer = new ArrayList<ChannelContainer>();
         this.latch = latch;
         this.disposeAfterOpen = disposeAfterOpen;
@@ -55,8 +57,6 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
     private void resetButtons() {
         selectAll.setSelected(false);
-        //TODO plugin will not show images in stack
-//        this.showInStack.setSelected(true);
     }
 
     private void resetDataStructures() {
@@ -87,9 +87,10 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         cancelButton = new javax.swing.JButton();
         OpenButton = new javax.swing.JButton();
         selectAll = new javax.swing.JCheckBox();
-        showInStack = new javax.swing.JCheckBox();
         exportTagsCheckbox = new javax.swing.JCheckBox();
         calibrateImageCheckbox = new javax.swing.JCheckBox();
+        calibrationUnitComboBox = new javax.swing.JComboBox();
+        unitLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("AFM Opener");
@@ -139,13 +140,6 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             }
         });
 
-        showInStack.setText("Show in stack:                              ");
-        showInStack.setEnabled(false);
-        showInStack.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        showInStack.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        showInStack.setMaximumSize(new java.awt.Dimension(198, 24));
-        showInStack.setPreferredSize(new java.awt.Dimension(198, 24));
-
         exportTagsCheckbox.setText("Export all tags:                             ");
         exportTagsCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         exportTagsCheckbox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
@@ -164,6 +158,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             }
         });
 
+        unitLabel.setText(" Unit:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -179,14 +175,18 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(10, 10, 10)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(showInStack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(41, 41, 41)
-                                        .addComponent(OpenButton)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(cancelButton))
                                     .addComponent(exportTagsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(calibrateImageCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(calibrateImageCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(unitLabel)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(calibrationUnitComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                            .addGap(41, 41, 41)
+                                            .addComponent(OpenButton)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(cancelButton))))))
                         .addGap(0, 5, Short.MAX_VALUE))
                     .addComponent(selectAll, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -210,13 +210,15 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
                 .addComponent(selectAll, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(imageOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(11, 11, 11)
-                .addComponent(showInStack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(exportTagsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(calibrateImageCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(calibrationUnitComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(unitLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cancelButton)
                     .addComponent(OpenButton))
@@ -268,7 +270,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         List<ChannelContainer> loadedImages = loader.loadImages(selectedChannelContainer);
 
         if (calibrateImageCheckbox.isSelected()) {
-            calibrateImages(loadedImages, LengthUnit.NANOMETER);
+            LengthUnit unit = LengthUnit.parse((String) calibrationUnitComboBox.getSelectedItem());
+            calibrateImages(loadedImages, unit);
         }
 
         showLoadedImages(loadedImages, showLoadedImages);
@@ -298,6 +301,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             IJ.run(imagePlus, "16-bit", "");
             cc.setImagePlus(imagePlus);
 
+            logger.trace("Resolution calibration");
             SizeCalibrator sizeCalibrator = new SizeCalibrator();
             Calibration cal = imagePlus.getCalibration();
             cal.pixelWidth = sizeCalibrator.calibrateImageWidth(cc, unit);
@@ -307,6 +311,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             logger.trace("Calibrated pixelWidth: {}, pixelHeight: {}, pixelDepth: {}, unit: {}",
                     cal.pixelWidth, cal.pixelHeight, cal.pixelDepth, cal.getUnit());
 
+            logger.trace("Intensity calibration");
             IntensityCalibrator ic = new IntensityCalibrator();
             double[] parameters = ic.computeCalibrationFunction(cc, Calibration.STRAIGHT_LINE, unit);
 
@@ -327,12 +332,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             boolean show) {
         if (show) {
             AfmOpenerImagePresenter presenter = new AfmOpenerImagePresenter();
-            if (loadedImages.size() == 1 && showInStack.isSelected()) {
-                IJ.showMessage("One image cannot be opened in stack");
-                showInStack.setSelected(false);
-            }
 
-            presenter.showAsStack(showInStack.isSelected());
+            presenter.showAsStack(false);
             presenter.show(loadedImages);
         }
     }
@@ -369,6 +370,11 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private void calibrateImageCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateImageCheckboxActionPerformed
         if (calibrateImageCheckbox.isSelected()) {
             IJ.showMessage("AFM Opener", "Thumbnail image will not be calibrated");
+            unitLabel.setEnabled(true);
+            calibrationUnitComboBox.setEnabled(true);
+        } else {
+            unitLabel.setEnabled(false);
+            calibrationUnitComboBox.setEnabled(false);
         }
     }//GEN-LAST:event_calibrateImageCheckboxActionPerformed
 
@@ -376,6 +382,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private javax.swing.JButton OpenButton;
     private javax.swing.JButton SelectButton;
     private javax.swing.JCheckBox calibrateImageCheckbox;
+    private javax.swing.JComboBox calibrationUnitComboBox;
     private javax.swing.JButton cancelButton;
     private javax.swing.JCheckBox exportTagsCheckbox;
     private javax.swing.JScrollPane imageOptionPanel;
@@ -383,6 +390,6 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JTextField nameField;
     private javax.swing.JCheckBox selectAll;
-    private javax.swing.JCheckBox showInStack;
+    private javax.swing.JLabel unitLabel;
     // End of variables declaration//GEN-END:variables
 }

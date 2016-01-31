@@ -18,7 +18,7 @@ public class TagListConfiguration {
     private List<TagConfiguration> tagList;
 
     public TagListConfiguration() {
-        tagList = new ArrayList<>();
+        tagList = new ArrayList<TagConfiguration>();
     }
 
     /**

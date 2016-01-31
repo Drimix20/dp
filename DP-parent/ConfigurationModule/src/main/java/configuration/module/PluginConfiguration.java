@@ -120,7 +120,7 @@ public class PluginConfiguration {
         imagePhysicalHeightTag = 32835;
         imageWidthTag = 32838;
         imageHeightTag = 32839;
-        tagConfigList = new ArrayList<>();
+        tagConfigList = new ArrayList<TagConfiguration>();
         numberOfSlotsTag = 32896;
         channelNameTag = 32848;
         scalingTypeTag = 32931;

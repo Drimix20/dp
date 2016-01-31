@@ -1,6 +1,5 @@
 package configuration.module.xml.elements;
 
-import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -77,9 +76,9 @@ public class TagConfiguration {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 89 * hash + Objects.hashCode(this.category);
-        hash = 89 * hash + this.decimal;
-        hash = 89 * hash + Objects.hashCode(this.hexadecimal);
+        hash = 79 * hash + (this.category != null ? this.category.hashCode() : 0);
+        hash = 79 * hash + this.decimal;
+        hash = 79 * hash + (this.hexadecimal != null ? this.hexadecimal.hashCode() : 0);
         return hash;
     }
 
@@ -92,13 +91,13 @@ public class TagConfiguration {
             return false;
         }
         final TagConfiguration other = (TagConfiguration) obj;
-        if (!Objects.equals(this.category, other.category)) {
+        if ((this.category == null) ? (other.category != null) : !this.category.equals(other.category)) {
             return false;
         }
         if (this.decimal != other.decimal) {
             return false;
         }
-        if (!Objects.equals(this.hexadecimal, other.hexadecimal)) {
+        if ((this.hexadecimal == null) ? (other.hexadecimal != null) : !this.hexadecimal.equals(other.hexadecimal)) {
             return false;
         }
         return true;

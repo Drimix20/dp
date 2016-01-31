@@ -9,13 +9,16 @@ import java.util.List;
  */
 public class SelectedChannelsContainer {
 
-    private static SelectedChannelsContainer instance = new SelectedChannelsContainer();
+    private static SelectedChannelsContainer instance;
     private List<ChannelContainer> channelContainers = new ArrayList<ChannelContainer>();
 
     private SelectedChannelsContainer() {
     }
 
     public static synchronized SelectedChannelsContainer newInstance() {
+        if (instance == null) {
+            instance = new SelectedChannelsContainer();
+        }
         return instance;
     }
 

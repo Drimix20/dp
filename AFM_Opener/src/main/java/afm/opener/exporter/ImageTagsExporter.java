@@ -32,7 +32,7 @@ public class ImageTagsExporter implements TagsExporter {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             logger.debug("Selected file to save is " + file.getAbsolutePath());
-
+            //TODo unused variable
             File tagsDescriptionFile = new File(PluginConfiguration.getPluginConfigurationXmlPath());
             List<TagConfiguration> tagsConfig = PluginConfiguration.getTagConfigurationList();
             logger.debug("Number of tags from xml: " + tagsConfig.size());

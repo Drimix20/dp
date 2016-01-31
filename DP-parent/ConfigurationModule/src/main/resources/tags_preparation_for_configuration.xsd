@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:element name="configuration" type="configurationType"/>
+    <xsd:complexType name="configurationType">
+        <xsd:sequence>
+            <xsd:element name="tags" type="tagsType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="tagsType">
+        <xsd:sequence>
+            <xsd:element name="tag" type="tagType" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="tagType">
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+             <xsd:element name="decimal" type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="hexadecimal" type="hexadecimalValue" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="offset_hexadecimal" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+        <xsd:attribute name="category" use="required">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="general"/>
+                    <xsd:enumeration value="channel"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:simpleType name="hexadecimalValue">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="0x[0-9A-Fa-f]+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>

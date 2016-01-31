@@ -11,13 +11,13 @@ import afm.opener.selector.ChannelContainer;
  */
 public class ChannelListElement extends javax.swing.JPanel {
 
-    private File imageFile;
     private ChannelContainer container;
     private List<ChannelContainer> selectedChannels;
 
     private int indexOfElement;
 
-    public ChannelListElement(ChannelContainer channelContainer, List<ChannelContainer> selectedChannels, boolean setSelected) {
+    public ChannelListElement(ChannelContainer channelContainer,
+            List<ChannelContainer> selectedChannels, boolean setSelected) {
         initComponents();
         this.selectedChannels = selectedChannels;
         this.container = channelContainer;

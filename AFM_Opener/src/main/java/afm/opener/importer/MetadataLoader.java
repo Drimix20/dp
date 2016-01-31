@@ -17,8 +17,9 @@ public class MetadataLoader {
 
     List<ChannelMetadata> imagesMetadata;
 
-    public List<ChannelMetadata> parseMetadata(Map<File, List<Integer>> channelMap) {
-        imagesMetadata = new ArrayList<>();
+    public List<ChannelMetadata> parseMetadata(
+            Map<File, List<Integer>> channelMap) {
+        imagesMetadata = new ArrayList<ChannelMetadata>();
         Decoder decoder = new MetadataDecoder();
 
         for (Map.Entry<File, List<Integer>> entry : channelMap.entrySet()) {

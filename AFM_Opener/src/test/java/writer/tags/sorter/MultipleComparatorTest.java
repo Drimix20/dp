@@ -32,7 +32,7 @@ public class MultipleComparatorTest {
                 = new MultipleComparator(Arrays.asList(
                                 new CategoryTagsDescriptionSorter(),
                                 new DecimalIDTagsDescriptionSorter()));
-        List<TagConfiguration> tags = new ArrayList<>();
+        List<TagConfiguration> tags = new ArrayList<TagConfiguration>();
         tags.add(tag3);
         tags.add(tag2);
         tags.add(tag1);

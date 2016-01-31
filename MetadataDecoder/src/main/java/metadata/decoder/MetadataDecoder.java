@@ -20,6 +20,7 @@ public class MetadataDecoder implements Decoder {
     private Logger logger = LoggerFactory.getLogger(MetadataDecoder.class);
 
     public List<ChannelMetadata> decodeMetadata(List<File> files) throws Exception {
+        logger.info("Decoda metadata for {} files", files.size());
         List<ChannelMetadata> channels = new ArrayList<ChannelMetadata>();
         for (File file : files) {
             try {
@@ -34,7 +35,7 @@ public class MetadataDecoder implements Decoder {
 
     @Override
     public List<ChannelMetadata> decodeMetadata(File file) throws Exception {
-        logger.warn("Decoding metadata for file " + file.getName());
+        logger.info("Decoding metadata for file " + file.getName());
         List<ChannelMetadata> channels = new ArrayList<ChannelMetadata>();
 
         SeekableStream stream = null;
@@ -46,9 +47,8 @@ public class MetadataDecoder implements Decoder {
                 TIFFDirectory tiffDirectory = new TIFFDirectory(stream, i);
                 channels.add(decodeTiffDirectory(file.getName(), tiffDirectory));
             }
-            logger.info("End of IFD");
+            logger.trace("End of IFD");
         } catch (Exception ex) {
-            logger.error("Errow while decoding metadata", ex);
             throw new IllegalStateException("Errow while decoding metadadata", ex);
         } finally {
             if (stream != null) {

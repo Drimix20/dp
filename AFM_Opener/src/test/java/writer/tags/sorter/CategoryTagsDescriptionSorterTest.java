@@ -35,7 +35,7 @@ public class CategoryTagsDescriptionSorterTest {
         tag3.setDecimalValue(31749);
 
         TagsDescriptionSorter instance = new CategoryTagsDescriptionSorter();
-        List<TagConfiguration> tags = new ArrayList<>();
+        List<TagConfiguration> tags = new ArrayList<TagConfiguration>();
         tags.add(tag3);
         tags.add(tag2);
         tags.add(tag1);

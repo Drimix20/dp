@@ -42,7 +42,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             throw new IllegalArgumentException("Count down latch is null");
         }
         initComponents();
-        selectedChannelContainer = new ArrayList<>();
+        selectedChannelContainer = new ArrayList<ChannelContainer>();
         this.latch = latch;
         this.disposeAfterOpen = disposeAfterOpen;
         this.showLoadedImages = showLoadedImages;
@@ -54,7 +54,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     }
 
     private void resetDataStructures() {
-        selectedChannelContainer = new ArrayList<>();
+        selectedChannelContainer = new ArrayList<ChannelContainer>();
     }
 
     public void showLoadedImages(boolean showLoadedImages) {
@@ -216,7 +216,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void SelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SelectButtonActionPerformed
-        logger.info("Clicked on select button...");
+        logger.info("Clicked on select button");
 
         JFileChooser fileChooser = new JFileChooser(currentDirectory);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -241,12 +241,12 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_SelectButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        logger.info("Canceled");
+        logger.info("Clicked on cancel button");
         disposeAfmOpener(true);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void OpenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenButtonActionPerformed
-        logger.info("Loading images...");
+        logger.info("Clicked on open button");
 
         if (selectedChannelContainer.isEmpty()) {
             IJ.showMessage("No image selected to open");
@@ -275,8 +275,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
     private void calibrateImages(List<ChannelContainer> loadedImages) {
         for (ChannelContainer cc : loadedImages) {
-            double uLength = (double) cc.getGeneralMetadata().getTagValue(32834);
-            double vLength = (double) cc.getGeneralMetadata().getTagValue(32835);
+            double uLength = (Double) cc.getGeneralMetadata().getTagValue(32834);
+            double vLength = (Double) cc.getGeneralMetadata().getTagValue(32835);
 
             ImagePlus imagePlus = cc.getImagePlus();
             int imgWidth = imagePlus.getWidth();
@@ -318,7 +318,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
     private void showLoadedImages(List<ChannelContainer> loadedImages,
             boolean show) {
-        if (showLoadedImages) {
+        if (show) {
             AfmOpenerImagePresenter presenter = new AfmOpenerImagePresenter();
             if (loadedImages.size() == 1 && showInStack.isSelected()) {
                 IJ.showMessage("One image cannot be opened in stack");
@@ -348,10 +348,12 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     }
 
     private void selectAllPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllPerformed
-        logger.info("All channels selected");
+        logger.info("Clicked on select all");
         if (selectAll.isSelected()) {
+            logger.trace("Selecting all");
             imageOptionManager.selectAllImages(true);
         } else {
+            logger.trace("Deselecting all");
             imageOptionManager.selectAllImages(false);
         }
         imageOptionManager.run();

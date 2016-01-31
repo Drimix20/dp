@@ -13,8 +13,7 @@ import afm.opener.selector.ChannelContainer;
  */
 public class FileSearcher {
 
-    private List<ChannelContainer> channelContainer = new ArrayList<ChannelContainer>();
-
+//    private List<ChannelContainer> channelContainer = new ArrayList<ChannelContainer>();
     public List<ChannelContainer> preloadJpkImageFiles(File parent) {
         FileFilter fileFilter = new JkpFileFilter();
         return preprocessToChannelContainer(parent, fileFilter);

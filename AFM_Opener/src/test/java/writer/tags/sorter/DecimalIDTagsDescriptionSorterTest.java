@@ -36,13 +36,14 @@ public class DecimalIDTagsDescriptionSorterTest {
         tag3.setDecimalValue(31749);
 
         TagsDescriptionSorter instance = new DecimalIDTagsDescriptionSorter();
-        List<TagConfiguration> tags = new ArrayList<>();
+        List<TagConfiguration> tags = new ArrayList<TagConfiguration>();
         tags.add(tag3);
         tags.add(tag1);
         tags.add(tag2);
         Collections.sort(tags, new Comparator<TagConfiguration>() {
+            @Override
             public int compare(TagConfiguration o1, TagConfiguration o2) {
-                return Integer.compare(o1.getDecimalID(), o2.getDecimalID());
+                return Integer.valueOf(o1.getDecimalID()).compareTo(Integer.valueOf(o2.getDecimalID()));
             }
 
         });

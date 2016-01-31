@@ -4,7 +4,7 @@
     <!-- appender určuje, kam se bude logovat, v tomto případě na konzolu -->
     <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d [%t] %-5p %c{1} - %m%n"/>
+            <param name="ConversionPattern" value="%d | %-5p | %c{1} | %m%n"/>
         </layout>
     </appender>
     <!-- tento appender loguje do denně rotovaného souboru  v adresáři určeném obsahem systémové property catalina.base-->

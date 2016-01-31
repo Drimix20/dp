@@ -2,14 +2,12 @@ package configuration.module.parser;
 
 import configuration.module.PluginConfiguration;
 import java.io.File;
-import java.io.IOException;
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.slf4j.Logger;
-import org.xml.sax.SAXException;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -31,7 +29,7 @@ public class PluginConfigurationValidator {
             Schema schema = factory.newSchema(new File(xsdPath));
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(new File(xmlPath)));
-        } catch (IOException | SAXException e) {
+        } catch (Exception e) {
             logger.error("File {} is not valid: {}", xmlPath, e.getMessage());
             return false;
         }

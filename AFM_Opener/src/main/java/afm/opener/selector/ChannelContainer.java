@@ -2,7 +2,6 @@ package afm.opener.selector;
 
 import ij.ImagePlus;
 import java.io.File;
-import java.util.Objects;
 import metadata.decoder.ChannelMetadata;
 
 /**
@@ -70,10 +69,10 @@ public class ChannelContainer {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 89 * hash + Objects.hashCode(this.file);
-        hash = 89 * hash + Objects.hashCode(this.IFD);
-        hash = 89 * hash + Objects.hashCode(this.channelName);
+        int hash = 3;
+        hash = 31 * hash + (this.file != null ? this.file.hashCode() : 0);
+        hash = 31 * hash + (this.IFD != null ? this.IFD.hashCode() : 0);
+        hash = 31 * hash + (this.channelName != null ? this.channelName.hashCode() : 0);
         return hash;
     }
 
@@ -86,13 +85,13 @@ public class ChannelContainer {
             return false;
         }
         final ChannelContainer other = (ChannelContainer) obj;
-        if (!Objects.equals(this.file, other.file)) {
+        if (this.file != other.file && (this.file == null || !this.file.equals(other.file))) {
             return false;
         }
-        if (!Objects.equals(this.IFD, other.IFD)) {
+        if ((this.IFD == null) ? (other.IFD != null) : !this.IFD.equals(other.IFD)) {
             return false;
         }
-        if (!Objects.equals(this.channelName, other.channelName)) {
+        if ((this.channelName == null) ? (other.channelName != null) : !this.channelName.equals(other.channelName)) {
             return false;
         }
         return true;

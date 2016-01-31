@@ -1,5 +1,8 @@
 package afm.opener.gui;
 
+import afm.opener.calibration.IntensityCalibrator;
+import afm.opener.calibration.LengthUnit;
+import afm.opener.calibration.SizeCalibrator;
 import afm.opener.common.ImageOptionManager;
 import afm.opener.common.AfmOpenerImagePresenter;
 import afm.opener.exporter.ImageTagsExporter;
@@ -15,6 +18,7 @@ import afm.opener.selector.ChannelContainer;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Calibration;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +30,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
     private Logger logger = LoggerFactory.getLogger(AfmOpenerFrame.class);
     private final CountDownLatch latch;
+    //TODO property for manual testing
     private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
     private List<ChannelContainer> selectedChannelContainer;
     private ImageOptionManager imageOptionManager;
@@ -50,7 +55,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
     private void resetButtons() {
         selectAll.setSelected(false);
-        this.showInStack.setSelected(true);
+        //TODO plugin will not show images in stack
+//        this.showInStack.setSelected(true);
     }
 
     private void resetDataStructures() {
@@ -133,8 +139,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             }
         });
 
-        showInStack.setSelected(true);
         showInStack.setText("Show in stack:                              ");
+        showInStack.setEnabled(false);
         showInStack.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         showInStack.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         showInStack.setMaximumSize(new java.awt.Dimension(198, 24));
@@ -152,6 +158,11 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         calibrateImageCheckbox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         calibrateImageCheckbox.setMaximumSize(new java.awt.Dimension(198, 24));
         calibrateImageCheckbox.setPreferredSize(new java.awt.Dimension(198, 24));
+        calibrateImageCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                calibrateImageCheckboxActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -256,12 +267,12 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         ImageLoader loader = new ImageLoader();
         List<ChannelContainer> loadedImages = loader.loadImages(selectedChannelContainer);
 
+        if (calibrateImageCheckbox.isSelected()) {
+            calibrateImages(loadedImages, LengthUnit.NANOMETER);
+        }
+
         showLoadedImages(loadedImages, showLoadedImages);
         disposeAfmOpener(disposeAfterOpen);
-
-        if (calibrateImageCheckbox.isSelected()) {
-            calibrateImages(loadedImages);
-        }
 
         if (exportTagsCheckbox.isSelected()) {
             TagsExporter tagsExporter = new ImageTagsExporter();
@@ -273,42 +284,38 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         logger.info("Images were loaded");
     }//GEN-LAST:event_OpenButtonActionPerformed
 
-    private void calibrateImages(List<ChannelContainer> loadedImages) {
+    private void calibrateImages(List<ChannelContainer> loadedImages,
+            LengthUnit unit) {
         for (ChannelContainer cc : loadedImages) {
-            double uLength = (Double) cc.getGeneralMetadata().getTagValue(32834);
-            double vLength = (Double) cc.getGeneralMetadata().getTagValue(32835);
+            if (cc.getChannelName().trim().equals("thumbnail")) {
+                logger.trace("Channel is thumbnail skipping calibration");
+                continue;
+            }
 
             ImagePlus imagePlus = cc.getImagePlus();
-            int imgWidth = imagePlus.getWidth();
-            int imgHeight = imagePlus.getHeight();
 
+            logger.trace("Convert image into 16-bit image");
+            IJ.run(imagePlus, "16-bit", "");
+            cc.setImagePlus(imagePlus);
+
+            SizeCalibrator sizeCalibrator = new SizeCalibrator();
             Calibration cal = imagePlus.getCalibration();
-            logger.trace("ImageWidth: " + uLength * Math.pow(10, 9));
-            double pixelWidth = uLength / imgWidth * Math.pow(10, 9);
-            cal.pixelWidth = pixelWidth;
-            double pixelHeight = vLength / imgHeight * Math.pow(10, 9);
-            cal.pixelHeight = pixelHeight;
-            double pixelDepth = uLength / imgWidth * Math.pow(10, 9);
-            cal.pixelDepth = pixelDepth;
-            logger.trace("pixelWidth: " + pixelWidth + ", pixelHeight: " + pixelHeight + ", pixelDepth:" + pixelDepth);
-            cal.setUnit("nm");
+            cal.pixelWidth = sizeCalibrator.calibrateImageWidth(cc, unit);
+            cal.pixelHeight = sizeCalibrator.calibrateImageHeight(cc, unit);
+            cal.pixelDepth = 1;
+            cal.setUnit(unit.getAbbreviation());
+            logger.trace("Calibrated pixelWidth: {}, pixelHeight: {}, pixelDepth: {}, unit: {}",
+                    cal.pixelWidth, cal.pixelHeight, cal.pixelDepth, cal.getUnit());
 
-            //TODO calibration of 32-bit image cannot be done
-//            double min = imagePlus.getProcessor().getMin();
-//            double max = imagePlus.getProcessor().getMax();
-//
-//            IntensityCalibrator ic = new IntensityCalibrator(cc);
-//            int calibrationType = Calibration.STRAIGHT_LINE;
-//            if (imagePlus.getType() != ImagePlus.GRAY32) {
-//                calibrationType = Calibration.STRAIGHT_LINE;
-//            }
-//            double[] parameters = ic.computeCalibrationFunctionInNanometer(min, max, Calibration.STRAIGHT_LINE);
-//            logger.trace("Calibration function parameters " + Arrays.toString(parameters));
-//            if (parameters != null) {
-//                cal.setFunction(calibrationType, parameters, "nm");
-//            } else {
-//                logger.trace("Parameters of calibration funcition are null");
-//            }
+            IntensityCalibrator ic = new IntensityCalibrator();
+            double[] parameters = ic.computeCalibrationFunction(cc, Calibration.STRAIGHT_LINE, unit);
+
+            if (parameters != null) {
+                logger.trace("Calibration function parameters {}", Arrays.toString(parameters));
+                cal.setFunction(Calibration.STRAIGHT_LINE, parameters, unit.getAbbreviation());
+            } else {
+                logger.trace("Parameters of calibration funcition are null");
+            }
             cc.getImagePlus().setCalibration(cal);
 
 //            IJ.run(imagePlus, "Calibration Bar...", "location=[Upper Right] fill=White label=Black number=5 decimal=0 font=12 zoom=1.3 overlay");
@@ -358,6 +365,12 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         }
         imageOptionManager.run();
     }//GEN-LAST:event_selectAllPerformed
+
+    private void calibrateImageCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateImageCheckboxActionPerformed
+        if (calibrateImageCheckbox.isSelected()) {
+            IJ.showMessage("AFM Opener", "Thumbnail image will not be calibrated");
+        }
+    }//GEN-LAST:event_calibrateImageCheckboxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton OpenButton;

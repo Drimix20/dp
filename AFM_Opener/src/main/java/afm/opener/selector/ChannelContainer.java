@@ -67,6 +67,10 @@ public class ChannelContainer {
         this.IFD = IFFD;
     }
 
+    public String getChannelName() {
+        return channelName;
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;

@@ -71,8 +71,7 @@ public class ScalerModule {
      @param pixelIntensityValue
      @return scaled pixel value in meter
      */
-    public double scalePixelIntensityToObtainRealHeight(
-            long pixelIntensityValue) {
+    public double scalePixelIntensityToObtainRealHeight(long pixelIntensityValue) {
         return dataScaler.scaleValue(pixelIntensityValue);
     }
 

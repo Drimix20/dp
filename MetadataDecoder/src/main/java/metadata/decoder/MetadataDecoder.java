@@ -65,13 +65,13 @@ public class MetadataDecoder implements Decoder {
         metadata.setIFD("" + tiffDirectory.getIFDOffset());
 
         TIFFField[] fields = tiffDirectory.getFields();
-        logger.info("File: " + fileName + ", offsetIFD: " + tiffDirectory.getIFDOffset());
+        logger.info("File: {} , offsetIFD: {}", fileName, tiffDirectory.getIFDOffset());
         for (int j = 0; j < fields.length; j++) {
             TIFFField tIFFField = fields[j];
             Object tagValue = getTagValue(tIFFField);
             metadata.setTagValue(tIFFField.getTag(), tagValue);
 
-            logger.info("Tag: " + tIFFField.getTag() + ", value: " + tagValue);
+            logger.trace("Tag: {}, value: {}", tIFFField.getTag(), tagValue);
         }
         return metadata;
     }

@@ -21,6 +21,8 @@
     </appender>-->
 
     <logger name="afm.opener.configuration.parser"><level value="trace"/></logger>
+    <logger name="afm.opener.calibration"><level value="trace"/></logger>
+    <logger name="afm.opener.gui.AfmOpenerFrame"><level value="trace"/></logger>
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>
         <priority value="INFO"/>

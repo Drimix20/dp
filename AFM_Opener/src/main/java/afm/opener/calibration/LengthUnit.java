@@ -10,7 +10,7 @@ public enum LengthUnit {
     DECIMETER(Math.pow(10, 1), "dm"),
     CENTIMETER(Math.pow(10, 2), "cm"),
     MILIMETER(Math.pow(10, 3), "mm"),
-    MICROMETER(Math.pow(10, 6), "micron"),
+    MICROMETER(Math.pow(10, 6), "\u00B5m"),
     NANOMETER(Math.pow(10, 9), "nm");
 
     private LengthUnit(double value, String abbreviation) {

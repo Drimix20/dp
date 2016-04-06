@@ -24,9 +24,14 @@ public class SizeCalibrator {
 
     public double calibrateImageWidth(int imageWidth, double uLengthInMeter,
             LengthUnit unit) {
-        double convertedImageWidth = uLengthInMeter / imageWidth * unit.getValue();
+        // Compute pixel width
+        double convertedPixelWidth = uLengthInMeter / imageWidth * unit.getValue();
+        logger.trace("Pixel width {} {}", convertedPixelWidth, unit.getAbbreviation());
 
-        logger.trace("Calibrated image width {} in m to {} {}", imageWidth, convertedImageWidth, unit.getAbbreviation());
+        // Convert image width to specific unit
+        double convertedImageWidth = uLengthInMeter * unit.getValue();
+
+        logger.trace("Calibrated image width: origin value in metadata {} in m to {} {}", uLengthInMeter, convertedImageWidth, unit.getAbbreviation());
         return convertedImageWidth;
     }
 
@@ -40,9 +45,15 @@ public class SizeCalibrator {
 
     public double calibrateImageHeight(int imageHeight, double vLengthInMeter,
             LengthUnit unit) {
-        double convertedImageWidth = vLengthInMeter / imageHeight * unit.getValue();
 
-        logger.trace("Calibrated image height {} in m to {} {}", imageHeight, convertedImageWidth, unit.getAbbreviation());
-        return convertedImageWidth;
+        // Compute pixel width
+        double convertedPixelHeight = vLengthInMeter / imageHeight * unit.getValue();
+        logger.trace("Pixel height {} {}", convertedPixelHeight, unit.getAbbreviation());
+
+        // Convert image width to specific unit
+        double convertedImageHeight = vLengthInMeter * unit.getValue();
+
+        logger.trace("Calibrated image height: origin value in metadata {} in m to {} {}", vLengthInMeter, convertedImageHeight, unit.getAbbreviation());
+        return convertedImageHeight;
     }
 }

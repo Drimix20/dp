@@ -2,7 +2,6 @@ package afm.analyzer.segmentation;
 
 import interactive.analyzer.selection.ImageSegments;
 import static afm.analyzer.segmentation.SegmentationConfiguration.*;
-import interactive.analyzer.selection.ExtendedRoi;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import ij.IJ;
 import ij.ImagePlus;
@@ -31,7 +30,7 @@ public class Segmentation {
         logger.info("Segment images " + channelContainers.size());
         IJ.showStatus("Image segmentation");
 
-        List<ImageSegments> segmentedImages = new ArrayList<>();
+        List<ImageSegments> segmentedImages = new ArrayList<ImageSegments>();
         ResultsTable resultsTable = new ResultsTable();
         RoiManager roiManager = new RoiManager(true);
 
@@ -77,7 +76,7 @@ public class Segmentation {
             List<ChannelContainer> channelContainers,
             ImageThresholdStrategy thresholdStrategy) {
         logger.info("Make binary images " + channelContainers.size());
-        List<ImageProcessor> binaryProcessors = new ArrayList<>();
+        List<ImageProcessor> binaryProcessors = new ArrayList<ImageProcessor>();
         for (ChannelContainer channel : channelContainers) {
             ImageProcessor ip = makeBinary(channel.getImagePlus().duplicate(), thresholdStrategy);
             binaryProcessors.add(ip);
@@ -123,7 +122,7 @@ public class Segmentation {
     }
 
     public List<Roi> computeRoiOfSegments(RoiManager roiManager) {
-        List<Roi> rois = new ArrayList<>();
+        List<Roi> rois = new ArrayList<Roi>();
         Roi[] roisAsArray = roiManager.getRoisAsArray();
 //        int[] selectedIndexes = new int[roisAsArray.length];
 //        for (int i = 0; i < roisAsArray.length; i++) {
@@ -133,12 +132,10 @@ public class Segmentation {
 //        roiManager.runCommand("Delete");
 
         for (int i = 0; i < roisAsArray.length; i++) {
-            ExtendedRoi extRoi = new ExtendedRoi(roisAsArray[i].getPolygon(), Roi.TRACED_ROI);
-            extRoi.setLabel(i + 1);
-            extRoi.setNonScalable(true);
-//            Rectangle bounds = extRoi.getBounds();bounds.getX();bounds.getY();bounds.getHeight();bounds.getWidth();
-            //roiManager.addRoi(extRoi);
-            rois.add(extRoi);
+            //TODO check name before setting index
+            Roi r = roisAsArray[i];
+            r.setName((i + 1) + "");
+            rois.add(r);
         }
 
         return rois;

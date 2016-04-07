@@ -54,8 +54,15 @@ public class MeasurementsElementManager extends Thread {
 
         //TODO automaticaly adds instances of measurements in package afm.analyzer.measurements.list
         JPanel columnpanel = createColumnPanelForOptionElements(backgroundPanel);
-        List<Class<?>> result = ClassFinder.find("afm.analyzer.measurements.list");
-        List<Object> instantiatedClasses = ClassInstantiater.instantiateClassesWithoutArgument(result);
+        List<Class> result = ClassFinder.find("afm.analyzer.measurements.list");
+        List<Object> instantiatedClasses = null;
+        try {
+            instantiatedClasses = ClassInstantiater.instantiateClassesWithoutArgument(result);
+        } catch (IllegalAccessException ex) {
+
+        } catch (InstantiationException ex) {
+
+        }
         int rowIndex = 1;
         for (int i = 0; i < result.size(); i++) {
             final MeasurementRowPanel rowPanel = new MeasurementRowPanel((AbstractMeasurement) instantiatedClasses.get(i), selectedMeasurements, false);

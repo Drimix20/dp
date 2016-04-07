@@ -1,24 +1,17 @@
 package afm.analyzer.gui;
 
-import interactive.analyzer.gui.InteractiveAnalyzerResultFrame;
 import afm.analyzer.measurements.AbstractMeasurement;
 import afm.analyzer.measurements.MeasurementComputation;
-import interactive.analyzer.presenter.InteractiveImageWindow;
-import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.result.table.AbstractMeasurementResult;
 import afm.analyzer.segmentation.Segmentation;
 import interactive.analyzer.selection.ImageSegments;
-import interactive.analyzer.listeners.ImageSelectionListener;
-import interactive.analyzer.listeners.TableSelectionListener;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import afm.analyzer.threshold.ThresholderExecutor;
 import afm.analyzer.threshold.ThresholderExecutor.Strategies;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import interactive.analyzer.InteractiveAnalyzer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,27 +33,17 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     private List<ChannelContainer> selectedChannelContainer;
     private ImageThresholdStrategy thresholder;
     private SegmentationConfigDialog segmentationConfDialog;
-    private ImageWindowI analyzerImageWindow;
-
-    public AfmAnalyzerFrame() {
-        this(new InteractiveImageWindow());
-    }
 
     /**
      * Creates new form AfmAnalyzer
-     * @param imageWindow
      */
-    public AfmAnalyzerFrame(ImageWindowI imageWindow) {
-        if (imageWindow == null) {
-            throw new IllegalArgumentException("Image window must be specified.");
-        }
+    public AfmAnalyzerFrame() {
         strategiesName = ThresholderExecutor.getStrategiesName();
         initComponents();
         selectedMeasurements = new ArrayList<AbstractMeasurement>();
         selectedChannelContainer = new ArrayList<ChannelContainer>();
         segmentationOptionButton.setEnabled(false);
         segmentationPreviewButton.setEnabled(false);
-        analyzerImageWindow = imageWindow;
 
         MeasurementsElementManager elementManager = new MeasurementsElementManager(measurementsPanel);
         elementManager.setSelectedMeasurements(selectedMeasurements);
@@ -304,7 +287,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         //TODO create abstract class as AnalyzerResult and its implementation (because of usage in AfmAnalyzerFrame)
         Map<String, List<AbstractMeasurementResult>> afmAnalyzerResult = new HashMap<String, List<AbstractMeasurementResult>>();
 
-        List<String> resultTableHeader = new ArrayList<>();
+        List<String> resultTableHeader = new ArrayList<String>();
         resultTableHeader.add("id");
         //for (ImageSegments segmImage : segmentImages) {
         for (int i = 0; i < selectedChannelContainer.size(); i++) {
@@ -313,7 +296,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
             ImageSegments segmentImage = segmentImages.get(i);
             //TODO implement multiple measurements
-            List<AbstractMeasurementResult> measurementResultsForImage = new ArrayList<>();
+            List<AbstractMeasurementResult> measurementResultsForImage = new ArrayList<AbstractMeasurementResult>();
             for (AbstractMeasurement am : selectedMeasurements) {
                 AbstractMeasurementResult computedResult = measComputation.compute(selectedChannelContainer.get(i), segmentImage, am);
                 measurementResultsForImage.add(computedResult);
@@ -321,14 +304,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
             }
             afmAnalyzerResult.put(channelContainer.getFile().getName(), measurementResultsForImage);
         }
-        InteractiveAnalyzerResultFrame resultFrame = new InteractiveAnalyzerResultFrame(resultTableHeader, Collections.EMPTY_LIST);
-        resultFrame.setAnalyzerValues(afmAnalyzerResult);
-        analyzerImageWindow.setImagesSegments(segmentImages);
-        resultFrame.addTableSelectionListener((TableSelectionListener) this.analyzerImageWindow);
-        analyzerImageWindow.addRoiSelectedListener((ImageSelectionListener) resultFrame);
-
-        InteractiveAnalyzer analyzer = new InteractiveAnalyzer(resultFrame, analyzerImageWindow);
-        analyzer.run();
     }//GEN-LAST:event_measureButtonActionPerformed
 
     private void segmentationOptionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationOptionButtonActionPerformed
@@ -398,7 +373,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new AfmAnalyzerFrame(new InteractiveImageWindow()).setVisible(true);
+                    new AfmAnalyzerFrame().setVisible(true);
                 } catch (Exception ex) {
                     logger.info(ex.getMessage(), ex);
                 }

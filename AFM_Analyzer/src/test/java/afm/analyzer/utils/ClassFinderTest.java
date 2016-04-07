@@ -16,7 +16,7 @@ public class ClassFinderTest {
 
     @Test
     public void testFindMeasurements() {
-        List<Class<?>> result = ClassFinder.find("afm.analyzer.measurements.list");
+        List<Class> result = ClassFinder.find("afm.analyzer.measurements.list");
         assertEquals(Arrays.asList(AreaMeasurement.class, AverageIntensityMeasurement.class, VolumeMeasurement.class), result);
     }
 

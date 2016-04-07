@@ -1,6 +1,5 @@
 package afm.analyzer.utils;
 
-
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -16,14 +15,14 @@ public class ClassFinder {
     private static final char SLASH = '/';
     private static final String CLASS_SUFFIX = ".class";
 
-    public static List<Class<?>> find(String scannedPackage) {
+    public static List<Class> find(String scannedPackage) {
         String scannedPath = scannedPackage.replace(DOT, SLASH);
         URL scannedPackageUrl = Thread.currentThread().getContextClassLoader().getResource(scannedPath);
         if (scannedPackageUrl == null) {
             throw new IllegalArgumentException("Unable to access resource " + scannedPackage);
         }
         File scannedDir = new File(scannedPackageUrl.getFile());
-        List<Class<?>> classes = new ArrayList<Class<?>>();
+        List<Class> classes = new ArrayList<Class>();
         for (File file : scannedDir.listFiles()) {
             classes.addAll(find(file, scannedPackage));
         }

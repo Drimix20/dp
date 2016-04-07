@@ -1,7 +1,5 @@
 
 import afm.analyzer.gui.AfmAnalyzerFrame;
-import interactive.analyzer.presenter.InteractiveImageWindow;
-import interactive.analyzer.presenter.ImageWindowI;
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.PlugIn;
@@ -38,11 +36,7 @@ public class AFM_Analyzer implements PlugIn {
             @Override
             public void run() {
                 try {
-                    ImageWindowI analyzerImageWindow = new InteractiveImageWindow();
-                    analyzerImageWindow.setImagesToShow(selectedChannelContainer);
-                    analyzerImageWindow.setImageVisible(true);
-
-                    AfmAnalyzerFrame analyzer = new AfmAnalyzerFrame(analyzerImageWindow);
+                    AfmAnalyzerFrame analyzer = new AfmAnalyzerFrame();
                     analyzer.setChannels(selectedChannelContainer);
                     analyzer.setLocationRelativeTo(null);
                     analyzer.setVisible(true);

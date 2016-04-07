@@ -1,7 +1,7 @@
 package afm.analyzer.utils;
 
 import afm.analyzer.measurements.list.AreaMeasurement;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,14 +15,13 @@ import org.junit.Test;
  */
 public class ClassInstantiaterTest {
 
-    public ClassInstantiaterTest() {
-    }
-
     @Test
-    public void testInstantiateClassesWithoutArgument() {
+    public void testInstantiateClassesWithoutArgument() throws Exception {
         try {
             Class<?> clazz = Class.forName("afm.analyzer.measurements.list.AreaMeasurement");
-            List<Object> instances = ClassInstantiater.instantiateClassesWithoutArgument((List<Class<?>>) Arrays.asList(clazz));
+            List<Class> classes = new ArrayList<Class>();
+            classes.add(clazz);
+            List<Object> instances = ClassInstantiater.instantiateClassesWithoutArgument(classes);
             assertEquals(1, instances.size());
             assertTrue("Instance should be instance of AreaMeasurement", instances.get(0) instanceof AreaMeasurement);
         } catch (ClassNotFoundException ex) {

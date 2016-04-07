@@ -4,7 +4,6 @@ import interactive.analyzer.result.table.AbstractMeasurementResult;
 import interactive.analyzer.result.table.MeasurementResult;
 import scaler.module.ScalerModule;
 import interactive.analyzer.selection.ImageSegments;
-import interactive.analyzer.selection.ExtendedRoi;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import afm.opener.selector.ChannelContainer;
@@ -25,7 +24,8 @@ public class MeasurementComputation {
         AbstractMeasurementResult results = new MeasurementResult();
 
         for (Roi roi : segmentedImage.getRois()) {
-            int labelIndex = ((ExtendedRoi) roi).getLabel();
+            //TODO check roi name
+            int labelIndex = Integer.parseInt(roi.getName());
             double computedResult = measure.compute(roi, container.getImagePlus(), thresholded, scalerModule);
             results.addResult(labelIndex, computedResult);
         }

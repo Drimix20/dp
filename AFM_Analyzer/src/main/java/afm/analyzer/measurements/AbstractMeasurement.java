@@ -4,7 +4,6 @@ import scaler.module.ScalerModule;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import java.util.Objects;
 
 /**
  *
@@ -28,8 +27,8 @@ public abstract class AbstractMeasurement {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 73 * hash + Objects.hashCode(this.label);
+        int hash = 5;
+        hash = 23 * hash + (this.label != null ? this.label.hashCode() : 0);
         return hash;
     }
 
@@ -42,6 +41,10 @@ public abstract class AbstractMeasurement {
             return false;
         }
         final AbstractMeasurement other = (AbstractMeasurement) obj;
-        return this.label.equals(other.getLabel());
+        if ((this.label == null) ? (other.label != null) : !this.label.equals(other.label)) {
+            return false;
+        }
+        return true;
     }
+
 }

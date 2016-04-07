@@ -6,6 +6,7 @@ import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import java.awt.Rectangle;
 import org.apache.log4j.Logger;
+import scaler.module.ScalerModule;
 
 /**
  *

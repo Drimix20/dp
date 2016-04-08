@@ -57,8 +57,6 @@ public class AFM_Analyzer implements PlugIn {
         // start ImageJ
         new ImageJ();
 
-//        ScalerModuleDemo.main(new String[]{""});
-//        IJ.setDebugMode(true);
         // run the plugin
         IJ.runPlugIn(clazz.getName(), "");
     }

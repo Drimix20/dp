@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
  */
 public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
 
+    //TODO delete none option
     private static Logger logger = Logger.getLogger(InteractiveAnalyzerDialog.class);
 
     private static final String INTERACTIVE__ANALYZER_NAME = "Interactive Analyzer";

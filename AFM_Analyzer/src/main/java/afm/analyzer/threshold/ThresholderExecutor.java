@@ -1,7 +1,6 @@
 package afm.analyzer.threshold;
 
 import afm.analyzer.gui.SegmentationConfigDialog;
-import static afm.analyzer.threshold.ThresholderExecutor.Strategies.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,16 +15,22 @@ public class ThresholderExecutor {
      */
     public static enum Strategies {
 
-        Unselected("Unselected"), TriangleThresholder("Triangle");
+        TriangleThresholder("Triangle", false);
 
         private String text;
+        private boolean strategyWithConfigurableOptions;
 
         public String getText() {
             return text;
         }
 
-        private Strategies(String text) {
+        public boolean isStrategyWitchConfigurableOptions() {
+            return this.strategyWithConfigurableOptions;
+        }
+
+        private Strategies(String text, boolean strategyWithConfigurableOptions) {
             this.text = text;
+            this.strategyWithConfigurableOptions = strategyWithConfigurableOptions;
         }
     }
 
@@ -39,7 +44,8 @@ public class ThresholderExecutor {
         return thresholder;
     }
 
-    public static SegmentationConfigDialog getSegmentationConfigDialog(Strategies strategy) {
+    public static SegmentationConfigDialog getSegmentationConfigDialog(
+            Strategies strategy) {
         SegmentationConfigDialog configDialog = new SegmentationConfigDialog(null, true);
         switch (strategy) {
             case TriangleThresholder:
@@ -58,7 +64,7 @@ public class ThresholderExecutor {
             }
         }
 
-        return Strategies.Unselected;
+        throw new IllegalArgumentException("Unsupported staregy <" + strategy + ">");
     }
 
     public static String[] getStrategiesName() {

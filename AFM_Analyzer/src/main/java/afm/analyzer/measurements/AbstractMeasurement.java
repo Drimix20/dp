@@ -11,8 +11,18 @@ import ij.process.ImageProcessor;
  */
 public abstract class AbstractMeasurement {
 
+    public enum MeasurementWithOption {
+
+        YES, NO;
+    }
+
     protected String label;
     protected String description;
+
+    public AbstractMeasurement(String label, String description) {
+        this.label = label;
+        this.description = description;
+    }
 
     public String getLabel() {
         return label;

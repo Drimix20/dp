@@ -17,8 +17,7 @@ public class AreaMeasurement extends AbstractMeasurement {
     private static Logger logger = Logger.getLogger(AreaMeasurement.class);
 
     public AreaMeasurement() {
-        label = "Area measurement";
-        description = "Compute structure area in nanometer";
+        super("Area measurement", "Compute structure area in nanometer");
     }
 
     @Override

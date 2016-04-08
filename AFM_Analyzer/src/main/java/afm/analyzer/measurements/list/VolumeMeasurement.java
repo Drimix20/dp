@@ -17,8 +17,7 @@ public class VolumeMeasurement extends AbstractMeasurement {
     private static Logger logger = Logger.getLogger(VolumeMeasurement.class);
 
     public VolumeMeasurement() {
-        label = "Volume measure";
-        description = "Compute volume of protein in nanometer^3";
+        super("Volume measure", "Compute volume of protein in nanometer^3");
     }
 
     @Override

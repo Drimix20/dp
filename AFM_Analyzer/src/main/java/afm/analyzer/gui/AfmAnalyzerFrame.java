@@ -18,6 +18,8 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import afm.opener.selector.ChannelContainer;
+import ij.WindowManager;
+import java.util.Arrays;
 
 /**
  *
@@ -25,8 +27,6 @@ import afm.opener.selector.ChannelContainer;
  */
 public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
-    //TODO pokud uzivatel na panelu segmentace zaklikne checkbox, tak se enabluje combobox a uzivatel si vybere okno se segmentovanym obrazem
-    // zaroven dojde k disablovani metody segmentace, options a preview
     private static Logger logger = Logger.getLogger(AfmAnalyzerFrame.class);
     private String[] strategiesName;
     private List<AbstractMeasurement> selectedMeasurements;
@@ -69,12 +69,12 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         cancelButton = new javax.swing.JButton();
         measureButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        segmentationComboBox = new javax.swing.JComboBox(strategiesName);
+        segmentationMethodComboBox = new javax.swing.JComboBox(strategiesName);
         segmentationOptionButton = new javax.swing.JButton();
         segmentationPreviewButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jComboBox1 = new javax.swing.JComboBox();
+        selectSegmentedCheckBox = new javax.swing.JCheckBox();
+        segmentedImagesComboBox = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("AFM Analyzer");
@@ -110,10 +110,10 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Segmentation"));
 
-        segmentationComboBox.setSelectedItem(ThresholderExecutor.getStrategiesName());
-        segmentationComboBox.addActionListener(new java.awt.event.ActionListener() {
+        segmentationMethodComboBox.setSelectedItem(ThresholderExecutor.getStrategiesName());
+        segmentationMethodComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                segmentationComboBoxActionPerformed(evt);
+                segmentationMethodComboBoxActionPerformed(evt);
             }
         });
 
@@ -133,10 +133,15 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
         jLabel1.setText("Method");
 
-        jCheckBox1.setText("Select Segmented");
+        selectSegmentedCheckBox.setText("Select Segmented");
+        selectSegmentedCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectSegmentedCheckBoxActionPerformed(evt);
+            }
+        });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox1.setEnabled(false);
+        segmentedImagesComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        segmentedImagesComboBox.setEnabled(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -145,32 +150,30 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(selectSegmentedCheckBox)
+                        .addGap(18, 18, 18)
+                        .addComponent(segmentedImagesComboBox, 0, 150, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
+                        .addGap(33, 33, 33)
+                        .addComponent(segmentationMethodComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(segmentationComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(segmentationOptionButton, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(segmentationPreviewButton))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jCheckBox1)
-                        .addGap(18, 18, 18)
-                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(segmentationPreviewButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                            .addComponent(segmentationOptionButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox1)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(selectSegmentedCheckBox)
+                    .addComponent(segmentedImagesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(segmentationOptionButton)
-                    .addComponent(segmentationComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(segmentationMethodComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(segmentationPreviewButton))
@@ -208,19 +211,15 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(prefilteringOptionButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(85, 114, Short.MAX_VALUE)
-                        .addComponent(measurementsLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(measurementsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cancelButton)
-                            .addComponent(measureButton)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(measurementsLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(measurementsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cancelButton)
+                    .addComponent(measureButton))
                 .addContainerGap())
         );
 
@@ -240,10 +239,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
     private void segmentationPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationPreviewButtonActionPerformed
         String labelBtn = evt.getActionCommand();
-        if (checkThatThresholderIsNotSelected()) {
-            logger.warn("Thresholder was not selected.");
-            return;
-        }
         //TODO fix threshold preview
         if ("Preview" == labelBtn) {
             logger.info("Clicked on Preview button");
@@ -287,9 +282,9 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         //TODO create abstract class as AnalyzerResult and its implementation (because of usage in AfmAnalyzerFrame)
         Map<String, List<AbstractMeasurementResult>> afmAnalyzerResult = new HashMap<String, List<AbstractMeasurementResult>>();
 
+        //TODO show computed results
         List<String> resultTableHeader = new ArrayList<String>();
         resultTableHeader.add("id");
-        //for (ImageSegments segmImage : segmentImages) {
         for (int i = 0; i < selectedChannelContainer.size(); i++) {
             ChannelContainer channelContainer = selectedChannelContainer.get(i);
             ImagePlus imagePlus = channelContainer.getImagePlus();
@@ -318,7 +313,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         });
     }//GEN-LAST:event_segmentationOptionButtonActionPerformed
 
-    private void segmentationComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationComboBoxActionPerformed
+    private void segmentationMethodComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationMethodComboBoxActionPerformed
         logger.info("SegmentationComboBox");
 
         //TODO repair preview
@@ -326,18 +321,51 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         segmentationPreviewButton.setEnabled(false);
         thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
         segmentationConfDialog = ThresholderExecutor.getSegmentationConfigDialog(getSelectedThresholdStrategy());
-    }//GEN-LAST:event_segmentationComboBoxActionPerformed
+    }//GEN-LAST:event_segmentationMethodComboBoxActionPerformed
 
-    private boolean checkThatThresholderIsNotSelected() {
-        if (segmentationComboBox.getSelectedItem() == "Unselected") {
-            IJ.showMessage("Unselected threshold option");
-            return true;
+    //Add selected images as segmented
+    private void selectSegmentedCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectSegmentedCheckBoxActionPerformed
+        if (selectSegmentedCheckBox.isSelected()) {
+            //enable selection of opened image as segmented
+            visibilityOfSelectionOfSegmentedImages(true);
+            segmentedImagesComboBox.removeAllItems();
+            String[] imageTitles = retrieveImageTitles();
+            for (int i = 0; i < imageTitles.length; i++) {
+                segmentedImagesComboBox.addItem(imageTitles[i]);
+            }
+        } else {
+            //disable selection of opened images
+            visibilityOfSelectionOfSegmentedImages(false);
         }
-        return false;
+    }//GEN-LAST:event_selectSegmentedCheckBoxActionPerformed
+
+    private void visibilityOfSelectionOfSegmentedImages(
+            boolean setSegmentedImagesComboBoxVisible) {
+        segmentedImagesComboBox.setEnabled(setSegmentedImagesComboBoxVisible);
+        segmentationMethodComboBox.setEnabled(!setSegmentedImagesComboBoxVisible);
+        segmentationOptionButton.setEnabled(getSelectedThresholdStrategy().isStrategyWitchConfigurableOptions() && !setSegmentedImagesComboBoxVisible);
+        segmentationPreviewButton.setEnabled(!setSegmentedImagesComboBoxVisible);
+    }
+
+    private String[] retrieveImageTitles() {
+        int[] wList = WindowManager.getIDList();
+        if (wList == null) {
+            IJ.showMessage("No image is open");
+            return new String[]{"NONE"};
+        } else {
+            String[] imageTitles = new String[wList.length];
+            for (int i = 0; i < wList.length; i++) {
+                ImagePlus imp = WindowManager.getImage(wList[i]);
+                imageTitles[i] = imp != null ? imp.getTitle() : "";
+            }
+
+            logger.trace("Image titles: " + Arrays.toString(imageTitles));
+            return imageTitles;
+        }
     }
 
     private Strategies getSelectedThresholdStrategy() {
-        return ThresholderExecutor.getStrategy((String) segmentationComboBox.getSelectedItem());
+        return ThresholderExecutor.getStrategy((String) segmentationMethodComboBox.getSelectedItem());
     }
 
     /**
@@ -383,8 +411,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton measureButton;
@@ -392,8 +418,10 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane measurementsPanel;
     private javax.swing.JLabel prefilteringLabel;
     private javax.swing.JButton prefilteringOptionButton;
-    private javax.swing.JComboBox segmentationComboBox;
+    private javax.swing.JComboBox segmentationMethodComboBox;
     private javax.swing.JButton segmentationOptionButton;
     private javax.swing.JButton segmentationPreviewButton;
+    private javax.swing.JComboBox segmentedImagesComboBox;
+    private javax.swing.JCheckBox selectSegmentedCheckBox;
     // End of variables declaration//GEN-END:variables
 }

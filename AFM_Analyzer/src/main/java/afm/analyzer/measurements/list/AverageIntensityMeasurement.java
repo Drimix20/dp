@@ -17,8 +17,7 @@ public class AverageIntensityMeasurement extends AbstractMeasurement {
     private static Logger logger = Logger.getLogger(AverageIntensityMeasurement.class);
 
     public AverageIntensityMeasurement() {
-        label = "Average Intensity Measurement";
-        description = "Compute average intensity of structure area in nanometer.";
+        super("Average Intensity Measurement", "Compute average intensity of structure area in nanometer.");
     }
 
     @Override

@@ -40,6 +40,8 @@ public class ThresholderExecutor {
             case TriangleThresholder:
                 thresholder = new TriangleThresholder();
                 break;
+            default:
+                throw new IllegalArgumentException("Usupported strategy " + strategy);
         }
         return thresholder;
     }

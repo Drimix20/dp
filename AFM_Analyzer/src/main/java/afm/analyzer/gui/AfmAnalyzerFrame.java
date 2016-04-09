@@ -263,8 +263,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                 processor.setThreshold(thresholder.getLowerThreshold(), thresholder.getUpperThreshold(), ImageProcessor.RED_LUT);
                 imp.updateAndDraw();
             }
-        }
-        if ("Reset" == labelBtn) {
+        } else if ("Reset" == labelBtn) {
             logger.info("Clicked on Reset button");
             this.segmentationPreviewButton.setText("Preview");
             for (ChannelContainer channelContainer : selectedChannelContainer) {
@@ -280,11 +279,8 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void measureButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_measureButtonActionPerformed
-        if (thresholder == null) {
-            //TODO validate all parameters
-            IJ.showMessage("Segmentation is not selected");
-            return;
-        }
+        thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
+        segmentationConfDialog = ThresholderExecutor.getSegmentationConfigDialog(getSelectedThresholdStrategy());
 
         logger.info("Start computing");
 
@@ -320,6 +316,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
             for (AbstractMeasurementResult measRes : entrySet.getValue()) {
                 for (Integer roiObjectId : measRes.getRoiKeys()) {
                     if (increaseRowCounter) {
+                        //Increment row counter just for first measurement
                         resultTable.incrementCounter();
                     }
                     resultTable.setValue(measRes.getMeasurementName() + " [nm]", (roiObjectId - 1), (Double) measRes.getResultForRoiKey(roiObjectId));
@@ -347,10 +344,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         logger.info("SegmentationComboBox");
 
         //TODO repair preview
-        segmentationOptionButton.setEnabled(false);
-        segmentationPreviewButton.setEnabled(false);
-        thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
-        segmentationConfDialog = ThresholderExecutor.getSegmentationConfigDialog(getSelectedThresholdStrategy());
     }//GEN-LAST:event_segmentationMethodComboBoxActionPerformed
 
     //Add selected images as segmented

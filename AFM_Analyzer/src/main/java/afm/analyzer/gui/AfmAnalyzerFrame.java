@@ -118,11 +118,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Segmentation"));
 
         segmentationMethodComboBox.setSelectedItem(ThresholderExecutor.getStrategiesName());
-        segmentationMethodComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                segmentationMethodComboBoxActionPerformed(evt);
-            }
-        });
 
         segmentationOptionButton.setText("Options");
         segmentationOptionButton.addActionListener(new java.awt.event.ActionListener() {
@@ -289,20 +284,15 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         //TODO create abstract class as AnalyzerResult and its implementation (because of usage in AfmAnalyzerFrame)
         Map<String, List<AbstractMeasurementResult>> afmAnalyzerResult = new HashMap<String, List<AbstractMeasurementResult>>();
 
-        //TODO show computed results
-        List<String> resultTableHeader = new ArrayList<String>();
-        resultTableHeader.add("id");
         for (int i = 0; i < selectedChannelContainer.size(); i++) {
             ChannelContainer channelContainer = selectedChannelContainer.get(i);
             ImagePlus imagePlus = channelContainer.getImagePlus();
 
             ImageSegments segmentImage = segmentImages.get(i);
-            //TODO implement multiple measurements
             List<AbstractMeasurementResult> measurementResultsForImage = new ArrayList<AbstractMeasurementResult>();
             for (AbstractMeasurement am : selectedMeasurements) {
                 AbstractMeasurementResult computedResult = measComputation.compute(selectedChannelContainer.get(i), segmentImage, am);
                 measurementResultsForImage.add(computedResult);
-                resultTableHeader.add(am.getLabel() + " [nm]");
             }
             afmAnalyzerResult.put(channelContainer.getFile().getName(), measurementResultsForImage);
         }
@@ -321,7 +311,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                     resultTable.setValue(measRes.getMeasurementName() + " [nm]", (roiObjectId - 1), (Double) measRes.getResultForRoiKey(roiObjectId));
                 }
                 increaseRowCounter = false;
-                System.out.println("a");
             }
         }
         resultTable.show("Afm Analyzer Results Table");
@@ -338,12 +327,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
             }
         });
     }//GEN-LAST:event_segmentationOptionButtonActionPerformed
-
-    private void segmentationMethodComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationMethodComboBoxActionPerformed
-        logger.info("SegmentationComboBox");
-
-        //TODO repair preview
-    }//GEN-LAST:event_segmentationMethodComboBoxActionPerformed
 
     //Add selected images as segmented
     private void selectSegmentedCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectSegmentedCheckBoxActionPerformed

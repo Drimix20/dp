@@ -52,7 +52,7 @@ public class MeasurementsElementManager extends Thread {
             }
         });
 
-        //TODO automaticaly adds instances of measurements in package afm.analyzer.measurements.list
+        //TODO automaticaly adds instances of measurements in package afm.analyzer.measurements.list; add function to skip errorneus instantiate class
         JPanel columnpanel = createColumnPanelForOptionElements(backgroundPanel);
         List<Class> result = ClassFinder.find("afm.analyzer.measurements.list");
         List<Object> instantiatedClasses = null;

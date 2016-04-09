@@ -12,7 +12,6 @@ import afm.opener.selector.ChannelContainer;
  */
 public class MeasurementComputation {
 
-    //TODO instance of MeasurementResult is there hardcoded
     public AbstractMeasurementResult compute(ChannelContainer container,
             ImageSegments segmentedImage, AbstractMeasurement measure) {
         ImageProcessor thresholded = segmentedImage.getThresholdedImageProcessor();

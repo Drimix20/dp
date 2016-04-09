@@ -12,7 +12,6 @@ import interactive.analyzer.histogram.HistogramImproved;
 import interactive.analyzer.histogram.HistogramOptionDialog;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.result.table.AbstractInteractiveTableModel;
-import interactive.analyzer.result.table.AbstractMeasurementResult;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.listeners.ImageSelectionListener;
@@ -37,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
@@ -66,7 +64,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private List<String> tableHeaderTooltips;
     private List<String> tableColumnNames;
     private String selectedColumnName;
-    private Map<String, List<AbstractMeasurementResult>> analyzerValues;
+//    private Map<String, List<AbstractMeasurementResult>> analyzerValues;
     private List<TableSelectionListener> tableSelectionListeners = new ArrayList<TableSelectionListener>();
     private ObjectFilteringFrame objectFilteringFrame;
     private Chart chart;
@@ -494,13 +492,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             tableModel = new AfmAnalyzerTableModel(this.tableColumnNames);
         }
         return tableModel;
-    }
-
-    public void setAnalyzerValues(
-            Map<String, List<AbstractMeasurementResult>> analyzerResultValues) {
-        this.analyzerValues = analyzerResultValues;
-        List<String> keySet = new ArrayList<String>(analyzerResultValues.keySet());
-        ((AfmAnalyzerTableModel) tableModel).setValues(analyzerValues.get(keySet.get(0)));
     }
 
     /** This method is called from within the constructor to

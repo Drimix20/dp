@@ -1,4 +1,4 @@
-package interactive.analyzer.result.table;
+package afm.analyzer.measurements;
 
 import java.util.List;
 
@@ -22,6 +22,12 @@ public abstract class AbstractMeasurementResult {
      @return measurement's result for roi
      */
     public abstract Object getResultForRoiKey(Integer key);
+
+    /**
+     Return name of measurement what was performed to compute the stored results
+     @return name of measurement
+     */
+    public abstract String getMeasurementName();
 
     /**
      Method return all id of roi's results

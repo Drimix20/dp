@@ -1,6 +1,5 @@
 package afm.analyzer.segmentation;
 
-import interactive.analyzer.selection.ImageSegments;
 import static afm.analyzer.segmentation.SegmentationConfiguration.*;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import ij.IJ;

@@ -36,39 +36,6 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
     }
 
     @Override
-    public void setValues(List<AbstractMeasurementResult> values) {
-        logger.debug("Set " + values.size() + " of rows");
-        if (values.isEmpty()) {
-            logger.trace("Data to set are empty");
-            data = new Object[0][0];
-            return;
-        }
-
-        //number of results per measurement + 1 for id column
-        int columnNumber = values.size() + 1;
-        List<Integer> roiKeys = values.get(0).getRoiKeys();
-        int rowNumber = roiKeys.size();
-
-        Object[][] dataTmp = new Object[rowNumber][columnNumber];
-        for (int row = 0; row < rowNumber; row++) {
-            Integer roiKey = roiKeys.get(row);
-            for (int col = 0; col < columnNumber; col++) {
-                logger.trace("Set value to " + row + " row index and " + col + " column index for " + roiKey + " roi key");
-                if (col == 0) {
-                    //set roi id
-                    dataTmp[row][col] = roiKey;
-                } else {
-                    //set measurement's result
-                    dataTmp[row][col] = values.get(col - 1).getResultForRoiKey(roiKey);
-                }
-            }
-        }
-
-        data = dataTmp;
-        fireTableDataChanged();
-    }
-
-    @Override
     public void setValues(Object[][] values) {
         logger.debug("Set table values with rows " + values.length);
         this.data = values;

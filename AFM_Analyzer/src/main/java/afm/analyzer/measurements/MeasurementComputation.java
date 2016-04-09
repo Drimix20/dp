@@ -1,9 +1,7 @@
 package afm.analyzer.measurements;
 
-import interactive.analyzer.result.table.AbstractMeasurementResult;
-import interactive.analyzer.result.table.MeasurementResult;
+import afm.analyzer.segmentation.ImageSegments;
 import scaler.module.ScalerModule;
-import interactive.analyzer.selection.ImageSegments;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import afm.opener.selector.ChannelContainer;
@@ -21,7 +19,7 @@ public class MeasurementComputation {
 
         //Module for scaling
         ScalerModule scalerModule = new ScalerModule(container.getGeneralMetadata(), container.getChannelMetadata());
-        AbstractMeasurementResult results = new MeasurementResult();
+        AbstractMeasurementResult results = new MeasurementResult(measure.getLabel());
 
         for (Roi roi : segmentedImage.getRois()) {
             //TODO check roi name

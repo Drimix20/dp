@@ -1,6 +1,5 @@
 package interactive.analyzer.result.table;
 
-import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -42,15 +41,7 @@ public abstract class AbstractInteractiveTableModel extends AbstractTableModel {
 
     /**
      * Method for setting values to table. This method is also used to changing values in table.
-     * For notify that table values was changed method fireTableDataChange must be called.
-     * List item is equal to measurement. AbstractmeasurementResult contains measurement's result for each region of interest
-     * @param values values visible in table
-     */
-    public abstract void setValues(List<AbstractMeasurementResult> values);
-
-    /**
-     * Method for setting values to table. This method is also used to changing values in table.
-     * For notify that table values was changed method fireTableDataChange must be called.
+     * For notify that table values was changed method fireTableDataChange is called.
      * @param values values visible in table
      */
     public abstract void setValues(Object[][] values);

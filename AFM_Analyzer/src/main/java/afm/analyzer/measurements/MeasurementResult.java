@@ -1,4 +1,4 @@
-package interactive.analyzer.result.table;
+package afm.analyzer.measurements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,11 @@ import java.util.TreeMap;
 public class MeasurementResult extends AbstractMeasurementResult {
 
     private SortedMap<Integer, Object> resultsMap;
-    private String measurement;
+    private String measurementName;
 
-    public MeasurementResult() {
+    public MeasurementResult(String measurementName) {
         resultsMap = new TreeMap<Integer, Object>();
+        this.measurementName = measurementName;
     }
 
     @Override
@@ -29,13 +30,18 @@ public class MeasurementResult extends AbstractMeasurementResult {
     }
 
     @Override
+    public String getMeasurementName() {
+        return measurementName;
+    }
+
+    @Override
     public List<Integer> getRoiKeys() {
         return new ArrayList<Integer>(resultsMap.keySet());
     }
 
     @Override
     public String toString() {
-        return "MeasurementResult{" + "resultsMapSize=" + resultsMap.size() + ", measurement=" + measurement + '}';
+        return "MeasurementResult{" + "resultsMapSize=" + resultsMap.size() + ", measurement=" + measurementName + '}';
     }
 
 }

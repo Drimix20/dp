@@ -1,10 +1,10 @@
 package afm.analyzer.gui;
 
 import afm.analyzer.measurements.AbstractMeasurement;
+import afm.analyzer.measurements.AbstractMeasurementResult;
 import afm.analyzer.measurements.MeasurementComputation;
-import interactive.analyzer.result.table.AbstractMeasurementResult;
+import afm.analyzer.segmentation.ImageSegments;
 import afm.analyzer.segmentation.Segmentation;
-import interactive.analyzer.selection.ImageSegments;
 import afm.analyzer.threshold.ImageThresholdStrategy;
 import afm.analyzer.threshold.ThresholderExecutor;
 import afm.analyzer.threshold.ThresholderExecutor.Strategies;
@@ -343,6 +343,10 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
             String[] imageTitles = retrieveImageTitles();
             for (int i = 0; i < imageTitles.length; i++) {
                 segmentedImagesComboBox.addItem(imageTitles[i]);
+            }
+
+            if (imageTitles.length == 1 && imageTitles[0] == "NONE") {
+                segmentedImagesComboBox.setEnabled(false);
             }
         } else {
             //disable selection of opened images

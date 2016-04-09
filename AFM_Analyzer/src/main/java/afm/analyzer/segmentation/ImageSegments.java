@@ -1,4 +1,4 @@
-package interactive.analyzer.selection;
+package afm.analyzer.segmentation;
 
 import ij.gui.Roi;
 import ij.process.ImageProcessor;

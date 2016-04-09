@@ -48,7 +48,6 @@ public class Segmentation {
             ImageProcessor binaryIp = makeBinary(img, thresholdStrategy);
             segmentedImage.setThresholdedIp(binaryIp);
             analyzer.analyze(new ImagePlus("", binaryIp));
-            //segmentedImage.setSegments(segmentImage(resultsTable, roiManager));
             segmentedImage.setRois(computeRoiOfSegments(roiManager));
 
             //TODO creation of segmented image without rois and showing it
@@ -87,37 +86,6 @@ public class Segmentation {
             ImageThresholdStrategy thresholdStrategy) {
         logger.info("Make binary image " + imp.getTitle());
         return thresholdStrategy.makeBinary(imp.duplicate());
-    }
-
-    /**
-     Method used to retrieve bounding box from roi and set into object Segment.
-     @param resultsTable
-     @param roiManager
-     @return
-     @deprecated
-     */
-    @Deprecated //TODO method is not needed
-    public List<Segment> segmentImage(ResultsTable resultsTable,
-            RoiManager roiManager) {
-        List<Segment> segments = new ArrayList<Segment>();
-
-        String[] headings = resultsTable.getHeadings();
-        int bxIndex = resultsTable.getColumnIndex(headings[0]);
-        int byIndex = resultsTable.getColumnIndex(headings[1]);
-        int widthIndex = resultsTable.getColumnIndex(headings[2]);
-        int heightIndex = resultsTable.getColumnIndex(headings[3]);
-        for (int i = 0; i < resultsTable.size(); i++) {
-            Segment segment = new Segment((i + 1),
-                    (int) resultsTable.getValueAsDouble(bxIndex, i),
-                    (int) resultsTable.getValueAsDouble(byIndex, i),
-                    (int) resultsTable.getValueAsDouble(widthIndex, i),
-                    (int) resultsTable.getValueAsDouble(heightIndex, i));
-
-            segments.add(segment);
-        }
-
-        logger.info("Count of segments " + segments.size());
-        return segments;
     }
 
     public List<Roi> computeRoiOfSegments(RoiManager roiManager) {

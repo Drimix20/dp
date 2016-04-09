@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import afm.opener.selector.ChannelContainer;
 import ij.WindowManager;
+import ij.measure.ResultsTable;
 import java.util.Arrays;
 
 /**
@@ -310,6 +311,24 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
             }
             afmAnalyzerResult.put(channelContainer.getFile().getName(), measurementResultsForImage);
         }
+
+        boolean increaseRowCounter = true;
+        ResultsTable resultTable = new ResultsTable();
+        resultTable.setPrecision(16);
+        for (Map.Entry<String, List<AbstractMeasurementResult>> entrySet : afmAnalyzerResult.entrySet()) {
+            String key = entrySet.getKey();//imageFilename
+            for (AbstractMeasurementResult measRes : entrySet.getValue()) {
+                for (Integer roiObjectId : measRes.getRoiKeys()) {
+                    if (increaseRowCounter) {
+                        resultTable.incrementCounter();
+                    }
+                    resultTable.setValue(measRes.getMeasurementName() + " [nm]", (roiObjectId - 1), (Double) measRes.getResultForRoiKey(roiObjectId));
+                }
+                increaseRowCounter = false;
+                System.out.println("a");
+            }
+        }
+        resultTable.show("Afm Analyzer Results Table");
     }//GEN-LAST:event_measureButtonActionPerformed
 
     private void segmentationOptionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationOptionButtonActionPerformed

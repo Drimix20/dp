@@ -44,7 +44,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         selectedMeasurements = new ArrayList<AbstractMeasurement>();
         selectedChannelContainer = new ArrayList<ChannelContainer>();
         segmentationOptionButton.setEnabled(false);
-        segmentationPreviewButton.setEnabled(false);
 
         MeasurementsElementManager elementManager = new MeasurementsElementManager(measurementsPanel);
         elementManager.setSelectedMeasurements(selectedMeasurements);
@@ -251,19 +250,19 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
     private void segmentationPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationPreviewButtonActionPerformed
         String labelBtn = evt.getActionCommand();
-        //TODO fix threshold preview
-        if ("Preview" == labelBtn) {
+        if ("Preview".equals(labelBtn)) {
             logger.info("Clicked on Preview button");
             this.segmentationPreviewButton.setText("Reset");
 
             for (ChannelContainer channelContainer : selectedChannelContainer) {
                 ImagePlus imp = channelContainer.getImagePlus();
+                thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
                 thresholder.makeBinary(imp.duplicate());
                 ImageProcessor processor = imp.getProcessor();
                 processor.setThreshold(thresholder.getLowerThreshold(), thresholder.getUpperThreshold(), ImageProcessor.RED_LUT);
                 imp.updateAndDraw();
             }
-        } else if ("Reset" == labelBtn) {
+        } else if ("Reset".equals(labelBtn)) {
             logger.info("Clicked on Reset button");
             this.segmentationPreviewButton.setText("Preview");
             for (ChannelContainer channelContainer : selectedChannelContainer) {

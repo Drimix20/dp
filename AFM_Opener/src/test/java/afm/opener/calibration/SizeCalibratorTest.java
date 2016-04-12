@@ -2,6 +2,7 @@ package afm.opener.calibration;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import scaler.module.types.LengthUnit;
 
 /**
  *

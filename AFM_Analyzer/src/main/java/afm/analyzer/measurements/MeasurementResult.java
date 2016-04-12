@@ -13,10 +13,15 @@ public class MeasurementResult extends AbstractMeasurementResult {
 
     private SortedMap<Integer, Object> resultsMap;
     private String measurementName;
+    private String unitRegulation;
+    private String unit;
 
-    public MeasurementResult(String measurementName) {
+    public MeasurementResult(String measurementName, String unit,
+            String unitRegulation) {
         resultsMap = new TreeMap<Integer, Object>();
         this.measurementName = measurementName;
+        this.unitRegulation = unitRegulation;
+        this.unit = unit;
     }
 
     @Override
@@ -35,13 +40,23 @@ public class MeasurementResult extends AbstractMeasurementResult {
     }
 
     @Override
+    public String getUnit() {
+        return unit;
+    }
+
+    @Override
+    public String getUnitRegulation() {
+        return unitRegulation;
+    }
+
+    @Override
     public List<Integer> getRoiKeys() {
         return new ArrayList<Integer>(resultsMap.keySet());
     }
 
     @Override
     public String toString() {
-        return "MeasurementResult{" + "resultsMapSize=" + resultsMap.size() + ", measurement=" + measurementName + '}';
+        return "MeasurementResult{" + "resultsMapSize=" + resultsMap.size() + ", measurement=" + measurementName + ",unitRegulation=" + unitRegulation + '}';
     }
 
 }

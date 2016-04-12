@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scaler.module.types.IdentityImageDataScaler;
 import scaler.module.types.ImageDataScaler;
+import scaler.module.types.LengthUnit;
 import scaler.module.types.ScalingType;
 import scaler.module.types.UnsupportedScalingType;
 
@@ -67,34 +68,34 @@ public class ScalerModule {
     }
 
     /**
-     Scale pixel intensity value to obtain real physical value of pixel intensity in nanometer unit
+     Scale pixel intensity value to obtain real physical value of pixel intensity in specified unit
      @param pixelIntensityValue
-     @return scaled pixel value in meter
+     @param unit
+     @return scaled and converted value to specified unit
      */
-    public double scalePixelIntensityToObtainRealHeight(long pixelIntensityValue) {
-        return dataScaler.scaleValue(pixelIntensityValue);
+    public double scalePixelIntensityToObtainRealHeight(long pixelIntensityValue,
+            LengthUnit unit) {
+        return dataScaler.scaleValue(pixelIntensityValue) * unit.getValue();
     }
 
     /**
-     Scale pixel intensity value to obtain real physical value of pixel intensity
+     Scale pixel intensity value to obtain real physical value of pixel intensity in specified unit
      @param pixelIntensityValue
-     @return scaled pixel value in meter
+     @param unit
+     @return scaled pixel value in specified unit
      */
     public double scalePixelIntensityToObtainRealHeight(
-            double pixelIntensityValue) {
-        return dataScaler.scaleValue(pixelIntensityValue);
+            double pixelIntensityValue, LengthUnit unit) {
+        return dataScaler.scaleValue(pixelIntensityValue) * unit.getValue();
     }
 
+    @Deprecated
     public double getPixelXSizeInMeter() {
         return pixelXSize;
     }
 
+    @Deprecated
     public double getPixelYSizeInMeter() {
         return pixelYSize;
     }
-
-    //TODO implement method with unit converter as argument
-//    public double scalePixelIntensityToObtainRealHeight(long pixelValue, Unit.NANOMETER) {
-//        return dataScaler.scaleValue(pixelValue);
-//    }
 }

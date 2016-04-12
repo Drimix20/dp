@@ -17,19 +17,23 @@ public abstract class AbstractMeasurement {
     }
 
     protected String label;
-    protected String description;
+    protected String unitRegulation;
 
-    public AbstractMeasurement(String label, String description) {
+    public AbstractMeasurement(String label, String unitRegulation) {
         this.label = label;
-        this.description = description;
+        this.unitRegulation = unitRegulation;
     }
 
+    /**
+     Label is used for show text in list of available measurements and in results column
+     @return label
+     */
     public String getLabel() {
         return label;
     }
 
-    public String getDescription() {
-        return description;
+    public String getUnitRegulation() {
+        return unitRegulation;
     }
 
     public abstract double compute(Roi roi, ImagePlus origImage,

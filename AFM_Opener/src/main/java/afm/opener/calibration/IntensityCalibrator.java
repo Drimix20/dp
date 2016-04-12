@@ -7,6 +7,7 @@ import ij.measure.Minimizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scaler.module.ScalerModule;
+import scaler.module.types.LengthUnit;
 
 /**
  *
@@ -23,8 +24,8 @@ public class IntensityCalibrator {
         double maxVal = container.getImagePlus().getProcessor().getMax();
 
         ScalerModule sm = new ScalerModule(container.getGeneralMetadata(), container.getChannelMetadata());
-        double calibratedMinVal = sm.scalePixelIntensityToObtainRealHeight(minVal) * unit.getValue();
-        double calibratedMaxVal = sm.scalePixelIntensityToObtainRealHeight(maxVal) * unit.getValue();
+        double calibratedMinVal = sm.scalePixelIntensityToObtainRealHeight(minVal, unit);
+        double calibratedMaxVal = sm.scalePixelIntensityToObtainRealHeight(maxVal, unit);
 
         logger.trace("Input for CurveFitter: {} -> {}, {} -> {}, unit: {}", minVal, calibratedMinVal, maxVal, calibratedMaxVal, unit.getAbbreviation());
         double[] x = new double[]{minVal, maxVal};

@@ -1,4 +1,4 @@
-package afm.opener.calibration;
+package scaler.module.types;
 
 /**
  *

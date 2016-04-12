@@ -82,7 +82,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         selectSegmentedCheckBox = new javax.swing.JCheckBox();
         segmentedImagesComboBox = new javax.swing.JComboBox();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("AFM Analyzer");
         setMinimumSize(new java.awt.Dimension(380, 450));
         setPreferredSize(new java.awt.Dimension(380, 655));
@@ -308,7 +308,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                         //Increment row counter just for first measurement
                         resultTable.incrementCounter();
                     }
-                    resultTable.setValue(measRes.getMeasurementName() + " [nm]", (roiObjectId - 1), (Double) measRes.getResultForRoiKey(roiObjectId));
+                    resultTable.setValue(measRes.getMeasurementName() + " [" + measRes.getUnit() + measRes.getUnitRegulation() + "] ", (roiObjectId - 1), (Double) measRes.getResultForRoiKey(roiObjectId));
                 }
                 increaseRowCounter = false;
             }

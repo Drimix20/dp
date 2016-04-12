@@ -1,7 +1,6 @@
 package afm.opener.gui;
 
 import afm.opener.calibration.IntensityCalibrator;
-import afm.opener.calibration.LengthUnit;
 import afm.opener.calibration.SizeCalibrator;
 import afm.opener.common.ImageOptionManager;
 import afm.opener.common.AfmOpenerImagePresenter;
@@ -22,6 +21,7 @@ import java.util.Arrays;
 import javax.swing.DefaultComboBoxModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scaler.module.types.LengthUnit;
 
 /**
  *

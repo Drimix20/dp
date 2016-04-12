@@ -38,4 +38,16 @@ public abstract class AbstractMeasurementResult {
     @Override
     public abstract String toString();
 
+    /**
+     Method return regulation for unit, i.e. ^2, ^3.
+     @return unit regulation
+     */
+    public abstract String getUnitRegulation();
+
+    /**
+     Method return unit of result
+     @return unit
+     */
+    public abstract String getUnit();
+
 }

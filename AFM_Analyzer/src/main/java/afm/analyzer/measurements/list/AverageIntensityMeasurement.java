@@ -17,7 +17,7 @@ public class AverageIntensityMeasurement extends AbstractMeasurement {
     private static Logger logger = Logger.getLogger(AverageIntensityMeasurement.class);
 
     public AverageIntensityMeasurement() {
-        super("Average Intensity Measurement", "Compute average intensity of structure area in nanometer.");
+        super("Average Intensity Measurement", "");
     }
 
     @Override
@@ -37,11 +37,7 @@ public class AverageIntensityMeasurement extends AbstractMeasurement {
             }
         }
 
-        //TODO nanometer unit hardcoded
         double averageIntensity = intensitySum / count;
-        double scaledAverageIntensity = scalerModule.scalePixelIntensityToObtainRealHeight(averageIntensity);
-        double scaledAverageIntensityInNanoMeter = scaledAverageIntensity * Math.pow(10, 9);
-        logger.trace("count: " + count + ", intensitySum: " + intensitySum + ", averageIntensity: " + averageIntensity + ", scaledAverageIntensity: " + scaledAverageIntensity + ", scaledAverageIntensityInNanometer: " + scaledAverageIntensityInNanoMeter);
-        return scaledAverageIntensityInNanoMeter;
+        return averageIntensity;
     }
 }

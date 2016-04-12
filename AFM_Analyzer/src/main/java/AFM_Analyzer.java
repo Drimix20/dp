@@ -18,6 +18,8 @@ public class AFM_Analyzer implements PlugIn {
     private Logger logger = Logger.getLogger(AFM_Analyzer.class);
     private List<ChannelContainer> selectedChannelContainer;
 
+    //TODO use selected segmented image from ImageJ
+
     public void run(String arg) {
         logger.info("Running plugin AFM_Analyzer");
         final CountDownLatch latch = new CountDownLatch(1);

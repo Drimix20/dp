@@ -4,6 +4,7 @@ import afm.analyzer.measurements.AbstractMeasurement;
 import scaler.module.ScalerModule;
 import ij.ImagePlus;
 import ij.gui.Roi;
+import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import java.awt.Rectangle;
 import org.apache.log4j.Logger;
@@ -17,7 +18,7 @@ public class VolumeMeasurement extends AbstractMeasurement {
     private static Logger logger = Logger.getLogger(VolumeMeasurement.class);
 
     public VolumeMeasurement() {
-        super("Volume measure", "Compute volume of protein in nanometer^3");
+        super("Volume measure", "^3");
     }
 
     @Override
@@ -36,12 +37,13 @@ public class VolumeMeasurement extends AbstractMeasurement {
                 }
             }
         }
-        //TODO nanometer is hardcoded
-        double scaledAverageIntensityInNanometer = scalerModule.scalePixelIntensityToObtainRealHeight(intensitySum / count) * Math.pow(10, 9);
-        double scaledAreaInNanometer = count * scalerModule.getPixelXSizeInMeter() * scalerModule.getPixelYSizeInMeter() * Math.pow(10, 9) * Math.pow(10, 9);
-        double volumeInNanometer = scaledAreaInNanometer * scaledAverageIntensityInNanometer;
-        logger.trace("saceldAverageInensityInMeter: " + scaledAverageIntensityInNanometer + ", areaInMeter: " + scaledAreaInNanometer + ", volumeInNanometer: " + volumeInNanometer);
-        return volumeInNanometer;
+
+        Calibration calibration = origImage.getCalibration();
+        double scaledAverageIntensityInUnit = intensitySum / count;
+        double scaledAreaInUnit = count * calibration.pixelHeight * calibration.pixelHeight;
+        double volumeInUnit = scaledAreaInUnit * scaledAverageIntensityInUnit;
+        logger.trace("Unit = " + origImage.getCalibration().getUnit() + "saceldAverageInensity: " + scaledAverageIntensityInUnit + ", area: " + scaledAreaInUnit + ", volume: " + volumeInUnit);
+        return volumeInUnit;
     }
 
 }

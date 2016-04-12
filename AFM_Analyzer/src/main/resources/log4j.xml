@@ -10,6 +10,7 @@
 
     <logger name="afm.analyzer.gui.AfmAnalyzerResultFrame"><level value="trace"/></logger>
     <logger name="afm.analyzer.result.module"><level value="trace"/></logger>
+    <logger name="aafm.analyzer.measurements.list"><level value="trace"/></logger>
     <!--<logger name="afm.analyzer.segmentation"><level value="debug"/></logger>-->
     <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>

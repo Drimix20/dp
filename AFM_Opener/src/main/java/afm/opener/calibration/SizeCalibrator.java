@@ -4,6 +4,7 @@ import afm.opener.selector.ChannelContainer;
 import ij.ImagePlus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scaler.module.types.LengthUnit;
 
 /**
  *

@@ -5,8 +5,7 @@ import scaler.module.ScalerModule;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import afm.opener.selector.ChannelContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -14,7 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MeasurementComputation {
 
-    private static Logger logger = LoggerFactory.getLogger(MeasurementComputation.class);
+    private static Logger logger = Logger.getLogger(MeasurementComputation.class);
 
     public AbstractMeasurementResult compute(ChannelContainer container,
             ImageSegments segmentedImage, AbstractMeasurement measure) {

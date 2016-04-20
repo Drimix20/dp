@@ -13,8 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import afm.opener.selector.ChannelContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Manager object for element option in image option panel
@@ -23,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ImageOptionManager extends Thread {
 
-    private Logger logger = LoggerFactory.getLogger(ImageOptionManager.class);
+    private Logger logger = Logger.getLogger(ImageOptionManager.class);
     private final JScrollPane scrollPane;
     private List<ChannelContainer> originalChannels;
     private List<ChannelContainer> selectedChannels;

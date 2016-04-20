@@ -4,8 +4,7 @@ import afm.opener.selector.ChannelContainer;
 import ij.IJ;
 import ij.measure.CurveFitter;
 import ij.measure.Minimizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import scaler.module.ScalerModule;
 import scaler.module.types.LengthUnit;
 
@@ -15,7 +14,7 @@ import scaler.module.types.LengthUnit;
  */
 public class IntensityCalibrator {
 
-    private static Logger logger = LoggerFactory.getLogger(IntensityCalibrator.class);
+    private static Logger logger = Logger.getLogger(IntensityCalibrator.class);
 
     public double[] computeCalibrationFunction(
             ChannelContainer container, int calibrationType, LengthUnit unit) {
@@ -27,7 +26,7 @@ public class IntensityCalibrator {
         double calibratedMinVal = sm.scalePixelIntensityToObtainRealHeight(minVal, unit);
         double calibratedMaxVal = sm.scalePixelIntensityToObtainRealHeight(maxVal, unit);
 
-        logger.trace("Input for CurveFitter: {} -> {}, {} -> {}, unit: {}", minVal, calibratedMinVal, maxVal, calibratedMaxVal, unit.getAbbreviation());
+        logger.trace("Input for CurveFitter: " + minVal + " -> " + calibratedMinVal + ", " + maxVal + " -> " + maxVal + ", unit: " + unit.getAbbreviation());
         double[] x = new double[]{minVal, maxVal};
         double[] y = new double[]{calibratedMinVal, calibratedMaxVal};
         return doCurveFitting(x, y, calibrationType);
@@ -55,7 +54,7 @@ public class IntensityCalibrator {
         if (IJ.debugMode) {
             IJ.log(cf.getResultString());
         }
-        logger.trace("Curve fitter result string - {}", cf.getResultString());
+        logger.trace("Curve fitter result string - " + cf.getResultString());
         int np = cf.getNumParams();
         double[] p = cf.getParams();
         double[] parameters = new double[np];

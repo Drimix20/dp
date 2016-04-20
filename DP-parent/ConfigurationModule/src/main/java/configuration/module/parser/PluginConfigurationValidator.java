@@ -7,8 +7,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -16,24 +15,24 @@ import org.slf4j.LoggerFactory;
  */
 public class PluginConfigurationValidator {
 
-    private static Logger logger = LoggerFactory.getLogger(PluginConfigurationValidator.class);
+    private static Logger logger = Logger.getLogger(PluginConfigurationValidator.class);
 
     public boolean validateXml(File xmlPath) {
         return validateXMLBySchema(xmlPath.getPath(), PluginConfiguration.getConfigurationXmlSchemaPath());
     }
 
     public boolean validateXMLBySchema(String xmlPath, String xsdPath) {
-        logger.debug("Starts validate {} file", xmlPath);
+        logger.debug("Starts validate " + xmlPath + " file");
         try {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = factory.newSchema(new File(xsdPath));
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(new File(xmlPath)));
         } catch (Exception e) {
-            logger.error("File {} is not valid: {}", xmlPath, e.getMessage());
+            logger.error("File " + xmlPath + " is not valid: " + e.getMessage());
             return false;
         }
-        logger.debug("File {} is valid ", xmlPath);
+        logger.debug("File " + xmlPath + " is valid");
         return true;
     }
 

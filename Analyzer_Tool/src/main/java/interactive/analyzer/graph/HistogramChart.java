@@ -11,8 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -21,7 +20,7 @@ import org.slf4j.LoggerFactory;
 public class HistogramChart implements Chart {
 
     //TODO do clean up
-    private Logger logger = LoggerFactory.getLogger(HistogramChart.class);
+    private Logger logger = Logger.getLogger(HistogramChart.class);
     private static final int TEXT_MARGIN = 3;
     private static final int GRAPH_MARGIN = 3;
 

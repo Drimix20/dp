@@ -19,8 +19,7 @@ import ij.ImagePlus;
 import ij.measure.Calibration;
 import java.util.Arrays;
 import javax.swing.DefaultComboBoxModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import scaler.module.types.LengthUnit;
 
 /**
@@ -29,7 +28,7 @@ import scaler.module.types.LengthUnit;
  */
 public class AfmOpenerFrame extends javax.swing.JFrame {
 
-    private Logger logger = LoggerFactory.getLogger(AfmOpenerFrame.class);
+    private Logger logger = Logger.getLogger(AfmOpenerFrame.class);
     private final CountDownLatch latch;
     //TODO property for manual testing
     private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
@@ -308,15 +307,14 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             cal.pixelHeight = sizeCalibrator.calibrateImageHeight(cc, unit);
             cal.pixelDepth = 1;
             cal.setUnit(unit.getAbbreviation());
-            logger.trace("Calibrated pixelWidth: {}, pixelHeight: {}, pixelDepth: {}, unit: {}",
-                    cal.pixelWidth, cal.pixelHeight, cal.pixelDepth, cal.getUnit());
+            logger.trace("Calibrated pixelWidth: " + cal.pixelWidth + ", pixelHeight: " + cal.pixelHeight + ", pixelDepth: " + cal.pixelDepth + ", unit: " + cal.getUnit());
 
             logger.trace("Intensity calibration");
             IntensityCalibrator ic = new IntensityCalibrator();
             double[] parameters = ic.computeCalibrationFunction(cc, Calibration.STRAIGHT_LINE, unit);
 
             if (parameters != null) {
-                logger.trace("Calibration function parameters {}", Arrays.toString(parameters));
+                logger.trace("Calibration function parameters " + Arrays.toString(parameters));
                 cal.setFunction(Calibration.STRAIGHT_LINE, parameters, unit.getAbbreviation());
             } else {
                 logger.trace("Parameters of calibration funcition are null");

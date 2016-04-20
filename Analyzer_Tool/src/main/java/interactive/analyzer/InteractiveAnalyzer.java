@@ -15,8 +15,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -24,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InteractiveAnalyzer {
 
-    private static Logger logger = LoggerFactory.getLogger(InteractiveAnalyzer.class);
+    private static Logger logger = Logger.getLogger(InteractiveAnalyzer.class);
     private ImageWindowI imageWindow;
     private InteractiveAnalyzerResultFrame resultFrame;
 

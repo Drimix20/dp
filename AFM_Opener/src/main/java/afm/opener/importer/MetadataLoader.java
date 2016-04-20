@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import metadata.decoder.*;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -15,7 +14,8 @@ import metadata.decoder.*;
  */
 public class MetadataLoader {
 
-    List<ChannelMetadata> imagesMetadata;
+    private static final Logger logger = Logger.getLogger(MetadataDecoder.class);
+    private List<ChannelMetadata> imagesMetadata;
 
     public List<ChannelMetadata> parseMetadata(
             Map<File, List<Integer>> channelMap) {
@@ -28,7 +28,7 @@ public class MetadataLoader {
 
                 imagesMetadata.addAll(decoder.decodeMetadata(file));
             } catch (Exception ex) {
-                Logger.getLogger(MetadataLoader.class.getName()).log(Level.SEVERE, null, ex);
+                logger.warn(ex);
             }
         }
 
@@ -40,7 +40,7 @@ public class MetadataLoader {
             Decoder decoder = new MetadataDecoder();
             return decoder.decodeMetadata(file);
         } catch (Exception ex) {
-            Logger.getLogger(MetadataLoader.class.getName()).log(Level.SEVERE, null, ex);
+            logger.warn(ex);
         }
         return Collections.EMPTY_LIST;
     }

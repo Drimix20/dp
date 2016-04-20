@@ -9,9 +9,19 @@
         </layout>
     </appender>
 
+    <appender name="FILE" class="org.apache.log4j.FileAppender">
+        <param name="file" value="c:/temp/MetaData.log" />
+        <param name="append" value="false" />
+        <param name="threshold" value="debug" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%t] | %-5p | %c{1} | %M  - %m%n" />
+        </layout>
+    </appender>
+
     <root>
         <level value="DEBUG" />
         <appender-ref ref="console" />
+        <appender-ref ref="FILE"/>
     </root>
 
 </log4j:configuration>

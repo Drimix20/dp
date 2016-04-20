@@ -4,29 +4,21 @@
     <!-- appender určuje, kam se bude logovat, v tomto případě na konzolu -->
     <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d | %-5p | %c{1} | %m%n"/>
+            <param name="ConversionPattern" value="%d [%t] | %-5p | %c{1} | %M  - %m%n"/>
         </layout>
     </appender>
-    <!-- tento appender loguje do denně rotovaného souboru  v adresáři určeném obsahem systémové property catalina.base-->
-<!--    <appender name="FILE" class="org.apache.log4j.FileAppender">
 
-        <param name="file" value="c:\\Users\\Drimal\\log.out"/>
-        <param name="immediateFlush" value="true"/>
-        <param name="threshold" value="debug"/>
-        <param name="append" value="false"/>
-
+    <appender name="FILE" class="org.apache.log4j.FileAppender">
+        <param name="File" value="${java.io.tmpdir}${file.separator}AFM_Opener.log" />
+        <param name="append" value="false" />
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="conversionPattern" value="%m%n"/>
+            <param name="ConversionPattern" value="%d [%t] | %-5p | %c{1} | %M  - %m%n" />
         </layout>
-    </appender>-->
+    </appender>
 
-    <logger name="afm.opener.configuration.parser"><level value="trace"/></logger>
-    <logger name="afm.opener.calibration"><level value="trace"/></logger>
-    <logger name="afm.opener.gui.AfmOpenerFrame"><level value="trace"/></logger>
-    <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
     <root>
         <priority value="INFO"/>
         <appender-ref ref="STDOUT"/>
-        <!--<appender-ref ref="FILE"/>-->
+        <appender-ref ref="FILE"/>
     </root>
 </log4j:configuration>

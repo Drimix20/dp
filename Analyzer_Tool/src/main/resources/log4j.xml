@@ -4,24 +4,22 @@
     <!-- appender určuje, kam se bude logovat, v tomto případě na konzolu -->
     <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d [%t] | %-5p | %c{1} | %M - %m%n"/>
+            <param name="ConversionPattern" value="%d [%t] | %-5p | %c{1} | %M  - %m%n"/>
         </layout>
     </appender>
 
-<!--    <logger name="interactive.analyzer.gui.ObjectFilteringFrame"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.result.table.AfmAnalyzerResultTable"><level value="trace"/></logger>-->
-    <!--<logger name="interactive.analyzer.result.table.AfmAnalyzerTableModel"><level value="trace"/></logger>-->
-    <!--<logger name="interactive.analyzer.gui.InteractiveAnalyzerResultFrame"><level value="trace"/></logger>-->
-    <!--<logger name="interactive.analyzer.result.table.DecimalPrecisionRenderer"><level value="trace"/></logger>-->
-    <!--<logger name="interactive.analyzer.graph.GraphPanel"><level value="trace"/></logger>-->
-    <!--<logger name="interactive.analyzer.graph.HistogramChart"><level value="trace"/></logger>-->
-<!--    <logger name="interactive.analyzer.presenter.InteractiveImageWindow"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.presenter.OverlayManager"><level value="trace"/></logger>
-    <logger name="interactive.analyzer.histogram.Histogram"><level value="trace"/></logger>-->
-    <logger name="interactive.analyzer.histogram.HistogramImproved"><level value="trace"/></logger>
-    <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
+    <appender name="FILE" class="org.apache.log4j.FileAppender">
+        <param name="File" value="${java.io.tmpdir}${file.separator}Analyzer_tool.log" />
+        <!--Append to current log file-->
+        <param name="append" value="false" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%t] | %-5p | %c{1} | %M  - %m%n" />
+        </layout>
+    </appender>
+
     <root>
-        <priority value="info"/>
+        <priority value="INFO"/>
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 </log4j:configuration>

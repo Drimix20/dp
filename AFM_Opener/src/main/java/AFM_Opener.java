@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import javax.swing.SwingUtilities;
 import afm.opener.selector.ChannelContainer;
+import org.apache.log4j.Logger;
 
 /**
  * Main class serve to run plugin in Fiji menu
@@ -15,6 +16,7 @@ import afm.opener.selector.ChannelContainer;
  */
 public class AFM_Opener implements PlugIn {
 
+    private static final Logger logger = Logger.getLogger(AFM_Opener.class);
     private CountDownLatch latch;
     private boolean disposeAfterOpen;
     private AfmOpenerRunnable afmOpenerRunnable;
@@ -43,6 +45,7 @@ public class AFM_Opener implements PlugIn {
 
     @Override
     public void run(String arg) {
+        logger.info("Running AFM_Opener plugin");
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override

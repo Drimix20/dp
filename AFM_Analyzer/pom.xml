@@ -15,7 +15,7 @@
         <relativePath />
     </parent>
     <repositories>
-         <!--NB: for project parent-->
+        <!--NB: for project parent-->
         <repository>
             <id>imagej.public</id>
             <url>http://maven.imagej.net/content/groups/public/</url>
@@ -71,23 +71,42 @@
     </dependencies>
 
     <build>
-<!--        <resources>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>${project.build.sourceDirectory}</directory>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>${basedir}/src/test/resources</directory>
-            </testResource>
-            <testResource>
-                <directory>${project.build.testSourceDirectory}</directory>
-            </testResource>
-        </testResources>-->
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <!-- Package into jar required dependencies becase ImageJ/Fiji does not contain any other libs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <!--Includes logger library-->
+                                    <include>log4j:log4j:jar:</include>
+                                    <include>DP:MetadataDecoder</include>
+                                    <include>DP:ConfigurationModule</include>
+                                    <include>DP:ScalerModule</include>
+                                </includes>
+                            </artifactSet>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>plugin</shadedClassifierName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -113,4 +132,115 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>deploy-to-imagej-custom</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.7</version>
+                        <executions>
+                            <execution>
+                                <id>version-150</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+
+                                <configuration>
+                                    <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij150\ImageJ\plugins\</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Analyzer-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>version-149</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+
+                                <configuration>
+                                    <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij149\ImageJ\plugins\</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Analyzer-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>version-148</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+
+                                <configuration>
+                                    <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij148\ImageJ\plugins\</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Analyzer-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>version-147</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+
+                                <configuration>
+                                    <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij147\ImageJ\plugins\</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Analyzer-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>version-146</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+
+                                <configuration>
+                                    <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij146\ImageJ\plugins\</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Analyzer-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

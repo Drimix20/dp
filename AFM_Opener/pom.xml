@@ -21,7 +21,6 @@
             <id>imagej.public</id>
             <url>http://maven.imagej.net/content/groups/public</url>
         </repository>
-
     </repositories>
 
 
@@ -63,19 +62,18 @@
             <artifactId>MetadataDecoder</artifactId>
             <version>1.0-SNAPSHOT</version>
             <classifier>plugin</classifier>
-            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>DP</groupId>
             <artifactId>ConfigurationModule</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>DP</groupId>
             <artifactId>ScalerModule</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>jar</type>
+            <classifier>plugin</classifier>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -111,12 +109,15 @@
                                     <include>DP:MetadataDecoder</include>
                                     <include>DP:ConfigurationModule</include>
                                     <include>DP:ScalerModule</include>
+                                    <!--Includes logger library-->
+                                    <include>log4j:log4j:jar:</include>
                                 </includes>
                             </artifactSet>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>plugin</shadedClassifierName>
                         </configuration>
                     </execution>
+
                 </executions>
             </plugin>
             <!-- Plugin for running jar file -->
@@ -133,6 +134,7 @@
                 </executions>
                 <configuration>
                     <mainClass>AFM_Opener</mainClass>
+                    <additionalClasspathElements></additionalClasspathElements>
                 </configuration>
             </plugin>
             <!-- Plugin for copy afmPluginConfiguration.xml from resources dir -->
@@ -165,4 +167,116 @@
             </plugin>
         </plugins>
     </build>
+
+
+    <profiles>
+        <profile>
+            <id>deploy-to-imagej-custom</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.7</version>
+                        <executions>
+                            <execution>
+                                <id>version-150</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+
+                                <configuration>
+                                    <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij150\ImageJ\plugins\</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Opener-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>version-149</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+
+                                <configuration>
+                                    <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij149\ImageJ\plugins\</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Opener-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>version-148</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+
+                                <configuration>
+                                    <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij148\ImageJ\plugins\</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Opener-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>version-147</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+
+                                <configuration>
+                                    <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij147\ImageJ\plugins\</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Opener-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>version-146</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+
+                                <configuration>
+                                    <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij146\ImageJ\plugins\</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Opener-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

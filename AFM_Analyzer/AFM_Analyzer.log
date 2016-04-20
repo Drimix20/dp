@@ -1,0 +1,8 @@
+2016-04-19 12:33:46,433 INFO  [AFM_Analyzer] - Running plugin AFM_Analyzer
+2016-04-19 12:33:48,134 INFO  [AfmOpenerFrame] - Clicked on select button
+2016-04-19 12:33:51,363 INFO  [MetadataDecoder] - Decoding metadata for file thyroglobulin 669 kDa-2013.08.13-13.59.14_height_trace.jpk
+2016-04-19 12:33:51,378 INFO  [MetadataDecoder] - File: thyroglobulin 669 kDa-2013.08.13-13.59.14_height_trace.jpk , offsetIFD: 8
+2016-04-19 12:33:51,378 INFO  [MetadataDecoder] - File: thyroglobulin 669 kDa-2013.08.13-13.59.14_height_trace.jpk , offsetIFD: 9404
+2016-04-19 12:33:56,277 INFO  [AfmOpenerFrame] - Clicked on open button
+2016-04-19 12:33:56,277 INFO  [ImageLoader] - Loading 1 images
+2016-04-19 12:33:56,402 INFO  [AfmOpenerFrame] - Images were loaded

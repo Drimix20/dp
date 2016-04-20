@@ -2,8 +2,7 @@ package afm.opener.calibration;
 
 import afm.opener.selector.ChannelContainer;
 import ij.ImagePlus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import scaler.module.types.LengthUnit;
 
 /**
@@ -12,11 +11,11 @@ import scaler.module.types.LengthUnit;
  */
 public class SizeCalibrator {
 
-    private static Logger logger = LoggerFactory.getLogger(SizeCalibrator.class);
+    private static Logger logger = Logger.getLogger(SizeCalibrator.class);
 
     public double calibrateImageWidth(ChannelContainer container,
             LengthUnit unit) {
-        logger.trace("Calibrate image width to {} unit", unit.getAbbreviation());
+        logger.trace("Calibrate image width to " + unit.getAbbreviation() + " unit");
         double uLengthInMeter = (Double) container.getGeneralMetadata().getTagValue(32834);
 
         ImagePlus img = container.getImagePlus();
@@ -27,12 +26,12 @@ public class SizeCalibrator {
             LengthUnit unit) {
         // Compute pixel width
         double convertedPixelWidth = uLengthInMeter / imageWidth * unit.getValue();
-        logger.trace("Pixel width {} {}", convertedPixelWidth, unit.getAbbreviation());
+        logger.trace("Pixel width " + convertedPixelWidth + " " + unit.getAbbreviation());
 
         // Convert image width to specific unit
         double convertedImageWidth = uLengthInMeter * unit.getValue();
 
-        logger.trace("Calibrated image width: origin value in metadata {} in m to {} {}", uLengthInMeter, convertedImageWidth, unit.getAbbreviation());
+        logger.trace("Calibrated image width: origin value in metadata " + uLengthInMeter + " in m to " + convertedImageWidth + " " + unit.getAbbreviation());
         return convertedImageWidth;
     }
 
@@ -49,12 +48,12 @@ public class SizeCalibrator {
 
         // Compute pixel width
         double convertedPixelHeight = vLengthInMeter / imageHeight * unit.getValue();
-        logger.trace("Pixel height {} {}", convertedPixelHeight, unit.getAbbreviation());
+        logger.trace("Pixel height " + convertedPixelHeight + " " + unit.getAbbreviation());
 
         // Convert image width to specific unit
         double convertedImageHeight = vLengthInMeter * unit.getValue();
 
-        logger.trace("Calibrated image height: origin value in metadata {} in m to {} {}", vLengthInMeter, convertedImageHeight, unit.getAbbreviation());
+        logger.trace("Calibrated image height: origin value in metadata " + vLengthInMeter + " in m to " + convertedImageHeight + " " + unit.getAbbreviation());
         return convertedImageHeight;
     }
 }

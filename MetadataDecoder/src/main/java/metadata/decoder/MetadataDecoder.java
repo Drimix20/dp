@@ -8,8 +8,7 @@ import static com.sun.media.jai.codec.TIFFField.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -17,10 +16,10 @@ import org.slf4j.LoggerFactory;
  */
 public class MetadataDecoder implements Decoder {
 
-    private Logger logger = LoggerFactory.getLogger(MetadataDecoder.class);
+    private Logger logger = Logger.getLogger(MetadataDecoder.class);
 
     public List<ChannelMetadata> decodeMetadata(List<File> files) throws Exception {
-        logger.info("Decoda metadata for {} files", files.size());
+        logger.info("Decoda metadata for " + files.size() + " files");
         List<ChannelMetadata> channels = new ArrayList<ChannelMetadata>();
         for (File file : files) {
             try {
@@ -65,13 +64,13 @@ public class MetadataDecoder implements Decoder {
         metadata.setIFD("" + tiffDirectory.getIFDOffset());
 
         TIFFField[] fields = tiffDirectory.getFields();
-        logger.info("File: {} , offsetIFD: {}", fileName, tiffDirectory.getIFDOffset());
+        logger.info("File: " + fileName + " , offsetIFD: " + tiffDirectory.getIFDOffset());
         for (int j = 0; j < fields.length; j++) {
             TIFFField tIFFField = fields[j];
             Object tagValue = getTagValue(tIFFField);
             metadata.setTagValue(tIFFField.getTag(), tagValue);
 
-            logger.trace("Tag: {}, value: {}", tIFFField.getTag(), tagValue);
+            logger.trace("Tag: " + tIFFField.getTag() + " , value:" + tagValue);
         }
         return metadata;
     }

@@ -11,8 +11,7 @@ import javax.swing.filechooser.FileFilter;
 import afm.opener.selector.ChannelContainer;
 import afm.opener.writer.tags.sorter.CategoryTagsDescriptionSorter;
 import afm.opener.writer.tags.sorter.DecimalIDTagsDescriptionSorter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ImageTagsExporter implements TagsExporter {
 
-    private static Logger logger = LoggerFactory.getLogger(ImageTagsExporter.class);
+    private static Logger logger = Logger.getLogger(ImageTagsExporter.class);
 
     @Override
     public void exportImageTags(List<ChannelContainer> channels,

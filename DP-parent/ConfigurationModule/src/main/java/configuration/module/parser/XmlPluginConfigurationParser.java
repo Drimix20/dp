@@ -7,8 +7,7 @@ import configuration.module.xml.elements.TagListConfiguration;
 import java.io.File;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -16,7 +15,7 @@ import org.slf4j.LoggerFactory;
  */
 public class XmlPluginConfigurationParser implements PluginConfigurationParser {
 
-    private static Logger logger = LoggerFactory.getLogger(XmlPluginConfigurationParser.class);
+    private static Logger logger = Logger.getLogger(XmlPluginConfigurationParser.class);
 
     @Override
     public ConfigurationXmlRootElement parseConfigurationFile(String filePath) {

@@ -7,18 +7,17 @@ import ij.io.TiffDecoder;
 import java.io.*;
 import java.util.*;
 import afm.opener.selector.ChannelContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Drimal
  */
 public class ImageLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(ImageLoader.class);
+    private static Logger logger = Logger.getLogger(ImageLoader.class);
 
     public List<ChannelContainer> loadImages(List<ChannelContainer> channels) {
-        logger.info("Loading {} images", channels.size());
+        logger.info("Loading " + channels.size() + " images");
         for (int i = 0; i < channels.size(); i++) {
             ChannelContainer currentChannelContainer = channels.get(i);
             File file = currentChannelContainer.getFile();

@@ -19,8 +19,7 @@ import afm.opener.selector.ChannelContainer;
 import afm.opener.writer.tags.sorter.MultipleComparator;
 import afm.opener.writer.tags.sorter.TagsDescriptionSorter;
 import ij.IJ;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -28,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CsvImageTagsWriter implements ImageTagsWriter {
 
-    private Logger logger = LoggerFactory.getLogger(CsvImageTagsWriter.class);
+    private Logger logger = Logger.getLogger(CsvImageTagsWriter.class);
     private static final String NEW_LINE = "\n";
     private String DELIMETR = ",";
     private Set<Integer> tagsInImage;
@@ -87,7 +86,7 @@ public class CsvImageTagsWriter implements ImageTagsWriter {
             try {
                 outputFile.createNewFile();
             } catch (IOException ex) {
-                logger.debug("Cannot create output file {}", outputFile.getAbsolutePath());
+                logger.debug("Cannot create output file " + outputFile.getAbsolutePath());
                 IJ.error("Cannot create output file " + outputFile.getAbsolutePath());
                 return;
             }

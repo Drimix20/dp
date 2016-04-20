@@ -7,8 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import metadata.decoder.ChannelMetadata;
 import metadata.decoder.MetadataProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -16,7 +15,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MetadataWriter implements Writer {
 
-    Logger logger = LoggerFactory.getLogger(MetadataWriter.class);
+    Logger logger = Logger.getLogger(MetadataWriter.class);
     private static final String NEW_LINE = "\n";
     private String delimeter = "\t";
     private File outputFile;

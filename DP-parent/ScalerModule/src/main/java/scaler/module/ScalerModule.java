@@ -2,8 +2,7 @@ package scaler.module;
 
 import configuration.module.PluginConfiguration;
 import metadata.decoder.ChannelMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import scaler.module.types.IdentityImageDataScaler;
 import scaler.module.types.ImageDataScaler;
 import scaler.module.types.LengthUnit;
@@ -16,7 +15,7 @@ import scaler.module.types.UnsupportedScalingType;
  */
 public class ScalerModule {
 
-    private static Logger logger = LoggerFactory.getLogger(ScalerModule.class);
+    private static Logger logger = Logger.getLogger(ScalerModule.class);
 
     private double multiplierValueInMeter;
     private double offsetValueInMeter;

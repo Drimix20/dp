@@ -7,6 +7,7 @@ import ij.Prefs;
 import ij.WindowManager;
 import ij.plugin.PlugIn;
 import javax.swing.SwingUtilities;
+import org.apache.log4j.Logger;
 
 /**
  * This main class serve to run plugin in Fiji menu
@@ -14,9 +15,11 @@ import javax.swing.SwingUtilities;
  */
 public class Analyzer_Tool implements PlugIn {
 
+    private static final Logger logger = Logger.getLogger(Analyzer_Tool.class);
+
     @Override
     public void run(String arg) {
-
+        logger.info("Running Analyzer_Tool plugin");
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override

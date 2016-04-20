@@ -8,13 +8,19 @@
         </layout>
     </appender>
 
-    <logger name="afm.analyzer.gui.AfmAnalyzerResultFrame"><level value="trace"/></logger>
-    <logger name="afm.analyzer.result.module"><level value="trace"/></logger>
-    <logger name="aafm.analyzer.measurements.list"><level value="trace"/></logger>
-    <!--<logger name="afm.analyzer.segmentation"><level value="debug"/></logger>-->
-    <!-- root definuej hlavní konfiguraci, tedy které z appenderů se mají použít -->
+    <appender name="FILE" class="org.apache.log4j.FileAppender">
+        <param name="File" value="${java.io.tmpdir}${file.separator}AFM_Analyzer.log" />
+        <!--Append to current log file-->
+        <param name="append" value="false" />
+        <!--<param name="Threshold" value="trace" />-->
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%t] | %-5p | %c{1} | %M  - %m%n" />
+        </layout>
+    </appender>
+
     <root>
-        <priority value="info"/>
+        <priority value="INFO"/>
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 </log4j:configuration>

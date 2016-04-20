@@ -56,10 +56,19 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
+        if (columnIndex < 0 && columnIndex > data.length - 1) {
+            throw new IllegalArgumentException("Column index " + columnIndex + " is out of range <0, " + (data.length - 1));
+        }
         if (data.length == 0) {
             return Object.class;
         }
-        return getValueAt(0, columnIndex).getClass();
+        logger.trace("Column index " + columnIndex);
+        Object columnValueObject = getValueAt(0, columnIndex);
+        if (columnValueObject == null) {
+            return Object.class;
+        } else {
+            return columnValueObject.getClass();
+        }
     }
 
     @Override

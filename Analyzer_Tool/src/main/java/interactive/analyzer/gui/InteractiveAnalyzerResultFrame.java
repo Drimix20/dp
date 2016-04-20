@@ -531,6 +531,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             jTable1.getColumnModel().getColumn(i).setCellRenderer(new DecimalPrecisionRenderer());
         }
         jTable1.setAutoResizeMode(jTable1.getAutoResizeMode());
+        jTable1.setAutoCreateRowSorter(true);
         jTable1.setDragEnabled(true);
         jTable1.setFillsViewportHeight(true);
         jScrollPane1.setViewportView(jTable1);

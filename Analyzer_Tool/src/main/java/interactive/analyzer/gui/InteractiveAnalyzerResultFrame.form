@@ -115,7 +115,7 @@
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor" postCode="//set DecimalPrecisonRenderer for all columns but first. First column is column with RowID&#xa;for (int i = 1; i &lt; jTable1.getColumnCount(); i++) {&#xa;    jTable1.getColumnModel().getColumn(i).setCellRenderer(new DecimalPrecisionRenderer());&#xa;}">
               <Connection code="getTableModelInstance()" type="code"/>
             </Property>
-            <Property name="autoResizeMode" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+            <Property name="autoResizeMode" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor" postCode="jTable1.setAutoCreateRowSorter(true);">
               <Connection code="jTable1.getAutoResizeMode()" type="code"/>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">

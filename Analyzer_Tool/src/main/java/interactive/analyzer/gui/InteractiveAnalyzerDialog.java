@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
  */
 public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
 
-    //TODO delete none option
     private static Logger logger = Logger.getLogger(InteractiveAnalyzerDialog.class);
 
     private static final String INTERACTIVE__ANALYZER_NAME = "Interactive Analyzer";
@@ -54,8 +53,7 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
     private void constructImageTitles() {
         int[] wList = WindowManager.getIDList();
         if (wList == null) {
-            imageTitles = new String[1];
-            imageTitles[0] = "NONE";
+            imageTitles = new String[0];
         } else {
             imageTitles = new String[wList.length];
             for (int i = 0; i < wList.length; i++) {
@@ -75,7 +73,6 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
      */
     private void constructResultTableTitles() {
         String[] nonImageTitles = WindowManager.getNonImageTitles();
-        resultTableChoice.add("NONE");
 
         for (int i = 0; i < nonImageTitles.length; i++) {
             ResultsTable rt = getResultsTableFromWindow(nonImageTitles[i]);
@@ -112,13 +109,13 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
     private boolean isEnvironmentValidToRunPlugin() {
         boolean returnVal = true;
         //Check if any image window is visible
-        if (imageTitles.length == 1 && imageTitles[0].equals("NONE")) {
+        if (imageTitles.length == 0) {
             IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "No images are open.");
             returnVal = false;
         }
 
         //Check if any results table window is visible
-        if (resultTableChoice.getItemCount() == 1) {
+        if (resultTableChoice.getItemCount() == 0) {
             IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "No results table is visible.");
             returnVal = false;
         }
@@ -281,11 +278,11 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
     private boolean checkSelectedChoices() {
         logger.debug("Check selected choices");
         boolean cancel = false;
-        if (resultTableChoice.getSelectedItem().equals("NONE")) {
+        if (resultTableChoice.getSelectedItem() == null) {
             IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "Select results table.");
             cancel = true;
         }
-        if (imageWindowChoice.getSelectedItem().equals("NONE")) {
+        if (imageWindowChoice.getSelectedItem() == null) {
             IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "Select image window.");
             cancel = true;
         }

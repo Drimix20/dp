@@ -531,8 +531,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             jTable1.getColumnModel().getColumn(i).setCellRenderer(new DecimalPrecisionRenderer());
         }
         jTable1.setAutoResizeMode(jTable1.getAutoResizeMode());
+        jTable1.setDragEnabled(true);
         jTable1.setFillsViewportHeight(true);
-        jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
         jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 

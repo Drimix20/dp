@@ -55,6 +55,14 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
     }
 
     @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        if (data.length == 0) {
+            return Object.class;
+        }
+        return getValueAt(0, columnIndex).getClass();
+    }
+
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         logger.trace("Get value from row " + rowIndex + " and column " + columnIndex);
 

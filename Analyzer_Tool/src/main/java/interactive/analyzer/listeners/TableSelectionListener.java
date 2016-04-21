@@ -8,13 +8,13 @@ import java.awt.Color;
  */
 public interface TableSelectionListener {
 
-    public void singleRowSelectedEvent(int rowIndex, double value,
+    public void singleRowSelectedEvent(int roiId, double value,
             Color color);
 
-    public void multipleRowsSelectedEvent(int rowIndex, double value,
+    public void multipleRowsSelectedEvent(int roiId, double value,
             Color color);
 
-    public void rowDeselectedEvent(int rowIndex);
+    public void rowDeselectedEvent(int roiId);
 
     public void redrawAllEvent();
 

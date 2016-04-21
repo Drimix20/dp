@@ -65,21 +65,6 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         }
     }
 
-//    @Override
-//    public void setImagesSegments(List<ImageSegments> imagesSegments) {
-//        this.imagesSegments = imagesSegments;
-//        //TODO functionality just for one image in window
-//        if (showingImg != null) {
-//            int currentSlice = showingImg.getCurrentSlice();
-//            ImageSegments segments = imagesSegments.get(currentSlice - 1);
-//            for (Roi roi : segments.getRois()) {
-//                roiManager.addRoi(roi);
-//                //roiManager.add(showingImg, roi, ((ExtendedRoi) roi).getLabel());
-//            }
-//            showingImg.updateImage();
-//        }
-//        throw new UnsupportedOperationException();
-//    }
     // <editor-fold defaultstate="collapsed" desc="Roi Selection Listener add, remove, removeAll">
     @Override
     public boolean addRoiSelectedListener(ImageSelectionListener listener) {
@@ -121,32 +106,6 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         return duplicatedImp.getFileInfo().directory + File.separator + duplicatedImp.getFileInfo().fileName;
     }
 
-    /**
-     * Set images which will be shown saved in special object for AFM analyzer
-     * @param channelContainer container contains images to show
-     */
-//    @Override
-//    public void setImagesToShow(List<ChannelContainer> channelContainer) {
-//        ImagePlus tmp = channelContainer.get(0).getImagePlus();
-//        ImageStack imgStack = new ImageStack(tmp.getWidth(), tmp.getHeight());
-//        for (ChannelContainer channelContainer1 : channelContainer) {
-//            imgStack.addSlice(channelContainer1.getImagePlus().getProcessor());
-//        }
-//
-//        showingImg = new ImagePlus(stackTitle, imgStack);
-//        configureImageStackWindow();
-//        throw new UnsupportedOperationException();
-//    }
-    /**
-     * Set images which will be shown in image window
-     * @param images one image or stack of images to show
-     */
-//    @Override
-//    public void setImagesToShow(ImagePlus images) {
-//        showingImg = images;
-//        configureImageStackWindow();
-//        throw new UnsupportedOperationException();
-//    }
     private void registerMouseListenerToImageCanvas(ImageCanvas canvas) {
         canvas.addMouseListener(new MouseAdapter() {
 
@@ -244,33 +203,31 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
     // <editor-fold defaultstate="collapsed" desc="TableSelectionListener...">
     @Override
-    public void singleRowSelectedEvent(int rowIndex, double value,
+    public void singleRowSelectedEvent(int roiId, double value,
             Color color) {
+        //Make selected just one roi
         if (duplicatedImp.getRoi() != null) {
             ij.gui.Roi imageR = null;
             duplicatedImp.setRoi(imageR);
         }
-        logger.trace("rowIndex: " + rowIndex);
-        int labelToSelect = rowIndex + 1;
+        logger.trace("RoiId: " + roiId);
         overlayManager.deselectAll();
-        overlayManager.selectRoi(labelToSelect, color);
+        overlayManager.selectRoi(roiId, color);
         overlayManager.drawRois();
     }
 
     @Override
-    public void multipleRowsSelectedEvent(int rowIndex, double value,
+    public void multipleRowsSelectedEvent(int roiId, double value,
             Color color) {
-        logger.trace("rowIndex: " + rowIndex);
-        int labelToSelect = rowIndex + 1;
-        overlayManager.addRoiToSelection(labelToSelect, color);
+        logger.trace("rowIndex: " + roiId);
+        overlayManager.addRoiToSelection(roiId, color);
         overlayManager.drawRois();
     }
 
     @Override
-    public void rowDeselectedEvent(int rowIndex) {
-        logger.trace("rowIndex: " + rowIndex);
-        int labelToSelect = rowIndex + 1;
-        overlayManager.deselectRoi(labelToSelect, DEFAULT_STROKE_ROI_COLOR);
+    public void rowDeselectedEvent(int roiId) {
+        logger.trace("rowIndex: " + roiId);
+        overlayManager.deselectRoi(roiId, DEFAULT_STROKE_ROI_COLOR);
         overlayManager.drawRois();
     }
 

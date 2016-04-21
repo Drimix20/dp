@@ -329,9 +329,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
     // <editor-fold defaultstate="collapsed" desc="TableSelectionListener...">
     @Override
-    public void singleRowSelectedEvent(int rowIndex, double value,
+    public void singleRowSelectedEvent(int roiId, double value,
             Color color) {
-        logger.trace("rowIndex: " + rowIndex);
+        logger.trace("rowIndex: " + roiId);
         if (chart == null) {
             return;
         }
@@ -348,9 +348,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     @Override
-    public void multipleRowsSelectedEvent(int rowIndex, double value,
+    public void multipleRowsSelectedEvent(int roiId, double value,
             Color color) {
-        logger.trace("rowIndex: " + rowIndex);
+        logger.trace("rowIndex: " + roiId);
         if (chart == null) {
             return;
         }
@@ -365,8 +365,8 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     @Override
-    public void rowDeselectedEvent(int rowIndex) {
-        logger.trace("rowIndex: " + rowIndex);
+    public void rowDeselectedEvent(int roiId) {
+        logger.trace("rowIndex: " + roiId);
         //not needed
     }
 

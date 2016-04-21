@@ -59,17 +59,6 @@ public class InteractiveAnalyzer {
         return Integer.parseInt(roiLabeString);
     }
 
-//    public InteractiveAnalyzer(InteractiveAnalyzerResultFrame resultFrame,
-//            ImageWindowI imageWindow) {
-//        if (resultFrame == null) {
-//            throw new IllegalArgumentException("Result frame is null");
-//        }
-//        if (imageWindow == null) {
-//            throw new IllegalArgumentException("ImageWindow is null");
-//        }
-//        this.resultFrame = resultFrame;
-//        this.imageWindow = imageWindow;
-//    }
     public void run() {
         if (!imageWindow.isVisible()) {
             imageWindow.setImageVisible(true);

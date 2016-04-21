@@ -56,6 +56,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, CLEAR_SELECTIONS_IN_TABLE, NONE;
     }
 
+    private static final int ROI_ID_COLUMN_INDEX = 0;
     private static final int CTRL_WITH_LMB_DOWN = CTRL_DOWN_MASK | BUTTON1_DOWN_MASK;
     private static final int SHIFT_WITH_LMB_DOWN = SHIFT_DOWN_MASK | BUTTON1_DOWN_MASK;
 
@@ -64,7 +65,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private List<String> tableHeaderTooltips;
     private List<String> tableColumnNames;
     private String selectedColumnName;
-//    private Map<String, List<AbstractMeasurementResult>> analyzerValues;
     private List<TableSelectionListener> tableSelectionListeners = new ArrayList<TableSelectionListener>();
     private ObjectFilteringFrame objectFilteringFrame;
     private Chart chart;
@@ -291,8 +291,29 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
      */
     public void notifySingleRowSelected(int rowIndex, double columnValue,
             Color color) {
+
+        Integer roiId = getRoiIdFromRow(rowIndex);
+        if (roiId == null) {
+            logger.trace("Object from first column is not roiID");
+            return;
+        }
         for (TableSelectionListener listener : tableSelectionListeners) {
-            listener.singleRowSelectedEvent(rowIndex, columnValue, color);
+            listener.singleRowSelectedEvent(roiId, columnValue, color);
+        }
+    }
+
+    /**
+     Method parse roi ID from specific row. Roi ID is saved in first column in table.
+     @param rowIndex
+     @return
+     */
+    private Integer getRoiIdFromRow(int rowIndex) {
+        Object roiIdObject = jTable1.getValueAt(rowIndex, ROI_ID_COLUMN_INDEX);
+        Integer roiId = null;
+        if (roiIdObject instanceof Number) {
+            return (Integer) roiIdObject;
+        } else {
+            return null;
         }
     }
 
@@ -304,8 +325,13 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
      */
     public void notifyMultipleRowsSelected(int rowIndex, double columnValue,
             Color color) {
+        Integer roiId = getRoiIdFromRow(rowIndex);
+        if (roiId == null) {
+            logger.trace("Object from first column is not roiID");
+            return;
+        }
         for (TableSelectionListener listener : tableSelectionListeners) {
-            listener.multipleRowsSelectedEvent(rowIndex, columnValue, color);
+            listener.multipleRowsSelectedEvent(roiId, columnValue, color);
         }
     }
 
@@ -314,8 +340,13 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
      * @param rowIndex
      */
     public void notifyRowDeselected(int rowIndex) {
+        Integer roiId = getRoiIdFromRow(rowIndex);
+        if (roiId == null) {
+            logger.trace("Object from first column is not roiID");
+            return;
+        }
         for (TableSelectionListener listener : tableSelectionListeners) {
-            listener.rowDeselectedEvent(rowIndex);
+            listener.rowDeselectedEvent(roiId);
         }
     }
 

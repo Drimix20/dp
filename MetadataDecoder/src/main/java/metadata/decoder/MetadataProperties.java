@@ -27,7 +27,7 @@ public class MetadataProperties {
 
         try {
             if (!propFile.exists()) {
-                throw new IllegalArgumentException(String.format("Error loading properties from file %s.", propFile.getAbsolutePath()));
+                throw new IllegalArgumentException("Property file " + propFile.getAbsolutePath() + " doesn't exist");
             }
             if (propFile.canRead()) {
                 Properties properties = new Properties();
@@ -36,7 +36,7 @@ public class MetadataProperties {
                     props.put((String) entry.getKey(), ((String) entry.getValue()).trim());
                 }
             } else {
-                throw new IllegalArgumentException(String.format("Error loading properties from file %s.", propFile.getAbsolutePath()));
+                throw new IllegalArgumentException("Cannot read properties from file " + propFile.getAbsolutePath());
             }
         } catch (IOException e) {
             throw new IllegalArgumentException(String.format("Error loading properties from file %s.", propFile.getAbsolutePath()), e);

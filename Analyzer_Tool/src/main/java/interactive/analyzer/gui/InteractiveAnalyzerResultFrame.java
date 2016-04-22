@@ -56,7 +56,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, CLEAR_SELECTIONS_IN_TABLE, NONE;
     }
 
-    private static final int ROI_ID_COLUMN_INDEX = 0;
     private static final int CTRL_WITH_LMB_DOWN = CTRL_DOWN_MASK | BUTTON1_DOWN_MASK;
     private static final int SHIFT_WITH_LMB_DOWN = SHIFT_DOWN_MASK | BUTTON1_DOWN_MASK;
 
@@ -308,7 +307,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
      @return
      */
     private Integer getRoiIdFromRow(int rowIndex) {
-        Object roiIdObject = jTable1.getValueAt(rowIndex, ROI_ID_COLUMN_INDEX);
+        Object roiIdObject = jTable1.getValueAt(rowIndex, AfmAnalyzerResultTable.ID_COLUMN_INDEX);
         Integer roiId = null;
         if (roiIdObject instanceof Number) {
             return (Integer) roiIdObject;

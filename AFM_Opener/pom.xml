@@ -205,12 +205,30 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>version-149</id>
+                                <id>deploy-to-plugins</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
 
+                                <configuration>
+                                    <outputDirectory>${basedir}\plugins</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>AFM_Opener-1.0.0-plugin.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>version-149</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
                                 <configuration>
                                     <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij149\ImageJ\plugins\</outputDirectory>
                                     <resources>
@@ -229,7 +247,6 @@
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
-
                                 <configuration>
                                     <outputDirectory>C:\Users\Drimal\Downloads\ImageJ-verze\ij148\ImageJ\plugins\</outputDirectory>
                                     <resources>

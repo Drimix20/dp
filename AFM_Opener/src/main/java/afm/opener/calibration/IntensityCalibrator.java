@@ -7,6 +7,7 @@ import ij.measure.Minimizer;
 import org.apache.log4j.Logger;
 import scaler.module.ScalerModule;
 import scaler.module.types.LengthUnit;
+import scaler.module.types.UnsupportedScalingType;
 
 /**
  *
@@ -17,17 +18,18 @@ public class IntensityCalibrator {
     private static Logger logger = Logger.getLogger(IntensityCalibrator.class);
 
     public double[] computeCalibrationFunction(
-            ChannelContainer container, int calibrationType, LengthUnit unit) {
+            ChannelContainer container, double minVal, double maxVal,
+            int calibrationType, LengthUnit unit) throws UnsupportedScalingType {
 
-        double minVal = container.getImagePlus().getProcessor().getMin();
-        double maxVal = container.getImagePlus().getProcessor().getMax();
+        double minValFromImage = container.getImagePlus().getProcessor().getMin();
+        double maxValFromImage = container.getImagePlus().getProcessor().getMax();
 
         ScalerModule sm = new ScalerModule(container.getGeneralMetadata(), container.getChannelMetadata());
         double calibratedMinVal = sm.scalePixelIntensityToObtainRealHeight(minVal, unit);
         double calibratedMaxVal = sm.scalePixelIntensityToObtainRealHeight(maxVal, unit);
 
-        logger.trace("Input for CurveFitter: " + minVal + " -> " + calibratedMinVal + ", " + maxVal + " -> " + maxVal + ", unit: " + unit.getAbbreviation());
-        double[] x = new double[]{minVal, maxVal};
+        logger.trace("Input for CurveFitter: " + minVal + " -> " + calibratedMinVal + ", " + maxVal + " -> " + calibratedMaxVal + ", unit: " + unit.getAbbreviation());
+        double[] x = new double[]{minValFromImage, maxValFromImage};
         double[] y = new double[]{calibratedMinVal, calibratedMaxVal};
         return doCurveFitting(x, y, calibrationType);
     }

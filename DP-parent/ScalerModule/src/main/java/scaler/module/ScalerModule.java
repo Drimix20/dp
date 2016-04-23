@@ -19,49 +19,63 @@ public class ScalerModule {
 
     private double multiplierValueInMeter;
     private double offsetValueInMeter;
-    private double pixelXSize;
-    private double pixelYSize;
     private ImageDataScaler dataScaler;
 
     public ScalerModule(ChannelMetadata generalMetadata,
             ChannelMetadata channelMetadata) {
+        //retrieve slot index based
+        String defaultSlotValue = (String) channelMetadata.getTagValue(PluginConfiguration.getDefaultSlotTag());
+        int slotIndex = getSlotIndexBasedOnDefaultSlotValue(channelMetadata, defaultSlotValue);
+
         //get scaling parameters from metadata
-        int multiplierTagId = PluginConfiguration.getScalingMultiplierTag() + PluginConfiguration.SLOT_INDEX * PluginConfiguration.TAG_OFFSET_DECIMAL_VALUE;
+        int multiplierTagId = PluginConfiguration.getScalingMultiplierTag() + slotIndex * PluginConfiguration.TAG_OFFSET_DECIMAL_VALUE;
         multiplierValueInMeter = (Double) channelMetadata.getTagValue(multiplierTagId);
-        int offsetTagId = PluginConfiguration.getScalingOffsetTag() + PluginConfiguration.SLOT_INDEX * PluginConfiguration.TAG_OFFSET_DECIMAL_VALUE;
+        int offsetTagId = PluginConfiguration.getScalingOffsetTag() + slotIndex * PluginConfiguration.TAG_OFFSET_DECIMAL_VALUE;
         offsetValueInMeter = (Double) channelMetadata.getTagValue(offsetTagId);
 
-        int scalingMethodTagId = PluginConfiguration.getScalingTypeTag() + PluginConfiguration.SLOT_INDEX * PluginConfiguration.TAG_OFFSET_DECIMAL_VALUE;
+        int scalingMethodTagId = PluginConfiguration.getScalingTypeTag() + slotIndex * PluginConfiguration.TAG_OFFSET_DECIMAL_VALUE;
         String scalingTypeValue = (String) channelMetadata.getTagValue(scalingMethodTagId);
-        configurePixelSize(generalMetadata);
         configureImageDataScalerInstance(scalingTypeValue.trim(), multiplierValueInMeter, offsetValueInMeter);
     }
 
     public ScalerModule(ChannelMetadata metadata, long multiplierInMeter,
-            long offsetInMeter, String scalingType) {
+            long offsetInMeter, String scalingType) throws UnsupportedScalingType {
         multiplierValueInMeter = multiplierInMeter;
         offsetValueInMeter = offsetInMeter;
-
-        configurePixelSize(metadata);
         configureImageDataScalerInstance(scalingType, multiplierInMeter, offsetInMeter);
     }
 
-    private void configurePixelSize(ChannelMetadata metadata) {
-        double physicalImageWidthInMeter = (Double) metadata.getTagValue(PluginConfiguration.getImagePhysicalWidthTag());
-        double physicalImageHeightInMeter = (Double) metadata.getTagValue(PluginConfiguration.getImagePhysicalHeightTag());
-        int imageWidth = (Integer) metadata.getTagValue(PluginConfiguration.getImageWidthTag());
-        int imageHeight = (Integer) metadata.getTagValue(PluginConfiguration.getImageHeightTag());
-        pixelXSize = physicalImageWidthInMeter / imageWidth;
-        pixelYSize = physicalImageHeightInMeter / imageHeight;
+    /**
+     Retrieve index of SlotName tag which contains same value as
+     @param channelMetadata structure which contains metadata for channel image
+     @param defaultSlotValue value saved in DefaultSlot tag
+     @return slot index
+     */
+    private int getSlotIndexBasedOnDefaultSlotValue(
+            ChannelMetadata channelMetadata, String defaultSlotValue) {
+        Integer tagValue = (Integer) channelMetadata.getTagValue(PluginConfiguration.getNumberOfSlotsTag());
+        int slotNameTag = PluginConfiguration.getSlotNameTag();
+        for (int slotIndex = 0; slotIndex < tagValue; slotIndex++) {
+            int tag = slotNameTag + slotIndex * PluginConfiguration.TAG_OFFSET_DECIMAL_VALUE;
+            String slotNameVal = (String) channelMetadata.getTagValue(tag);
+            if (defaultSlotValue.trim().equals(slotNameVal.trim())) {
+                return slotIndex;
+            }
+        }
+
+        throw new IllegalArgumentException("Missing SlotName with DefaultSlot " + defaultSlotValue + " value.");
     }
 
     private void configureImageDataScalerInstance(String scalingType,
             double multiplierInMeter,
             double offsetInMeter) {
+
+        ScalingType type = ScalingType.parse(scalingType);
+
         try {
-            dataScaler = ScalerFactory.getImageDataScalerInstance(ScalingType.parse(scalingType), multiplierInMeter, offsetInMeter);
+            dataScaler = ScalerFactory.getImageDataScalerInstance(type, multiplierInMeter, offsetInMeter);
         } catch (UnsupportedScalingType ex) {
-            logger.warn("UnsuppordetScalingType - Setting imageDataScaler to IdentityScaler.");
+            logger.error("Configuring dataScaler to IdentityScaler", ex);
             dataScaler = new IdentityImageDataScaler();
         }
     }
@@ -86,15 +100,5 @@ public class ScalerModule {
     public double scalePixelIntensityToObtainRealHeight(
             double pixelIntensityValue, LengthUnit unit) {
         return dataScaler.scaleValue(pixelIntensityValue) * unit.getValue();
-    }
-
-    @Deprecated
-    public double getPixelXSizeInMeter() {
-        return pixelXSize;
-    }
-
-    @Deprecated
-    public double getPixelYSizeInMeter() {
-        return pixelYSize;
     }
 }

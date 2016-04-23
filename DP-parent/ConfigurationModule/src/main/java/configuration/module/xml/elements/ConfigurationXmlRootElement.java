@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ConfigurationXmlRootElement {
 
     private int numberOfSlotsTag;
+    private int defaultSlotTag;
+    private int slotNameTag;
     private int channelNameTag;
     //@XmlElement(name = "dimensionTags")
     private DimensionTagsConfiguration dimensionTagsConfiguration;

@@ -8,6 +8,10 @@ public enum ScalingType {
 
     IDENTITY("NullScaling"), LINEAR("LinearScaling");
 
+    public static ScalingType parse(ScalingType scalingType) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     private String type;
 
     private ScalingType(String type) {

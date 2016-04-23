@@ -1,12 +1,13 @@
 package afm.opener.calibration;
 
 import afm.opener.selector.ChannelContainer;
+import configuration.module.PluginConfiguration;
 import ij.ImagePlus;
 import org.apache.log4j.Logger;
 import scaler.module.types.LengthUnit;
 
 /**
- *
+ * Class represents functionality for computing size in physical units from metadata
  * @author Drimal
  */
 public class SizeCalibrator {
@@ -16,7 +17,7 @@ public class SizeCalibrator {
     public double calibrateImageWidth(ChannelContainer container,
             LengthUnit unit) {
         logger.trace("Calibrate image width to " + unit.getAbbreviation() + " unit");
-        double uLengthInMeter = (Double) container.getGeneralMetadata().getTagValue(32834);
+        double uLengthInMeter = (Double) container.getGeneralMetadata().getTagValue(PluginConfiguration.getImagePhysicalWidthTag());
 
         ImagePlus img = container.getImagePlus();
         return calibrateImageWidth(img.getWidth(), uLengthInMeter, unit);
@@ -24,9 +25,6 @@ public class SizeCalibrator {
 
     public double calibrateImageWidth(int imageWidth, double uLengthInMeter,
             LengthUnit unit) {
-        // Compute pixel width
-        double convertedPixelWidth = uLengthInMeter / imageWidth * unit.getValue();
-        logger.trace("Pixel width " + convertedPixelWidth + " " + unit.getAbbreviation());
 
         // Convert image width to specific unit
         double convertedImageWidth = uLengthInMeter * unit.getValue();
@@ -37,7 +35,7 @@ public class SizeCalibrator {
 
     public double calibrateImageHeight(ChannelContainer container,
             LengthUnit unit) {
-        double vLengthInMeter = (Double) container.getGeneralMetadata().getTagValue(32835);
+        double vLengthInMeter = (Double) container.getGeneralMetadata().getTagValue(PluginConfiguration.getImagePhysicalHeightTag());
 
         ImagePlus img = container.getImagePlus();
         return calibrateImageHeight(img.getHeight(), vLengthInMeter, unit);
@@ -45,10 +43,6 @@ public class SizeCalibrator {
 
     public double calibrateImageHeight(int imageHeight, double vLengthInMeter,
             LengthUnit unit) {
-
-        // Compute pixel width
-        double convertedPixelHeight = vLengthInMeter / imageHeight * unit.getValue();
-        logger.trace("Pixel height " + convertedPixelHeight + " " + unit.getAbbreviation());
 
         // Convert image width to specific unit
         double convertedImageHeight = vLengthInMeter * unit.getValue();

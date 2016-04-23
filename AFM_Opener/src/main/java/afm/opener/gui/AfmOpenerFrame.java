@@ -21,6 +21,7 @@ import java.util.Arrays;
 import javax.swing.DefaultComboBoxModel;
 import org.apache.log4j.Logger;
 import scaler.module.types.LengthUnit;
+import scaler.module.types.UnsupportedScalingType;
 
 /**
  *
@@ -31,7 +32,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private Logger logger = Logger.getLogger(AfmOpenerFrame.class);
     private final CountDownLatch latch;
     //TODO property for manual testing
-    private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
+    private File currentDirectory = new File("c:\\Users\\Drimal\\Dropbox\\DP\\DATA\\");
+//    private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
     private List<ChannelContainer> selectedChannelContainer;
     private ImageOptionManager imageOptionManager;
     private boolean showLoadedImages;
@@ -230,6 +232,10 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private void SelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SelectButtonActionPerformed
         logger.info("Clicked on select button");
 
+        //TODO delete before deploy
+        if (!currentDirectory.exists()) {
+            currentDirectory = new File(System.getProperty("user.home"));
+        }
         JFileChooser fileChooser = new JFileChooser(currentDirectory);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
@@ -269,8 +275,12 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         List<ChannelContainer> loadedImages = loader.loadImages(selectedChannelContainer);
 
         if (calibrateImageCheckbox.isSelected()) {
-            LengthUnit unit = LengthUnit.parse((String) calibrationUnitComboBox.getSelectedItem());
-            calibrateImages(loadedImages, unit);
+            try {
+                LengthUnit unit = LengthUnit.parse((String) calibrationUnitComboBox.getSelectedItem());
+                calibrateImages(loadedImages, unit);
+            } catch (UnsupportedScalingType ex) {
+                IJ.error(ex.toString());
+            }
         }
 
         showLoadedImages(loadedImages, showLoadedImages);
@@ -287,42 +297,39 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_OpenButtonActionPerformed
 
     private void calibrateImages(List<ChannelContainer> loadedImages,
-            LengthUnit unit) {
+            LengthUnit unit) throws UnsupportedScalingType {
         for (ChannelContainer cc : loadedImages) {
             if (cc.getChannelName().trim().equals("thumbnail")) {
                 logger.trace("Channel is thumbnail skipping calibration");
                 continue;
             }
 
-            ImagePlus imagePlus = cc.getImagePlus();
+            cc.setImagePlus(cc.getImagePlus());
 
+            SizeCalibrator sizeCalibrator = new SizeCalibrator();
+            double calibrateImageWidth = sizeCalibrator.calibrateImageWidth(cc, unit);
+            IJ.run(cc.getImagePlus(), "Set Scale...", "distance=" + cc.getImagePlus().getWidth() + " known=" + calibrateImageWidth + " unit=" + unit.getAbbreviation());
+
+            logger.trace("Intensity calibration");
+            double minValueBeforeChangingTo16bit = cc.getImagePlus().getProcessor().getMin();
+            double maxValueBeforeChangingTo16bit = cc.getImagePlus().getProcessor().getMax();
+            ImagePlus imagePlus = cc.getImagePlus();
             logger.trace("Convert image into 16-bit image");
             IJ.run(imagePlus, "16-bit", "");
             cc.setImagePlus(imagePlus);
-
-            logger.trace("Resolution calibration");
-            SizeCalibrator sizeCalibrator = new SizeCalibrator();
-            Calibration cal = imagePlus.getCalibration();
-            cal.pixelWidth = sizeCalibrator.calibrateImageWidth(cc, unit);
-            cal.pixelHeight = sizeCalibrator.calibrateImageHeight(cc, unit);
-            cal.pixelDepth = 1;
-            cal.setUnit(unit.getAbbreviation());
-            logger.trace("Calibrated pixelWidth: " + cal.pixelWidth + ", pixelHeight: " + cal.pixelHeight + ", pixelDepth: " + cal.pixelDepth + ", unit: " + cal.getUnit());
-
-            logger.trace("Intensity calibration");
             IntensityCalibrator ic = new IntensityCalibrator();
-            double[] parameters = ic.computeCalibrationFunction(cc, Calibration.STRAIGHT_LINE, unit);
+            double[] parameters = ic.computeCalibrationFunction(cc, minValueBeforeChangingTo16bit, maxValueBeforeChangingTo16bit, Calibration.STRAIGHT_LINE, unit);
 
             if (parameters != null) {
                 logger.trace("Calibration function parameters " + Arrays.toString(parameters));
-                cal.setFunction(Calibration.STRAIGHT_LINE, parameters, unit.getAbbreviation());
+                imagePlus.getCalibration().setFunction(Calibration.STRAIGHT_LINE, parameters, unit.getAbbreviation());
             } else {
                 logger.trace("Parameters of calibration funcition are null");
             }
-            cc.getImagePlus().setCalibration(cal);
 
-//            IJ.run(imagePlus, "Calibration Bar...", "location=[Upper Right] fill=White label=Black number=5 decimal=0 font=12 zoom=1.3 overlay");
-            IJ.run(imagePlus, "Scale Bar...", "width=50 height=5 font=18 color=Black background=White location=[Lower Right] overlay");
+            //Define whic value is used to scale bar
+            double scaleBarValue = 0.025;
+            IJ.run(cc.getImagePlus(), "Scale Bar...", "width=" + scaleBarValue + " height=3 font=18 color=Black background=None location=[Lower Right] bold overlay");
         }
     }
 

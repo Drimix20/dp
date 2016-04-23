@@ -9,6 +9,11 @@ import java.util.List;
  */
 public class DataStatistics {
 
+    /**
+     Compute statistics from data. Computed statistics are min, max, median and mean values.
+     @param columnData
+     @return
+     */
     public static HistogramDataSet computeDataSetFromTable(Object[] columnData) {
         if (columnData == null) {
             throw new IllegalArgumentException("Column data are null");

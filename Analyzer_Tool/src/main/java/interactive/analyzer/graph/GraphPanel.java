@@ -70,6 +70,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
             @Override
             public void mouseMoved(MouseEvent e) {
+                if (chart == null) {
+                    return;
+                }
                 Shape shape = getShapeAtPoint(e.getPoint());
                 if (shape != null) {
                     setToolTipText(shape.getTooltipText());
@@ -79,6 +82,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
             @Override
             public void mouseDragged(MouseEvent e) {
+                if (chart == null) {
+                    return;
+                }
                 if (mousePressed) {
                     draggedSelection = true;
                 }
@@ -108,6 +114,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                if (chart == null) {
+                    return;
+                }
                 logger.trace("mousePressed: " + mousePressed);
                 Shape shape = getShapeAtPoint(e.getPoint());
                 if (shape != null) {
@@ -131,11 +140,17 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                if (chart == null) {
+                    return;
+                }
                 mousePressed = true;
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                if (chart == null) {
+                    return;
+                }
                 logger.trace("" + e.getPoint());
                 mousePressed = false;
                 //multiple selection by mouse dragged
@@ -195,6 +210,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         if (shape == null || selectionColor == null) {
             throw new IllegalArgumentException("Shape or color is null");
         }
+        if (chart == null) {
+            return;
+        }
         logger.trace("Single bar selected: " + shape);
         for (ChartSelectionListener listener : selectionListeners) {
             listener.singleBarSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
@@ -205,6 +223,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         if (shape == null || selectionColor == null) {
             throw new IllegalArgumentException("Shape or color is null");
         }
+        if (chart == null) {
+            return;
+        }
         logger.trace("Multiple bar selected: " + shape);
         for (ChartSelectionListener listener : selectionListeners) {
             listener.barSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
@@ -214,6 +235,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     public void notifyBarDeselected(Shape shape) {
         if (shape == null) {
             throw new IllegalArgumentException("Shape is null");
+        }
+        if (chart == null) {
+            return;
         }
         logger.trace("Bar deselected: " + shape);
         for (ChartSelectionListener listener : selectionListeners) {

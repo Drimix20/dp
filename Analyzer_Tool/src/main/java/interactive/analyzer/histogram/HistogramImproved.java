@@ -131,7 +131,7 @@ public class HistogramImproved {
 
     private static int getBinIndexBasedOnValue(Object d) {
         int binIndex = (int) (((Double) d - minValue) / binSize);
-        binIndex = (binIndex > (binsNumber - 1)) ? (binsNumber - 1) : binIndex;
+        binIndex = (binIndex > (binsNumber - 1)) ? (binsNumber - 1) : (binIndex < 0 ? 0 : binIndex);
         return binIndex;
     }
 

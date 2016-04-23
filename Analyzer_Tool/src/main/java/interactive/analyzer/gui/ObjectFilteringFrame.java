@@ -5,26 +5,23 @@ import interactive.analyzer.file.tools.ImageFileFilter;
 import interactive.analyzer.graph.HistogramChart;
 import interactive.analyzer.graph.Chart;
 import interactive.analyzer.graph.GraphPanel;
+import interactive.analyzer.graph.data.DataStatistics;
 import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.HistogramBin;
+import interactive.analyzer.histogram.HistogramImproved;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.listeners.ManageTagListener;
 import interactive.analyzer.options.ObjectFilteringConfiguration;
+import interactive.analyzer.result.table.AbstractInteractiveTableModel;
+import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.result.table.TableColorSelectionManager;
-import interactive.analyzer.selection.CircleIcon;
-import interactive.analyzer.selection.JListElement;
-import interactive.analyzer.selection.Tag;
 import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
-import javax.swing.ListCellRenderer;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 
@@ -37,22 +34,26 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     private static Logger logger = Logger.getLogger(ObjectFilteringFrame.class);
     private static final int DIALOG_OK_STATUS = 1;
 
+    private AbstractInteractiveTableModel tableModel;
     private TableColorSelectionManager selectionManager;
     private List<ManageTagListener> tagListeners;
+    private String selectedColumnName;
+    private double minColumnValue;
+    private double maxColumnValue;
 
     /**
      * Creates new frame of ObjectFilteringFrame
+     * @param tableModel
      */
-    public ObjectFilteringFrame() {
+    public ObjectFilteringFrame(AbstractInteractiveTableModel tableModel) {
         tagListeners = new ArrayList<ManageTagListener>();
         selectionManager = TableColorSelectionManager.getInstance();
+        this.tableModel = tableModel;
         initComponents();
 
         graphPanel.setSelectionColor(selectionManager.getCurrentSelectionColor());
-        tagColorThumbnail.setBackground(selectionManager.getCurrentSelectionColor());
         this.setLocationRelativeTo(null);
         logger.trace("Frame width=" + getWidth() + ", height=" + getHeight() + javax.swing.UIManager.getLookAndFeel());
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="Manage ManageTagListener...">
@@ -71,11 +72,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
     public Color getCurrentSelectionColor() {
         return selectionManager.getCurrentSelectionColor();
-    }
-
-    public void addChart(Chart chart) {
-        graphPanel.setChart(chart);
-        graphPanel.updatePaint();
     }
 
     public GraphPanel getGraphPanel() {
@@ -105,23 +101,18 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
         jSeparator1 = new javax.swing.JSeparator();
         graphPanel = new interactive.analyzer.graph.GraphPanel();
-        jSplitPane = new javax.swing.JSplitPane();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        tagNameField = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        tagColorThumbnail = new javax.swing.JPanel();
-        colorChooserButton = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tagDescriptionArea = new javax.swing.JTextArea();
-        saveTagButton = new javax.swing.JButton();
-        deleteTagButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tagsJList = new javax.swing.JList(getTagListData(TagManager.getInstance().getTags()));
         clearButton = new javax.swing.JButton();
+        histogramConfigPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        binSpinner = new javax.swing.JSpinner();
+        useDataMinAndMaxCheckbox = new javax.swing.JCheckBox();
+        jLabel2 = new javax.swing.JLabel();
+        minValLabel = new javax.swing.JLabel();
+        xMinSpinner = new javax.swing.JSpinner();
+        maxValLabel = new javax.swing.JLabel();
+        xMaxSpinner = new javax.swing.JSpinner();
+        computeCumulativeHist = new javax.swing.JCheckBox();
+        computeHistogramButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         Save = new javax.swing.JMenuItem();
@@ -140,172 +131,12 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         graphPanel.setLayout(graphPanelLayout);
         graphPanelLayout.setHorizontalGroup(
             graphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 408, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         graphPanelLayout.setVerticalGroup(
             graphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 251, Short.MAX_VALUE)
+            .addGap(0, 249, Short.MAX_VALUE)
         );
-
-        jSplitPane.setDividerLocation(90);
-        jSplitPane.setOneTouchExpandable(true);
-
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Tags"));
-
-        jLabel1.setText("Name:");
-
-        jLabel2.setText("Description:");
-
-        jLabel3.setText("Color:");
-
-        tagColorThumbnail.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        javax.swing.GroupLayout tagColorThumbnailLayout = new javax.swing.GroupLayout(tagColorThumbnail);
-        tagColorThumbnail.setLayout(tagColorThumbnailLayout);
-        tagColorThumbnailLayout.setHorizontalGroup(
-            tagColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 25, Short.MAX_VALUE)
-        );
-        tagColorThumbnailLayout.setVerticalGroup(
-            tagColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 23, Short.MAX_VALUE)
-        );
-
-        colorChooserButton.setText("Choose");
-        colorChooserButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                colorChooserButtonActionPerformed(evt);
-            }
-        });
-
-        tagDescriptionArea.setColumns(15);
-        tagDescriptionArea.setRows(3);
-        tagDescriptionArea.getDocument().addDocumentListener(new DocumentListener(){
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                //saveTagButton.setEnabled(true);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                //saveTagButton.setEnabled(true);
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                saveTagButton.setEnabled(true);
-            }
-        });
-        jScrollPane2.setViewportView(tagDescriptionArea);
-
-        saveTagButton.setText("Save");
-        saveTagButton.setEnabled(false);
-        saveTagButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveTagButtonActionPerformed(evt);
-            }
-        });
-
-        deleteTagButton.setText("Delete");
-        deleteTagButton.setEnabled(false);
-        deleteTagButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteTagButtonActionPerformed(evt);
-            }
-        });
-
-        jButton1.setText("Add new");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addNewTagButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tagNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
-                        .addGap(32, 32, 32))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel3)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(tagColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(colorChooserButton))))
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
-                        .addComponent(jLabel2)
-                        .addGap(0, 59, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(saveTagButton)
-                .addGap(18, 18, 18)
-                .addComponent(deleteTagButton)
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(tagNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tagColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(colorChooserButton)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(saveTagButton)
-                    .addComponent(deleteTagButton)
-                    .addComponent(jButton1)))
-        );
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
-        jSplitPane.setRightComponent(jPanel1);
-
-        ListCellRenderer renderer = new interactive.analyzer.selection.ListCellRendererWithColorIcon();
-        tagsJList.setCellRenderer(renderer);
-        tagsJList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                valueChangedJListListener(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tagsJList);
-
-        jSplitPane.setLeftComponent(jScrollPane1);
 
         clearButton.setText("Clear all selections");
         clearButton.addActionListener(new java.awt.event.ActionListener() {
@@ -313,6 +144,103 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
                 clearButtonActionPerformed(evt);
             }
         });
+
+        jLabel1.setText("Bins:");
+
+        binSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+
+        useDataMinAndMaxCheckbox.setSelected(true);
+        useDataMinAndMaxCheckbox.setText("Use column range value");
+        useDataMinAndMaxCheckbox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                useDataMinAndMaxCheckboxStateChanged(evt);
+            }
+        });
+
+        jLabel2.setText("or use:");
+
+        minValLabel.setText("Minimal:");
+        minValLabel.setEnabled(false);
+
+        xMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(1.0d)));
+        xMinSpinner.setEnabled(false);
+
+        maxValLabel.setText("Maximal:");
+        maxValLabel.setEnabled(false);
+
+        xMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(1.0d)));
+        xMaxSpinner.setEnabled(false);
+
+        computeCumulativeHist.setLabel("Compute cumulative histogram");
+
+        computeHistogramButton.setText("Compute");
+        computeHistogramButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                computeHistogramButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout histogramConfigPanelLayout = new javax.swing.GroupLayout(histogramConfigPanel);
+        histogramConfigPanel.setLayout(histogramConfigPanelLayout);
+        histogramConfigPanelLayout.setHorizontalGroup(
+            histogramConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(histogramConfigPanelLayout.createSequentialGroup()
+                .addGroup(histogramConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(histogramConfigPanelLayout.createSequentialGroup()
+                        .addGroup(histogramConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(histogramConfigPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(computeCumulativeHist))
+                            .addGroup(histogramConfigPanelLayout.createSequentialGroup()
+                                .addGap(48, 48, 48)
+                                .addComponent(jLabel2)))
+                        .addGap(0, 10, Short.MAX_VALUE))
+                    .addGroup(histogramConfigPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(histogramConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(histogramConfigPanelLayout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(binSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(histogramConfigPanelLayout.createSequentialGroup()
+                                .addComponent(useDataMinAndMaxCheckbox)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, histogramConfigPanelLayout.createSequentialGroup()
+                                .addComponent(maxValLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(xMaxSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(histogramConfigPanelLayout.createSequentialGroup()
+                                .addComponent(minValLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(xMinSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, histogramConfigPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(computeHistogramButton)))
+                .addContainerGap())
+        );
+        histogramConfigPanelLayout.setVerticalGroup(
+            histogramConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(histogramConfigPanelLayout.createSequentialGroup()
+                .addGroup(histogramConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(binSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(useDataMinAndMaxCheckbox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(histogramConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(minValLabel)
+                    .addComponent(xMinSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(histogramConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(xMaxSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(maxValLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(computeCumulativeHist)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(computeHistogramButton))
+        );
 
         fileMenu.setText("File");
 
@@ -344,23 +272,25 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator1)
-            .addComponent(jSplitPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(210, Short.MAX_VALUE)
                 .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(histogramConfigPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
+                .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(11, 11, 11)
-                .addComponent(jSplitPane)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(histogramConfigPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
                 .addComponent(clearButton)
                 .addContainerGap())
         );
@@ -387,45 +317,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_SaveActionPerformed
 
-    private void colorChooserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooserButtonActionPerformed
-        Color c = JColorChooser.showDialog(null,
-                "Color chooser", selectionManager.getCurrentSelectionColor());
-        if (c != null) {
-            tagColorThumbnail.setBackground(c);
-            saveTagButton.setEnabled(true);
-        }
-        setCurrentSelectionColor(c);
-    }//GEN-LAST:event_colorChooserButtonActionPerformed
-
-    private void valueChangedJListListener(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_valueChangedJListListener
-        if (evt.getValueIsAdjusting()) {
-            return;
-        }
-        if (!tagsJList.isSelectionEmpty()) {
-            if (tagsJList.getSelectedIndices().length > 1) {
-                deleteTagButton.setEnabled(false);
-                saveTagButton.setEnabled(false);
-            } else {
-                deleteTagButton.setEnabled(true);
-                saveTagButton.setEnabled(true);
-            }
-
-            JListElement selectedElem = (JListElement) tagsJList.getSelectedValue();
-            Tag t = TagManager.getInstance().getTagById(selectedElem.getId());
-            if (t == null) {
-                logger.trace("No tag selected");
-                return;
-            }
-            tagColorThumbnail.setBackground(t.getColor());
-            tagNameField.setText(t.getName());
-            tagDescriptionArea.setText(t.getDescription());
-            setCurrentSelectionColor(t.getColor());
-        } else {
-            deleteTagButton.setEnabled(false);
-            saveTagButton.setEnabled(false);
-        }
-    }//GEN-LAST:event_valueChangedJListListener
-
     private void setCurrentSelectionColor(Color color) {
         selectionManager.setCurrentSelectionColor(color);
         if (graphPanel != null) {
@@ -433,86 +324,12 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         }
     }
 
-    private void saveTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveTagButtonActionPerformed
-        if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to save changes?")) {
-            String tagName = tagNameField.getText();
-            Color tagColor = tagColorThumbnail.getBackground();
-            String tagDescription = tagDescriptionArea.getText();
-
-            if (!validateTag(tagColor, tagName, tagDescription)) {
-                IJ.showMessage("Object filtering frame", "Tag name and color must be set. Description is optioanl");
-                return;
-            }
-
-            int selectedIndex = tagsJList.getSelectedIndex();
-            JListElement e = (JListElement) tagsJList.getSelectedValue();
-            Color c = TagManager.getInstance().getTagColor(e.getId());
-            Tag tag = new Tag(tagColor, tagName, tagDescription);
-            tag.setId(e.getId());
-            TagManager.getInstance().editTag(tag);
-
-            if (graphPanel != null) {
-                graphPanel.changeSelectionColor(c, tagColor);
-            }
-
-            setCurrentSelectionColor(tagColor);
-            updateTagJList();
-            tagsJList.setSelectedIndex(selectedIndex);
-        }
-    }//GEN-LAST:event_saveTagButtonActionPerformed
-
-    private void addNewTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addNewTagButtonActionPerformed
-        String tagName = tagNameField.getText();
-        Color tagColor = tagColorThumbnail.getBackground();
-        String tagDescription = tagDescriptionArea.getText();
-
-        if (!validateTag(tagColor, tagName, tagName)) {
-            IJ.showMessage("Object filtering frame", "Tag name and color must be set. Description is optional.");
-            return;
-        }
-
-        if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to add new tag?")) {
-            int id = TagManager.getInstance().addTag(tagColor, tagName, tagDescription);
-            updateTagJList();
-            emptyFormular();
-
-            for (ManageTagListener listener : tagListeners) {
-                listener.newTagCreatedEvent(id, tagColor);
-            }
-        }
-    }//GEN-LAST:event_addNewTagButtonActionPerformed
-
-    private void deleteTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteTagButtonActionPerformed
-        if (!tagsJList.isSelectionEmpty()) {
-            if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to delete selected tag?")) {
-                Tag t = TagManager.getInstance().getTagById(((JListElement) tagsJList.getSelectedValue()).getId());
-                if (t == null) {
-                    return;
-                }
-                TagManager.getInstance().removeTag(t);
-
-                emptyFormular();
-                updateTagJList();
-
-                if (graphPanel != null) {
-                    graphPanel.deselectShapeWithColor(t.getColor());
-                }
-                t = null;
-
-                deleteTagButton.setEnabled(false);
-                saveTagButton.setEnabled(false);
-            }
-        }
-    }//GEN-LAST:event_deleteTagButtonActionPerformed
-
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to delete all selections?")) {
             if (graphPanel != null) {
                 graphPanel.clearAllSelectionsEvent();
             }
             TagManager.getInstance().clearAllTags();
-            emptyFormular();
-            updateTagJList();
         }
     }//GEN-LAST:event_clearButtonActionPerformed
 
@@ -528,40 +345,82 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_optionsMenuItemActionPerformed
 
-    private void emptyFormular() {
-        tagColorThumbnail.setBackground(selectionManager.getCurrentSelectionColor());
-        tagNameField.setText("");
-        tagDescriptionArea.setText("");
+    private void computeHistogramButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_computeHistogramButtonActionPerformed
+        int binNumber = (Integer) binSpinner.getValue();
+        if (binNumber == 0) {
+            IJ.showMessage("Count of bin must be greater then zero");
+            return;
+        }
+
+        double minVal;
+        double maxVal;
+        if (useDataMinAndMaxCheckbox.isSelected()) {
+            minVal = minColumnValue;
+            maxVal = maxColumnValue;
+        } else {
+            minVal = (Double) xMinSpinner.getValue();
+            maxVal = (Double) xMaxSpinner.getValue();
+        }
+
+        Object[] columnData = ((AbstractInteractiveTableModel) tableModel).getColumnData(selectedColumnName);
+        DataStatistics.printData(columnData);
+
+        HistogramDataSet chartData = DataStatistics.computeDataSetFromTable(columnData);
+        HistogramChart chart = new HistogramChart();
+
+        List<HistogramBin> calculatedHistogram;
+        if (computeCumulativeHist.isSelected()) {
+            chart.setColumnName(selectedColumnName + " cumulated");
+            calculatedHistogram = HistogramImproved.calculateCumulatedHistogram(columnData, minVal, maxVal, binNumber);
+        } else {
+            calculatedHistogram = HistogramImproved.calculateHistogram(columnData, minVal, maxVal, binNumber);
+        }
+        chartData.setMinValue(minVal);
+        chartData.setMaxValue(maxVal);
+
+        chartData.setMaxOccurence(HistogramImproved.getMaxOccurence());
+        chartData.setMinOccurence(HistogramImproved.getMinOccurence());
+        chartData.setPairs(calculatedHistogram);
+
+        chartData.setBinSize(HistogramImproved.getBinSize());
+        chartData.setNumberOfBins(HistogramImproved.getBinsNumber());
+        chart.loadData(chartData);
+
+        graphPanel.setChart(chart);
+        graphPanel.updatePaint();
+    }//GEN-LAST:event_computeHistogramButtonActionPerformed
+
+    private void useDataMinAndMaxCheckboxStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_useDataMinAndMaxCheckboxStateChanged
+        changeVisibilitiForMinMaxSpinner(!this.useDataMinAndMaxCheckbox.isSelected());
+    }//GEN-LAST:event_useDataMinAndMaxCheckboxStateChanged
+
+    private void changeVisibilitiForMinMaxSpinner(boolean isSelected) {
+        xMaxSpinner.setEnabled(isSelected);
+        xMinSpinner.setEnabled(isSelected);
+        maxValLabel.setEnabled(isSelected);
+        minValLabel.setEnabled(isSelected);
     }
 
-    private void updateTagJList() {
-        tagsJList.setListData(getTagListData(TagManager.getInstance().getTags()));
-        tagsJList.repaint();
+    public void showWindow(String selectedColumName) {
+        this.selectedColumnName = selectedColumName;
+
+        Object[] columnData = ((AbstractInteractiveTableModel) tableModel).getColumnData(selectedColumnName);
+        HistogramDataSet computeDataSetFromTable = DataStatistics.computeDataSetFromTable(columnData);
+        minColumnValue = computeDataSetFromTable.getMinValue();
+        maxColumnValue = computeDataSetFromTable.getMaxValue();
+
+        xMaxSpinner.setValue(maxColumnValue);
+        xMinSpinner.setValue(minColumnValue);
+
+        if (!super.isVisible()) {
+            super.setVisible(true);
+        }
     }
 
-    private boolean validateTag(Color color, String name, String desc) {
-        boolean isValid = true;
-        if (color == null) {
-            isValid = false;
-        }
-        if (name == null || name.isEmpty()) {
-            isValid = false;
-        }
-        if (desc == null) {
-            isValid = false;
-        }
-        return isValid;
-    }
-
-    private JListElement[] getTagListData(List<Tag> tags) {
-        JListElement elements[] = new JListElement[tags.size()];
-        int i = 0;
-        for (Tag t : tags) {
-            elements[i] = new JListElement(t.getId(), t.getName(), new CircleIcon(t.getColor()));
-            i++;
-        }
-
-        return elements;
+    @Override
+    @Deprecated
+    public void setVisible(boolean b) {
+        throw new UnsupportedOperationException("Use showWindow() method instead.");
     }
 
     /**
@@ -571,7 +430,10 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                ObjectFilteringFrame frame = new ObjectFilteringFrame();
+                AfmAnalyzerTableModel afmAnalyzerTableModel = new AfmAnalyzerTableModel(new String[]{"ColumnA"});
+                afmAnalyzerTableModel.setValues(new Object[][]{{14.0}, {24.0}, {27.0}, {31.0}, {36.0}, {38.0}, {42.0},
+                {51.0}, {53.0}, {54.0}, {57.0}, {59.0}, {61.0}, {63.0}, {64.0}, {67.0}, {69.0}, {62.0}, {75.0}});
+                ObjectFilteringFrame frame = new ObjectFilteringFrame(afmAnalyzerTableModel);
                 Chart chart = new HistogramChart();
                 chart.setColumnName("ColumnA");
                 HistogramDataSet dataSet = new HistogramDataSet();
@@ -587,298 +449,32 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
                 dataSet.addPair(new HistogramBin(6, 60, 70, 6));
                 dataSet.addPair(new HistogramBin(7, 70, 80, 1));
                 dataSet.setMedianValue(80);
-//                dataSet.addPair(new HistogramBin(1, 1.0, 19));
-//                dataSet.addPair(new HistogramBin(2, 9.0, 3));
-//                dataSet.addPair(new HistogramBin(3, 17.0, 4));
-//                dataSet.addPair(new HistogramBin(4, 26.0, 1));
-//                dataSet.addPair(new HistogramBin(5, 34.0, 1));
-//                dataSet.addPair(new HistogramBin(6, 42.0, 0));
-//                dataSet.addPair(new HistogramBin(7, 50.0, 4));
-//                dataSet.addPair(new HistogramBin(8, 58.0, 0));
-//                dataSet.addPair(new HistogramBin(9, 67.0, 3));
-//                dataSet.addPair(new HistogramBin(10, 75.0, 1));
-//                dataSet.addPair(new HistogramBin(11, 83.0, 3));
-//                dataSet.addPair(new HistogramBin(12, 91.0, 2));
-//                dataSet.addPair(new HistogramBin(13, 99.0, 2));
-//                dataSet.addPair(new HistogramBin(14, 108.0, 1));
-//                dataSet.addPair(new HistogramBin(15, 116.0, 2));
-//                dataSet.addPair(new HistogramBin(16, 124.0, 0));
-//                dataSet.addPair(new HistogramBin(17, 132.0, 1));
-//                dataSet.addPair(new HistogramBin(18, 141.0, 1));
-//                dataSet.addPair(new HistogramBin(19, 149.0, 1));
-//                dataSet.addPair(new HistogramBin(20, 157.0, 2));
-//                dataSet.addPair(new HistogramBin(21, 165.0, 1));
-//                dataSet.addPair(new HistogramBin(22, 173.0, 1));
-//                dataSet.addPair(new HistogramBin(23, 182.0, 1));
-//                dataSet.addPair(new HistogramBin(24, 190.0, 1));
-//                dataSet.addPair(new HistogramBin(25, 198.0, 1));
-//                dataSet.addPair(new HistogramBin(26, 206.0, 0));
-//                dataSet.addPair(new HistogramBin(27, 214.0, 0));
-//                dataSet.addPair(new HistogramBin(28, 223.0, 4));
-//                dataSet.addPair(new HistogramBin(29, 231.0, 0));
-//                dataSet.addPair(new HistogramBin(30, 239.0, 2));
-//                dataSet.addPair(new HistogramBin(31, 247.0, 0));
-//                dataSet.addPair(new HistogramBin(32, 255.0, 1));
-//                dataSet.addPair(new HistogramBin(33, 264.0, 0));
-//                dataSet.addPair(new HistogramBin(34, 272.0, 1));
-//                dataSet.addPair(new HistogramBin(35, 280.0, 1));
-//                dataSet.addPair(new HistogramBin(36, 288.0, 0));
-//                dataSet.addPair(new HistogramBin(37, 296.0, 0));
-//                dataSet.addPair(new HistogramBin(38, 305.0, 1));
-//                dataSet.addPair(new HistogramBin(39, 313.0, 0));
-//                dataSet.addPair(new HistogramBin(40, 321.0, 0));
-//                dataSet.addPair(new HistogramBin(41, 329.0, 3));
-//                dataSet.addPair(new HistogramBin(42, 337.0, 1));
-//                dataSet.addPair(new HistogramBin(43, 346.0, 1));
-//                dataSet.addPair(new HistogramBin(44, 354.0, 0));
-//                dataSet.addPair(new HistogramBin(45, 362.0, 0));
-//                dataSet.addPair(new HistogramBin(46, 370.0, 1));
-//                dataSet.addPair(new HistogramBin(47, 379.0, 2));
-//                dataSet.addPair(new HistogramBin(48, 387.0, 1));
-//                dataSet.addPair(new HistogramBin(49, 395.0, 0));
-//                dataSet.addPair(new HistogramBin(50, 403.0, 0));
-//                dataSet.addPair(new HistogramBin(51, 411.0, 1));
-//                dataSet.addPair(new HistogramBin(52, 420.0, 0));
-//                dataSet.addPair(new HistogramBin(53, 428.0, 0));
-//                dataSet.addPair(new HistogramBin(54, 436.0, 4));
-//                dataSet.addPair(new HistogramBin(55, 444.0, 0));
-//                dataSet.addPair(new HistogramBin(56, 452.0, 2));
-//                dataSet.addPair(new HistogramBin(57, 461.0, 1));
-//                dataSet.addPair(new HistogramBin(58, 469.0, 1));
-//                dataSet.addPair(new HistogramBin(59, 477.0, 1));
-//                dataSet.addPair(new HistogramBin(60, 485.0, 2));
-//                dataSet.addPair(new HistogramBin(61, 493.0, 0));
-//                dataSet.addPair(new HistogramBin(62, 502.0, 1));
-//                dataSet.addPair(new HistogramBin(63, 510.0, 0));
-//                dataSet.addPair(new HistogramBin(64, 518.0, 0));
-//                dataSet.addPair(new HistogramBin(65, 526.0, 0));
-//                dataSet.addPair(new HistogramBin(66, 534.0, 0));
-//                dataSet.addPair(new HistogramBin(67, 543.0, 0));
-//                dataSet.addPair(new HistogramBin(68, 551.0, 2));
-//                dataSet.addPair(new HistogramBin(69, 559.0, 0));
-//                dataSet.addPair(new HistogramBin(70, 567.0, 0));
-//                dataSet.addPair(new HistogramBin(71, 575.0, 1));
-//                dataSet.addPair(new HistogramBin(72, 584.0, 0));
-//                dataSet.addPair(new HistogramBin(73, 592.0, 0));
-//                dataSet.addPair(new HistogramBin(74, 600.0, 0));
-//                dataSet.addPair(new HistogramBin(75, 608.0, 1));
-//                dataSet.addPair(new HistogramBin(76, 617.0, 0));
-//                dataSet.addPair(new HistogramBin(77, 625.0, 0));
-//                dataSet.addPair(new HistogramBin(78, 633.0, 0));
-//                dataSet.addPair(new HistogramBin(79, 641.0, 0));
-//                dataSet.addPair(new HistogramBin(80, 649.0, 0));
-//                dataSet.addPair(new HistogramBin(81, 658.0, 0));
-//                dataSet.addPair(new HistogramBin(82, 666.0, 0));
-//                dataSet.addPair(new HistogramBin(83, 674.0, 0));
-//                dataSet.addPair(new HistogramBin(84, 682.0, 0));
-//                dataSet.addPair(new HistogramBin(85, 690.0, 0));
-//                dataSet.addPair(new HistogramBin(86, 699.0, 0));
-//                dataSet.addPair(new HistogramBin(87, 707.0, 1));
-//                dataSet.addPair(new HistogramBin(88, 715.0, 1));
-//                dataSet.addPair(new HistogramBin(89, 723.0, 1));
-//                dataSet.addPair(new HistogramBin(90, 731.0, 0));
-//                dataSet.addPair(new HistogramBin(91, 740.0, 0));
-//                dataSet.addPair(new HistogramBin(92, 748.0, 2));
-//                dataSet.addPair(new HistogramBin(93, 756.0, 1));
-//                dataSet.addPair(new HistogramBin(94, 764.0, 2));
-//                dataSet.addPair(new HistogramBin(95, 772.0, 1));
-//                dataSet.addPair(new HistogramBin(96, 781.0, 0));
-//                dataSet.addPair(new HistogramBin(97, 789.0, 0));
-//                dataSet.addPair(new HistogramBin(98, 797.0, 1));
-//                dataSet.addPair(new HistogramBin(99, 805.0, 0));
-//                dataSet.addPair(new HistogramBin(100, 813.0, 0));
-//                dataSet.addPair(new HistogramBin(101, 822.0, 0));
-//                dataSet.addPair(new HistogramBin(102, 830.0, 0));
-//                dataSet.addPair(new HistogramBin(103, 838.0, 0));
-//                dataSet.addPair(new HistogramBin(104, 846.0, 0));
-//                dataSet.addPair(new HistogramBin(105, 855.0, 1));
-//                dataSet.addPair(new HistogramBin(106, 863.0, 0));
-//                dataSet.addPair(new HistogramBin(107, 871.0, 0));
-//                dataSet.addPair(new HistogramBin(108, 879.0, 0));
-//                dataSet.addPair(new HistogramBin(109, 887.0, 0));
-//                dataSet.addPair(new HistogramBin(110, 896.0, 0));
-//                dataSet.addPair(new HistogramBin(111, 904.0, 0));
-//                dataSet.addPair(new HistogramBin(112, 912.0, 2));
-//                dataSet.addPair(new HistogramBin(113, 920.0, 1));
-//                dataSet.addPair(new HistogramBin(114, 928.0, 0));
-//                dataSet.addPair(new HistogramBin(115, 937.0, 1));
-//                dataSet.addPair(new HistogramBin(116, 945.0, 0));
-//                dataSet.addPair(new HistogramBin(117, 953.0, 0));
-//                dataSet.addPair(new HistogramBin(118, 961.0, 0));
-//                dataSet.addPair(new HistogramBin(119, 969.0, 0));
-//                dataSet.addPair(new HistogramBin(120, 978.0, 0));
-//                dataSet.addPair(new HistogramBin(121, 986.0, 0));
-//                dataSet.addPair(new HistogramBin(122, 994.0, 0));
-//                dataSet.addPair(new HistogramBin(123, 1002.0, 1));
-//                dataSet.addPair(new HistogramBin(124, 1010.0, 1));
-//                dataSet.addPair(new HistogramBin(125, 1019.0, 0));
-//                dataSet.addPair(new HistogramBin(126, 1027.0, 0));
-//                dataSet.addPair(new HistogramBin(127, 1035.0, 1));
-//                dataSet.addPair(new HistogramBin(128, 1043.0, 0));
-//                dataSet.addPair(new HistogramBin(129, 1052.0, 0));
-//                dataSet.addPair(new HistogramBin(130, 1060.0, 0));
-//                dataSet.addPair(new HistogramBin(131, 1068.0, 0));
-//                dataSet.addPair(new HistogramBin(132, 1076.0, 0));
-//                dataSet.addPair(new HistogramBin(133, 1084.0, 0));
-//                dataSet.addPair(new HistogramBin(134, 1093.0, 0));
-//                dataSet.addPair(new HistogramBin(135, 1101.0, 0));
-//                dataSet.addPair(new HistogramBin(136, 1109.0, 0));
-//                dataSet.addPair(new HistogramBin(137, 1117.0, 0));
-//                dataSet.addPair(new HistogramBin(138, 1125.0, 0));
-//                dataSet.addPair(new HistogramBin(139, 1134.0, 0));
-//                dataSet.addPair(new HistogramBin(140, 1142.0, 0));
-//                dataSet.addPair(new HistogramBin(141, 1150.0, 0));
-//                dataSet.addPair(new HistogramBin(142, 1158.0, 0));
-//                dataSet.addPair(new HistogramBin(143, 1166.0, 0));
-//                dataSet.addPair(new HistogramBin(144, 1175.0, 0));
-//                dataSet.addPair(new HistogramBin(145, 1183.0, 0));
-//                dataSet.addPair(new HistogramBin(146, 1191.0, 0));
-//                dataSet.addPair(new HistogramBin(147, 1199.0, 0));
-//                dataSet.addPair(new HistogramBin(148, 1207.0, 1));
-//                dataSet.addPair(new HistogramBin(149, 1216.0, 0));
-//                dataSet.addPair(new HistogramBin(150, 1224.0, 0));
-//                dataSet.addPair(new HistogramBin(151, 1232.0, 0));
-//                dataSet.addPair(new HistogramBin(152, 1240.0, 0));
-//                dataSet.addPair(new HistogramBin(153, 1248.0, 0));
-//                dataSet.addPair(new HistogramBin(154, 1257.0, 0));
-//                dataSet.addPair(new HistogramBin(155, 1265.0, 0));
-//                dataSet.addPair(new HistogramBin(156, 1273.0, 0));
-//                dataSet.addPair(new HistogramBin(157, 1281.0, 1));
-//                dataSet.addPair(new HistogramBin(158, 1290.0, 0));
-//                dataSet.addPair(new HistogramBin(159, 1298.0, 0));
-//                dataSet.addPair(new HistogramBin(160, 1306.0, 0));
-//                dataSet.addPair(new HistogramBin(161, 1314.0, 0));
-//                dataSet.addPair(new HistogramBin(162, 1322.0, 0));
-//                dataSet.addPair(new HistogramBin(163, 1331.0, 0));
-//                dataSet.addPair(new HistogramBin(164, 1339.0, 0));
-//                dataSet.addPair(new HistogramBin(165, 1347.0, 0));
-//                dataSet.addPair(new HistogramBin(166, 1355.0, 0));
-//                dataSet.addPair(new HistogramBin(167, 1363.0, 0));
-//                dataSet.addPair(new HistogramBin(168, 1372.0, 0));
-//                dataSet.addPair(new HistogramBin(169, 1380.0, 0));
-//                dataSet.addPair(new HistogramBin(170, 1388.0, 0));
-//                dataSet.addPair(new HistogramBin(171, 1396.0, 0));
-//                dataSet.addPair(new HistogramBin(172, 1404.0, 0));
-//                dataSet.addPair(new HistogramBin(173, 1413.0, 1));
-//                dataSet.addPair(new HistogramBin(174, 1421.0, 0));
-//                dataSet.addPair(new HistogramBin(175, 1429.0, 0));
-//                dataSet.addPair(new HistogramBin(176, 1437.0, 0));
-//                dataSet.addPair(new HistogramBin(177, 1445.0, 1));
-//                dataSet.addPair(new HistogramBin(178, 1454.0, 0));
-//                dataSet.addPair(new HistogramBin(179, 1462.0, 0));
-//                dataSet.addPair(new HistogramBin(180, 1470.0, 0));
-//                dataSet.addPair(new HistogramBin(181, 1478.0, 0));
-//                dataSet.addPair(new HistogramBin(182, 1486.0, 0));
-//                dataSet.addPair(new HistogramBin(183, 1495.0, 0));
-//                dataSet.addPair(new HistogramBin(184, 1503.0, 0));
-//                dataSet.addPair(new HistogramBin(185, 1511.0, 0));
-//                dataSet.addPair(new HistogramBin(186, 1519.0, 0));
-//                dataSet.addPair(new HistogramBin(187, 1528.0, 0));
-//                dataSet.addPair(new HistogramBin(188, 1536.0, 0));
-//                dataSet.addPair(new HistogramBin(189, 1544.0, 0));
-//                dataSet.addPair(new HistogramBin(190, 1552.0, 0));
-//                dataSet.addPair(new HistogramBin(191, 1560.0, 0));
-//                dataSet.addPair(new HistogramBin(192, 1569.0, 0));
-//                dataSet.addPair(new HistogramBin(193, 1577.0, 0));
-//                dataSet.addPair(new HistogramBin(194, 1585.0, 0));
-//                dataSet.addPair(new HistogramBin(195, 1593.0, 0));
-//                dataSet.addPair(new HistogramBin(196, 1601.0, 0));
-//                dataSet.addPair(new HistogramBin(197, 1610.0, 1));
-//                dataSet.addPair(new HistogramBin(198, 1618.0, 0));
-//                dataSet.addPair(new HistogramBin(199, 1626.0, 0));
-//                dataSet.addPair(new HistogramBin(200, 1634.0, 0));
-//                dataSet.addPair(new HistogramBin(201, 1642.0, 0));
-//                dataSet.addPair(new HistogramBin(202, 1651.0, 0));
-//                dataSet.addPair(new HistogramBin(203, 1659.0, 0));
-//                dataSet.addPair(new HistogramBin(204, 1667.0, 0));
-//                dataSet.addPair(new HistogramBin(205, 1675.0, 0));
-//                dataSet.addPair(new HistogramBin(206, 1683.0, 0));
-//                dataSet.addPair(new HistogramBin(207, 1692.0, 0));
-//                dataSet.addPair(new HistogramBin(208, 1700.0, 0));
-//                dataSet.addPair(new HistogramBin(209, 1708.0, 0));
-//                dataSet.addPair(new HistogramBin(210, 1716.0, 0));
-//                dataSet.addPair(new HistogramBin(211, 1724.0, 0));
-//                dataSet.addPair(new HistogramBin(212, 1733.0, 0));
-//                dataSet.addPair(new HistogramBin(213, 1741.0, 0));
-//                dataSet.addPair(new HistogramBin(214, 1749.0, 0));
-//                dataSet.addPair(new HistogramBin(215, 1757.0, 0));
-//                dataSet.addPair(new HistogramBin(216, 1766.0, 0));
-//                dataSet.addPair(new HistogramBin(217, 1774.0, 1));
-//                dataSet.addPair(new HistogramBin(218, 1782.0, 0));
-//                dataSet.addPair(new HistogramBin(219, 1790.0, 0));
-//                dataSet.addPair(new HistogramBin(220, 1798.0, 0));
-//                dataSet.addPair(new HistogramBin(221, 1807.0, 0));
-//                dataSet.addPair(new HistogramBin(222, 1815.0, 0));
-//                dataSet.addPair(new HistogramBin(223, 1823.0, 0));
-//                dataSet.addPair(new HistogramBin(224, 1831.0, 0));
-//                dataSet.addPair(new HistogramBin(225, 1839.0, 0));
-//                dataSet.addPair(new HistogramBin(226, 1848.0, 0));
-//                dataSet.addPair(new HistogramBin(227, 1856.0, 0));
-//                dataSet.addPair(new HistogramBin(228, 1864.0, 0));
-//                dataSet.addPair(new HistogramBin(229, 1872.0, 0));
-//                dataSet.addPair(new HistogramBin(230, 1880.0, 0));
-//                dataSet.addPair(new HistogramBin(231, 1889.0, 0));
-//                dataSet.addPair(new HistogramBin(232, 1897.0, 0));
-//                dataSet.addPair(new HistogramBin(233, 1905.0, 0));
-//                dataSet.addPair(new HistogramBin(234, 1913.0, 0));
-//                dataSet.addPair(new HistogramBin(235, 1921.0, 0));
-//                dataSet.addPair(new HistogramBin(236, 1930.0, 0));
-//                dataSet.addPair(new HistogramBin(237, 1938.0, 0));
-//                dataSet.addPair(new HistogramBin(238, 1946.0, 0));
-//                dataSet.addPair(new HistogramBin(239, 1954.0, 0));
-//                dataSet.addPair(new HistogramBin(240, 1962.0, 0));
-//                dataSet.addPair(new HistogramBin(241, 1971.0, 0));
-//                dataSet.addPair(new HistogramBin(242, 1979.0, 0));
-//                dataSet.addPair(new HistogramBin(243, 1987.0, 0));
-//                dataSet.addPair(new HistogramBin(244, 1995.0, 0));
-//                dataSet.addPair(new HistogramBin(245, 2004.0, 0));
-//                dataSet.addPair(new HistogramBin(246, 2012.0, 1));
-//                dataSet.addPair(new HistogramBin(247, 2020.0, 0));
-//                dataSet.addPair(new HistogramBin(248, 2028.0, 0));
-//                dataSet.addPair(new HistogramBin(249, 2036.0, 0));
-//                dataSet.addPair(new HistogramBin(250, 2045.0, 0));
-//                dataSet.addPair(new HistogramBin(251, 2053.0, 0));
-//                dataSet.addPair(new HistogramBin(252, 2061.0, 0));
-//                dataSet.addPair(new HistogramBin(253, 2069.0, 0));
-//                dataSet.addPair(new HistogramBin(254, 2077.0, 0));
-//                dataSet.addPair(new HistogramBin(255, 2086.0, 0));
-//                dataSet.addPair(new HistogramBin(256, 2094.0, 0));
-//                dataSet.setMaxOccurence(19);
-//                dataSet.setMinOccurence(0);
-//                dataSet.setMaxValue(2102);
-//                dataSet.setMinValue(1);
 
                 chart.loadData(dataSet);
-                frame.addChart(chart);
-                frame.setVisible(true);
+                frame.showWindow("ColumnA");
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Save;
+    private javax.swing.JSpinner binSpinner;
     private javax.swing.JButton clearButton;
-    private javax.swing.JButton colorChooserButton;
-    private javax.swing.JButton deleteTagButton;
+    private javax.swing.JCheckBox computeCumulativeHist;
+    private javax.swing.JButton computeHistogramButton;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
     private interactive.analyzer.graph.GraphPanel graphPanel;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JPanel histogramConfigPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSplitPane jSplitPane;
+    private javax.swing.JLabel maxValLabel;
+    private javax.swing.JLabel minValLabel;
     private javax.swing.JMenuItem optionsMenuItem;
-    private javax.swing.JButton saveTagButton;
-    private javax.swing.JPanel tagColorThumbnail;
-    private javax.swing.JTextArea tagDescriptionArea;
-    private javax.swing.JTextField tagNameField;
-    private javax.swing.JList tagsJList;
+    private javax.swing.JCheckBox useDataMinAndMaxCheckbox;
+    private javax.swing.JSpinner xMaxSpinner;
+    private javax.swing.JSpinner xMinSpinner;
     // End of variables declaration//GEN-END:variables
 }

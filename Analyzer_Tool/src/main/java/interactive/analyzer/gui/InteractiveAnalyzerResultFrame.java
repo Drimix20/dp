@@ -2,13 +2,7 @@ package interactive.analyzer.gui;
 
 import ij.IJ;
 import interactive.analyzer.exporter.TextTableExporter;
-import interactive.analyzer.graph.HistogramChart;
-import interactive.analyzer.graph.Chart;
-import interactive.analyzer.graph.data.HistogramDataSet;
-import interactive.analyzer.graph.data.DataStatistics;
-import interactive.analyzer.graph.data.HistogramBin;
 import static interactive.analyzer.gui.InteractiveAnalyzerResultFrame.TableSelectionMode.*;
-import interactive.analyzer.histogram.HistogramImproved;
 import interactive.analyzer.histogram.HistogramOptionDialog;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.result.table.AbstractInteractiveTableModel;
@@ -66,7 +60,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private String selectedColumnName;
     private List<TableSelectionListener> tableSelectionListeners = new ArrayList<TableSelectionListener>();
     private ObjectFilteringFrame objectFilteringFrame;
-    private Chart chart;
     private TableColorSelectionManager selectionManager;
 
     private TableSelectionMode selectionMode = NONE;
@@ -537,11 +530,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = createTableInstance();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        columnComboBox = new javax.swing.JComboBox();
         showHistogram = new javax.swing.JButton();
         clearSelectionsButton = new javax.swing.JButton();
-        cumulHistCheckBox = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         saveAsMenuItem = new javax.swing.JMenuItem();
@@ -567,10 +557,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         jScrollPane1.setViewportView(jTable1);
         jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-        jLabel1.setText("Selected Column:");
-
-        columnComboBox.setModel(new javax.swing.DefaultComboBoxModel(getColumnHeadersForCombobox()));
-
         showHistogram.setText("Show histogram");
         showHistogram.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -585,36 +571,24 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             }
         });
 
-        cumulHistCheckBox.setText("Cumulative");
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(clearSelectionsButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addComponent(columnComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cumulHistCheckBox)
-                        .addGap(18, 18, 18)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(showHistogram)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(showHistogram)
-                    .addComponent(columnComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(cumulHistCheckBox))
+                .addComponent(showHistogram)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(clearSelectionsButton)
                 .addGap(16, 16, 16))
@@ -682,63 +656,29 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     }// </editor-fold>//GEN-END:initComponents
 
     private void showHistogramActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showHistogramActionPerformed
-        selectedColumnName = (String) columnComboBox.getSelectedItem();
-
-        Object[] columnData = null;
-        if (jTable1.getSelectedRowCount() == 0) {
-            //no row is selected so compute chart from all rows
-            logger.trace("Show data for whole table");
-            columnData = ((AbstractInteractiveTableModel) tableModel).getColumnData(selectedColumnName);
-        } else {
-            //compute chart from selected rows
-            logger.trace("Show data for selected rows: [" + jTable1.getSelectedRows() + "]");
-            columnData = ((AbstractInteractiveTableModel) tableModel).getColumnData(selectedColumnName, jTable1.getSelectedRows());
-        }
-        DataStatistics.printData(columnData);
-
+        logger.info("Show histogram");
         if (objectFilteringFrame == null) {
-            objectFilteringFrame = new ObjectFilteringFrame();
+            objectFilteringFrame = new ObjectFilteringFrame((AbstractInteractiveTableModel) tableModel);
             objectFilteringFrame.addManageTagListener((ManageTagListener) this);
             objectFilteringFrame.addChartSelectionListener(this);
             objectFilteringFrame.addChartSelectionListener((ChartSelectionListener) interactiveImageWindow);
             this.addTableSelectionListener((TableSelectionListener) objectFilteringFrame.getGraphPanel());
         }
-        if (chart == null) {
-            chart = new HistogramChart();
-        }
-        clearTableSelectionAndNotifyListeners();
-        HistogramDataSet chartData = DataStatistics.computeDataSetFromTable(columnData);
-        HistogramOptionDialog histogramDialog = new HistogramOptionDialog(this, true, chartData.getHistogramPairs().size(), chartData.getMinValue(), chartData.getMaxValue());
+
+        HistogramOptionDialog histogramDialog = new HistogramOptionDialog(this, true, getColumnHeadersForCombobox());
+
         histogramDialog.setVisible(true);
         int returnStatus = histogramDialog.getReturnStatus();
 
         if (returnStatus == 0) {
+            logger.trace("Canceled");
             return;
         }
 
-        List<HistogramBin> calculatedHistogram;
-        if (cumulHistCheckBox.isSelected()) {
-            chart.setColumnName(selectedColumnName + " cumulated");
-            calculatedHistogram = HistogramImproved.calculateCumulatedHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
-        } else {
-            chart.setColumnName(selectedColumnName);
-            calculatedHistogram = HistogramImproved.calculateHistogram(columnData, histogramDialog.getXMinValue(), histogramDialog.getXMaxValue(), histogramDialog.getNumbBins());
-        }
+        //TODO jedna se o chtenou funkcionalitu?
+        clearTableSelectionAndNotifyListeners();
 
-        DataStatistics.PairsToString(calculatedHistogram);
-
-        chartData.setMaxOccurence(HistogramImproved.getMaxOccurence());
-        chartData.setMinOccurence(HistogramImproved.getMinOccurence());
-        chartData.setPairs(calculatedHistogram);
-        chartData.setBinSize(HistogramImproved.getBinSize());
-        chartData.setNumberOfBins(HistogramImproved.getBinsNumber());
-
-        chart.loadData(chartData);
-        objectFilteringFrame.addChart(chart);
-        objectFilteringFrame.getGraphPanel().updatePaint();
-        if (!objectFilteringFrame.isVisible()) {
-            objectFilteringFrame.setVisible(true);
-        }
+        objectFilteringFrame.showWindow(histogramDialog.getSelectedColumnName());
     }//GEN-LAST:event_showHistogramActionPerformed
 
     private void clearSelectionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSelectionsButtonActionPerformed
@@ -792,16 +732,21 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InteractiveAnalyzerResultFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -822,10 +767,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton clearSelectionsButton;
-    private javax.swing.JComboBox columnComboBox;
-    private javax.swing.JCheckBox cumulHistCheckBox;
     private javax.swing.JMenu helpMenu;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;

@@ -27,7 +27,7 @@ public class SizeCalibrator {
             LengthUnit unit) {
 
         // Convert image width to specific unit
-        double convertedImageWidth = uLengthInMeter * unit.getValue();
+        double convertedImageWidth = uLengthInMeter * unit.getMultiplier();
 
         logger.trace("Calibrated image width: origin value in metadata " + uLengthInMeter + " in m to " + convertedImageWidth + " " + unit.getAbbreviation());
         return convertedImageWidth;
@@ -45,7 +45,7 @@ public class SizeCalibrator {
             LengthUnit unit) {
 
         // Convert image width to specific unit
-        double convertedImageHeight = vLengthInMeter * unit.getValue();
+        double convertedImageHeight = vLengthInMeter * unit.getMultiplier();
 
         logger.trace("Calibrated image height: origin value in metadata " + vLengthInMeter + " in m to " + convertedImageHeight + " " + unit.getAbbreviation());
         return convertedImageHeight;

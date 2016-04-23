@@ -88,7 +88,7 @@ public class ScalerModule {
      */
     public double scalePixelIntensityToObtainRealHeight(long pixelIntensityValue,
             LengthUnit unit) {
-        return dataScaler.scaleValue(pixelIntensityValue) * unit.getValue();
+        return dataScaler.scaleValue(pixelIntensityValue) * unit.getMultiplier();
     }
 
     /**
@@ -99,6 +99,6 @@ public class ScalerModule {
      */
     public double scalePixelIntensityToObtainRealHeight(
             double pixelIntensityValue, LengthUnit unit) {
-        return dataScaler.scaleValue(pixelIntensityValue) * unit.getValue();
+        return dataScaler.scaleValue(pixelIntensityValue) * unit.getMultiplier();
     }
 }

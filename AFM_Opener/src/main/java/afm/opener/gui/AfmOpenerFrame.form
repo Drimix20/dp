@@ -42,10 +42,15 @@
                                   <Component id="exportTagsCheckbox" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="calibrateImageCheckbox" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                                      <Group type="102" alignment="1" attributes="0">
-                                          <Component id="unitLabel" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="calibrationUnitLabel" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="32767" attributes="0"/>
                                           <Component id="calibrationUnitComboBox" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="dimensionUnitLabel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="32767" attributes="0"/>
+                                          <Component id="dimensionsUnitComboBox" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
                                           <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
@@ -84,17 +89,22 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="selectAll" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="imageOptionPanel" min="-2" pref="195" max="-2" attributes="0"/>
+              <Component id="imageOptionPanel" min="-2" pref="154" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="exportTagsCheckbox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="calibrateImageCheckbox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="calibrationUnitComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="unitLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="dimensionsUnitComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="dimensionUnitLabel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="16" max="32767" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="calibrationUnitLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="calibrationUnitComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="18" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="cancelButton" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="OpenButton" min="-2" max="-2" attributes="0"/>
@@ -202,16 +212,41 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="calibrateImageCheckboxActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JComboBox" name="calibrationUnitComboBox">
+    <Component class="javax.swing.JComboBox" name="dimensionsUnitComboBox">
       <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="0"/>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="new DefaultComboBoxModel(LengthUnit.retrieveAbbreviations())" type="code"/>
+        </Property>
+        <Property name="selectedItem" type="java.lang.Object" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="LengthUnit.MICROMETER" type="code"/>
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="unitLabel">
+    <Component class="javax.swing.JLabel" name="dimensionUnitLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value=" Unit:"/>
+        <Property name="text" type="java.lang.String" value=" Dimensions Unit:"/>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="Dimensions Unit:"/>
+      </AccessibilityProperties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="calibrationUnitLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value=" Height value unit:"/>
+      </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=" Height value unit:"/>
+      </AccessibilityProperties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="calibrationUnitComboBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="new DefaultComboBoxModel(LengthUnit.retrieveAbbreviations())" type="code"/>
+        </Property>
+        <Property name="selectedItem" type="java.lang.Object" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="LengthUnit.NANOMETER" type="code"/>
+        </Property>
       </Properties>
     </Component>
   </SubComponents>

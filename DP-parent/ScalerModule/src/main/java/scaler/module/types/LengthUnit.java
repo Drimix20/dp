@@ -14,21 +14,30 @@ public enum LengthUnit {
     NANOMETER(Math.pow(10, 9), "nm");
 
     private LengthUnit(double value, String abbreviation) {
-        this.value = value;
+        this.multiplier = value;
         this.abbreviation = abbreviation;
     }
 
-    private double value;
+    private double multiplier;
     private String abbreviation;
 
-    public double getValue() {
-        return value;
+    /**
+     Get multiplier needed to convert from meter to this unit
+     @return multiplier
+     */
+    public double getMultiplier() {
+        return multiplier;
     }
 
     public String getAbbreviation() {
         return abbreviation;
     }
 
+    /**
+     Parse enum object from its abbreviation
+     @param abbreviation
+     @return object of enum LengthUnit
+     */
     public static LengthUnit parse(String abbreviation) {
         if (abbreviation.equals(METER.getAbbreviation())) {
             return METER;
@@ -47,6 +56,10 @@ public enum LengthUnit {
         }
     }
 
+    /**
+     Get array of all abbreviations
+     @return abbreviations
+     */
     public static String[] retrieveAbbreviations() {
         LengthUnit[] values = LengthUnit.values();
         String[] abbreviations = new String[values.length];
@@ -59,7 +72,7 @@ public enum LengthUnit {
 
     @Override
     public String toString() {
-        return "SizeUnit{" + "value=" + value + ", abbreviation=" + abbreviation + '}';
+        return "SizeUnit{" + "value=" + multiplier + ", abbreviation=" + abbreviation + '}';
     }
 
 }

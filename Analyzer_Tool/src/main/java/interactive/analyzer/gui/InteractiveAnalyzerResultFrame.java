@@ -43,6 +43,8 @@ import org.apache.log4j.Logger;
  */
 public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelectionListener, ChartSelectionListener, ManageTagListener {
 
+    //TODO thread safe collection of data
+
     private static Logger logger = Logger.getLogger(InteractiveAnalyzerResultFrame.class);
 
     enum TableSelectionMode {

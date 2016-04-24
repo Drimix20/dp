@@ -14,7 +14,7 @@ import java.util.List;
 public interface Chart {
 
     /**
-     * Draws chart using given graphics
+     * Draws chart using given graphics with all its data
      * @param g graphics
      * @param area area where the chart is drawn
      */
@@ -49,6 +49,12 @@ public interface Chart {
      * @return shapes
      */
     public List<Shape> getDrawShapes();
+
+    /**
+     Return if chart contains any data
+     @return
+     */
+    public boolean isEmpty();
 
     /**
      * Scale graph panel clicked point to point of

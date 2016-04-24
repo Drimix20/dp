@@ -334,6 +334,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             try {
                 graphPanel.save(file, (ImageFileFilter) fc.getFileFilter());
             } catch (IOException ex) {
+                IJ.error("Error while saving graph: \n" + ex.getMessage());
             }
         }
     }//GEN-LAST:event_SaveActionPerformed
@@ -388,7 +389,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         }
 
         Object[] columnData = ((AbstractInteractiveTableModel) tableModel).getColumnData(selectedColumnName);
-        DataStatistics.printData(columnData);
 
         HistogramDataSet chartData = DataStatistics.computeDataSetFromTable(columnData);
         HistogramChart chart = new HistogramChart();

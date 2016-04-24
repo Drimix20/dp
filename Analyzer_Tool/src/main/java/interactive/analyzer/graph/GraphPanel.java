@@ -36,6 +36,15 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
     private static Logger logger = Logger.getLogger(GraphPanel.class);
 
+    protected enum GraphSelection {
+
+        //single mode selection by left mouse click
+        SingleMode,
+        //multi mode selection by left mouse dragged click
+        MultiModeSelection,
+        //multi mode deselection by left mouse dragged click
+        MultiModeDeselection;
+    }
     private Graphics2D graphics2D;
     private BufferedImage paintImage;
     private Chart chart;
@@ -48,7 +57,6 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     private double minLowerBound;
     private double maxUpperBound;
 
-    private boolean mousePressed = false;
     private boolean draggedSelection = false;
     private boolean deselectionModeIsOn;
 
@@ -75,11 +83,12 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                 updatePaint();
             }
         });
-        //TODO problem with single mode selection and multimode selection: some selections are not valid but still visible
+
         addMouseMotionListener(new MouseAdapter() {
 
             @Override
             public void mouseMoved(MouseEvent e) {
+                //show tooltip of shape on which is mouse located
                 final MouseEvent event = e;
                 if (chart == null) {
                     return;
@@ -94,137 +103,156 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
             @Override
             public void mouseDragged(MouseEvent e) {
                 final MouseEvent event = e;
-                if (chart == null) {
+                if (chart == null || chart.isEmpty()) {
                     return;
                 }
-                if (mousePressed) {
-                    draggedSelection = true;
+
+                draggedSelection = event.getModifiersEx() == MouseEvent.BUTTON1_DOWN_MASK;
+                deselectionModeIsOn = event.getModifiersEx() == MouseEvent.BUTTON3_DOWN_MASK;
+
+                if (draggedSelection) {
+                    selectionAction(GraphSelection.MultiModeSelection, event);
+                } else if (deselectionModeIsOn) {
+                    selectionAction(GraphSelection.MultiModeDeselection, event);
                 }
-                deselectionModeIsOn = false;
-                if (event.getModifiersEx() == MouseEvent.BUTTON3_DOWN_MASK) {
-                    deselectionModeIsOn = true;
-                }
-
-                Shape shape = getShapeAtPoint(event.getPoint());
-                if (shape != null) {
-                    if (mousePressed && !deselectionModeIsOn) {
-                        boolean select = !deselectionModeIsOn;
-                        shape.setSelected(select);
-                        shape.setSelectionColor(selectionColor);
-
-                        //needed to repaint canvas
-                        updatePaint();
-                    }
-                    if (draggedSelection) {
-                        if (deselectionModeIsOn) {
-                            if (!selectionByDragged.contains(shape)) {
-                                return;
-                            }
-                            logger.info("Dragged selection - deselect " + deselectionModeIsOn);
-                            shape.setSelected(false);
-                            selectionByDragged.remove(shape);
-                            sumOfOccurence -= shape.getOccurence();
-                            updatePaint();
-                            Collections.sort(selectionByDragged);
-                            if (selectionByDragged.isEmpty()) {
-                                //if is selection empty then show no info
-                                clearInformationAboutSelection();
-                            } else {
-                                //show info about current selection
-                                minLowerBound = selectionByDragged.get(0).getLowerBound();
-                                maxUpperBound = selectionByDragged.get(selectionByDragged.size() - 1).getUpperBound();
-                                showInformationAboutSelection(sumOfOccurence, minLowerBound, maxUpperBound);
-                            }
-                            logger.info("Deleted shape, selection size:" + selectionByDragged.size());
-                        } else {
-                            if (selectionByDragged.contains(shape)) {
-                                return;
-                            }
-                            selectionByDragged.add(shape);
-                            sumOfOccurence += shape.getOccurence();
-                            double sMin = shape.getLowerBound();
-                            double sMax = shape.getUpperBound();
-                            minLowerBound = (sMin < minLowerBound) ? sMin : minLowerBound;
-                            maxUpperBound = (sMax > maxUpperBound) ? sMax : maxUpperBound;
-                            showInformationAboutSelection(sumOfOccurence, minLowerBound, maxUpperBound);
-                        }
-
-                    }
-                    logger.info("SelectionByDragged - size" + selectionByDragged.size());
-                }
-
             }
         });
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                logger.info("Single mode selection");
-                final MouseEvent event = e;
-                if (chart == null) {
-                    return;
-                }
-                logger.trace("mouseClicked: " + mousePressed);
-                Shape shape = getShapeAtPoint(event.getPoint());
-                if (shape != null) {
-                    clearAllSelectionsEvent();
-                    logger.trace(shape.getID() + ", " + shape.getTooltipText());
-                    boolean select = !shape.isSelected();
-                    shape.setSelected(select);
-                    shape.setSelectionColor(selectionColor);
-                    //TODO selectionByDragged should be empty
-                    logger.warn("Selection by dragged: " + selectionByDragged.size());
-
-                    //needed to repaint canvas
-                    updatePaint();
-
-                    if (select) {
-                        showInformationAboutSelection(shape.getOccurence(), shape.getLowerBound(), shape.getUpperBound());
-                        //chart shape was selected
-                        notifySingleBarSelected(shape, selectionColor);
-                    } else {
-                        clearInformationAboutSelection();
-                        //chart shape was deselected
-                        notifyBarDeselected(shape);
-
-                    }
-                }
+                selectionAction(GraphSelection.SingleMode, e);
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
                 logger.info("Mouse button " + e.getButton());
-                if (chart == null) {
+                if (chart == null || chart.isEmpty()) {
                     return;
                 }
-                mousePressed = true;
+
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    clearAllSelectionsEvent();
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                final MouseEvent event = e;
-                if (chart == null) {
+                if (chart == null || chart.isEmpty()) {
                     return;
                 }
-                logger.trace("");
-                mousePressed = false;
-                //multiple selection by mouse dragged
-                if (draggedSelection) {
-                    logger.trace("dragged selection");
-                    for (Shape shapeByDragged : selectionByDragged) {
-                        if (deselectionModeIsOn) {
-                            //chart shape was deselected
-                            notifyBarDeselected(shapeByDragged);
-                        } else {
-                            //chart shape was selected
-                            notifyBarSelected(shapeByDragged, selectionColor);
-                        }
-                    }
-                    //reinitializeSelectionInformation();
-                }
-                draggedSelection = false;
+                logger.info("Dragged selections: " + selectionByDragged.size());
             }
         });
+    }
+
+    /**
+     Method do selection which depends on selectionMode. Mouse event is needed to determine which shape is selected
+     @param selectionMode
+     @param event
+     */
+    public void selectionAction(GraphSelection selectionMode, MouseEvent event) {
+        switch (selectionMode) {
+            case SingleMode:
+                singleBarSelectionAction(event);
+                break;
+            case MultiModeSelection:
+                multipleBarSelectionAction(event);
+                break;
+            case MultiModeDeselection:
+                mulptipleBarDeselectionAction(event);
+                break;
+        }
+    }
+
+    /**
+     Just single bar was selected or deselected by mouse click. Single selection at time.
+     If clicked shape is selected then method deselects it.
+     @param event
+     */
+    private void singleBarSelectionAction(final MouseEvent event) {
+        if (chart == null || chart.isEmpty()) {
+            return;
+        }
+        Shape shape = getShapeAtPoint(event.getPoint());
+        if (shape == null) {
+            return;
+        }
+
+        logger.trace(shape.getID() + ", " + shape.getTooltipText());
+        clearSelectionsInGraph();
+        //Select shape clicked on
+        boolean select = !shape.isSelected();
+        shape.setSelected(select);
+        shape.setSelectionColor(selectionColor);
+
+        //needed to repaint canvas
+        updatePaint();
+
+        if (select) {
+            //Show information of selected object
+            showInformationAboutSelection(shape.getOccurence(), shape.getLowerBound(), shape.getUpperBound());
+            //chart shape was selected
+            notifySingleBarSelected(shape, selectionColor);
+        } else {
+            //No information to show
+            clearInformationAboutSelection();
+            //chart shape was deselected
+            notifyBarDeselected(shape);
+        }
+    }
+
+    /**
+     Multiple bars were selected by mouse dragged with left button clicked.
+     @param event
+     */
+    private void multipleBarSelectionAction(final MouseEvent event) {
+        Shape shape = getShapeAtPoint(event.getPoint());
+        if (shape == null) {
+            return;
+        }
+        if (selectionByDragged.contains(shape)) {
+            return;
+        }
+        logger.info("Selecting " + shape.getID());
+        shape.setSelected(true);
+        shape.setSelectionColor(selectionColor);
+        selectionByDragged.add(shape);
+        updatePaint();
+        sumOfOccurence += shape.getOccurence();
+        double sMin = shape.getLowerBound();
+        double sMax = shape.getUpperBound();
+        minLowerBound = (sMin < minLowerBound) ? sMin : minLowerBound;
+        maxUpperBound = (sMax > maxUpperBound) ? sMax : maxUpperBound;
+        showInformationAboutSelection(sumOfOccurence, minLowerBound, maxUpperBound);
+        notifyBarSelected(shape, selectionColor);
+    }
+
+    private void mulptipleBarDeselectionAction(final MouseEvent event) {
+        Shape shape = getShapeAtPoint(event.getPoint());
+        if (shape == null) {
+            return;
+        }
+        if (!selectionByDragged.contains(shape)) {
+            return;
+        }
+        logger.info("Disabling shape: " + shape.getID());
+        shape.setSelected(false);
+        selectionByDragged.remove(shape);
+        sumOfOccurence -= shape.getOccurence();
+        updatePaint();
+        Collections.sort(selectionByDragged);
+        if (selectionByDragged.isEmpty()) {
+            //if is selection empty then show no info
+            clearInformationAboutSelection();
+        } else {
+            //show info about current selection
+            minLowerBound = selectionByDragged.get(0).getLowerBound();
+            maxUpperBound = selectionByDragged.get(selectionByDragged.size() - 1).getUpperBound();
+            showInformationAboutSelection(sumOfOccurence, minLowerBound, maxUpperBound);
+        }
+        notifyBarDeselected(shape);
+        logger.info("Deleted shape, selection size:" + selectionByDragged.size());
     }
 
     /**
@@ -250,7 +278,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     public void changeSelectionColor(final Color oldC, final Color newC) {
-        if (chart == null) {
+        if (chart == null || chart.isEmpty()) {
             return;
         }
         for (Shape shape : chart.getDrawShapes()) {
@@ -283,6 +311,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         return format;
     }
 
+    /**
+     Method delete all information about selection on Object Filtering frame.
+     */
     private void clearInformationAboutSelection() {
         logger.info("Clearing information about selection");
         informativePanel.setCountFieldValue("");
@@ -291,7 +322,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     public void deselectShapeWithColor(final Color color) {
-        if (chart == null) {
+        if (chart == null || chart.isEmpty()) {
             return;
         }
         for (Shape shape : chart.getDrawShapes()) {
@@ -304,47 +335,72 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         updatePaint();
     }
 
-    public void notifySingleBarSelected(Shape shape, Color selectionColor) {
-        if (shape == null || selectionColor == null) {
-            throw new IllegalArgumentException("Shape or color is null");
-        }
-        if (chart == null) {
-            return;
-        }
-        logger.trace("Single bar selected: " + shape);
-        for (ChartSelectionListener listener : selectionListeners) {
-            listener.singleBarSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
-        }
+    /**
+     Notify subscribers that single bar is selected. Subscribers should take care of selections.
+     It means only one selection at time.
+     @param shape selected shape on graph
+     @param selectionColor selected color
+     */
+    public void notifySingleBarSelected(final Shape shape,
+            final Color selectionColor) {
+        new Runnable() {
+
+            @Override
+            public void run() {
+                if (shape == null || selectionColor == null) {
+                    throw new IllegalArgumentException("Shape or color is null");
+                }
+                if (chart == null || chart.isEmpty()) {
+                    return;
+                }
+                logger.trace("Single bar selected: " + shape);
+                for (ChartSelectionListener listener : selectionListeners) {
+                    listener.singleBarSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
+                }
+            }
+        }.run();
+
     }
 
-    public void notifyBarSelected(Shape shape, Color selectionColor) {
-        if (shape == null || selectionColor == null) {
-            throw new IllegalArgumentException("Shape or color is null");
-        }
-        if (chart == null) {
-            return;
-        }
-        logger.trace("Multiple bar selected: " + shape);
-        for (ChartSelectionListener listener : selectionListeners) {
-            listener.barSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
-        }
+    public void notifyBarSelected(final Shape shape, final Color selectionColor) {
+        new Runnable() {
+            @Override
+            public void run() {
+                if (shape == null || selectionColor == null) {
+                    throw new IllegalArgumentException("Shape or color is null");
+                }
+                if (chart == null || chart.isEmpty()) {
+                    return;
+                }
+                logger.trace("Multiple bar selected: " + shape);
+                for (ChartSelectionListener listener : selectionListeners) {
+                    listener.barSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
+                }
+            }
+        }.run();
     }
 
-    public void notifyBarDeselected(Shape shape) {
-        if (shape == null) {
-            throw new IllegalArgumentException("Shape is null");
-        }
-        if (chart == null) {
-            return;
-        }
-        logger.trace("Bar deselected: " + shape);
-        for (ChartSelectionListener listener : selectionListeners) {
-            listener.barDeselectedEvent(shape.getLowerBound(), shape.getUpperBound());
-        }
+    public void notifyBarDeselected(final Shape shape) {
+        new Runnable() {
+
+            @Override
+            public void run() {
+                if (shape == null) {
+                    throw new IllegalArgumentException("Shape is null");
+                }
+                if (chart == null || chart.isEmpty()) {
+                    return;
+                }
+                logger.trace("Bar deselected: " + shape);
+                for (ChartSelectionListener listener : selectionListeners) {
+                    listener.barDeselectedEvent(shape.getLowerBound(), shape.getUpperBound());
+                }
+            }
+        }.run();
     }
 
     public void setBarBackgroundColor(Color color) {
-        if (chart != null) {
+        if (chart != null || chart.isEmpty()) {
             for (Shape shape : chart.getDrawShapes()) {
                 shape.setBgColor(color);
             }
@@ -352,7 +408,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     public void setBarBorderColor(Color color) {
-        if (chart != null) {
+        if (chart != null || chart.isEmpty()) {
             for (Shape shape : chart.getDrawShapes()) {
                 shape.setBorderColor(color);
             }
@@ -387,7 +443,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
      * @return shape or null if no shape
      */
     private Shape getShapeAtPoint(Point p) {
-        if (chart == null) {
+        if (chart == null || chart.isEmpty()) {
             logger.trace("No chart is painted");
             return null;
         }
@@ -497,18 +553,32 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         updatePaint();
     }
 
+    /**
+     Method clear all selections in graph and notify subscribers to clean all selections to.
+     */
     @Override
     public void clearAllSelectionsEvent() {
         logger.trace("");
-        if (chart != null) {
-            chart.clearAllSelections();
-        }
-        updatePaint();
+        clearSelectionsInGraph();
 
         for (ChartSelectionListener listener : selectionListeners) {
             listener.clearBarSelectionsEvent();
         }
     }
     // </editor-fold>
+
+    /**
+     Method clear all selections in graph, remove selections created by mouse dragged,
+     clear informations and repaint graph
+     */
+    private void clearSelectionsInGraph() {
+        logger.info("clear selections");
+        if (chart != null) {
+            chart.clearAllSelections();
+        }
+        selectionByDragged.clear();
+        clearInformationAboutSelection();
+        updatePaint();
+    }
 
 }

@@ -82,6 +82,11 @@ public class HistogramChart implements Chart {
         return data;
     }
 
+    @Override
+    public boolean isEmpty() {
+        return shapes.isEmpty();
+    }
+
     /**
      * Prepare shapes representing bars in graph. If sorting was performed after
      * selection then selection will be visible after sorting

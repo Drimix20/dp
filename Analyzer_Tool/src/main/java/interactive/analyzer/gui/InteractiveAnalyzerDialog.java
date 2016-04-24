@@ -111,13 +111,13 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
         //Check if any image window is visible
         if (imageTitles.length == 0) {
             IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "No images are open.");
-            returnVal = false;
+            return false;
         }
 
         //Check if any results table window is visible
         if (resultTableChoice.getItemCount() == 0) {
             IJ.showMessage(INTERACTIVE__ANALYZER_NAME, "No results table is visible.");
-            returnVal = false;
+            return false;
         }
 
         //Retrieve RoiManager
@@ -127,7 +127,7 @@ public class InteractiveAnalyzerDialog extends javax.swing.JDialog {
             this.openRoisButton.setEnabled(true);
             roiManager = new RoiManager(false);
         }
-        return returnVal;
+        return true;
     }
 
     /** This method is called from within the constructor to

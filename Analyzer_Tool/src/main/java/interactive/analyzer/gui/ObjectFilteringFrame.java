@@ -52,6 +52,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         initComponents();
 
         graphPanel.setSelectionColor(selectionManager.getCurrentSelectionColor());
+        graphPanel.setInformativePanel(informativePanel1);
         this.setLocationRelativeTo(null);
         logger.trace("Frame width=" + getWidth() + ", height=" + getHeight() + javax.swing.UIManager.getLookAndFeel());
     }
@@ -113,6 +114,8 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         xMaxSpinner = new javax.swing.JSpinner();
         computeCumulativeHist = new javax.swing.JCheckBox();
         computeHistogramButton = new javax.swing.JButton();
+        informationPanel = new InformativePanel();
+        informativePanel1 = new interactive.analyzer.gui.InformativePanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         Save = new javax.swing.JMenuItem();
@@ -121,6 +124,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Object's filtering");
+        setMinimumSize(new java.awt.Dimension(408, 550));
 
         graphPanel.setMinimumSize(new java.awt.Dimension(401, 249));
         graphPanel.setPreferredSize(new java.awt.Dimension(401, 249));
@@ -135,7 +139,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         );
         graphPanelLayout.setVerticalGroup(
             graphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 249, Short.MAX_VALUE)
+            .addGap(0, 255, Short.MAX_VALUE)
         );
 
         clearButton.setText("Clear all selections");
@@ -164,6 +168,9 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
         xMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(1.0d)));
         xMinSpinner.setEnabled(false);
+        xMinSpinner.setMinimumSize(new java.awt.Dimension(55, 20));
+        xMinSpinner.setName(""); // NOI18N
+        xMinSpinner.setPreferredSize(new java.awt.Dimension(55, 20));
 
         maxValLabel.setText("Maximal:");
         maxValLabel.setEnabled(false);
@@ -206,13 +213,13 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
                                 .addComponent(useDataMinAndMaxCheckbox)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, histogramConfigPanelLayout.createSequentialGroup()
-                                .addComponent(maxValLabel)
+                                .addGroup(histogramConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(maxValLabel)
+                                    .addComponent(minValLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(xMaxSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(histogramConfigPanelLayout.createSequentialGroup()
-                                .addComponent(minValLabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(xMinSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGroup(histogramConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(xMinSpinner, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                                    .addComponent(xMaxSpinner)))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, histogramConfigPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(computeHistogramButton)))
@@ -240,6 +247,17 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
                 .addComponent(computeCumulativeHist)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(computeHistogramButton))
+        );
+
+        javax.swing.GroupLayout informationPanelLayout = new javax.swing.GroupLayout(informationPanel);
+        informationPanel.setLayout(informationPanelLayout);
+        informationPanelLayout.setHorizontalGroup(
+            informationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(informativePanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+        );
+        informationPanelLayout.setVerticalGroup(
+            informationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(informativePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         fileMenu.setText("File");
@@ -273,23 +291,26 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(210, Short.MAX_VALUE)
-                .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(histogramConfigPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(histogramConfigPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(informationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(graphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(histogramConfigPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(histogramConfigPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(informationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(40, 40, 40)
                 .addComponent(clearButton)
                 .addContainerGap())
@@ -326,6 +347,9 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to delete all selections?")) {
+            informativePanel1.setCountFieldValue("");
+            informativePanel1.setLowerBoundField("");
+            informativePanel1.setUpperBoundField("");
             if (graphPanel != null) {
                 graphPanel.clearAllSelectionsEvent();
             }
@@ -342,6 +366,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             graphPanel.setBarBorderColor(ObjectFilteringConfiguration.getBarBorderColor());
             graphPanel.setBarBackgroundColor(ObjectFilteringConfiguration.getBarBackgroundColor());
             graphPanel.updatePaint();
+            informativePanel1.repaint();
         }
     }//GEN-LAST:event_optionsMenuItemActionPerformed
 
@@ -466,6 +491,8 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
     private javax.swing.JMenu fileMenu;
     private interactive.analyzer.graph.GraphPanel graphPanel;
     private javax.swing.JPanel histogramConfigPanel;
+    private javax.swing.JPanel informationPanel;
+    private interactive.analyzer.gui.InformativePanel informativePanel1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenuBar jMenuBar1;

@@ -7,7 +7,7 @@ import java.awt.Graphics2D;
  *
  * @author Drimal
  */
-public abstract class Shape {
+public abstract class Shape implements Comparable<Shape> {
 
     private int ID;
     private double lowerBound;
@@ -154,4 +154,9 @@ public abstract class Shape {
 
     @Override
     public abstract String toString();
+
+    @Override
+    public int compareTo(Shape o) {
+        return Double.compare(this.getLowerBound(), o.getLowerBound());
+    }
 }

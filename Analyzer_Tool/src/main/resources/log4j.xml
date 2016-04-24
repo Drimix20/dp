@@ -17,8 +17,11 @@
         </layout>
     </appender>
 
+    <logger name="interactive.analyzer.gui.ObjectFilteringFrame"> <level value="trace"/></logger>
+    <logger name="interactive.analyzer.graph.GraphPanel"> <level value="info"/></logger>
+
     <root>
-        <priority value="TRACE"/>
+        <priority value="INFO"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>

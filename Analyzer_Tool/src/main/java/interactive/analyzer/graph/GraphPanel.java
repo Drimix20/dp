@@ -2,8 +2,10 @@ package interactive.analyzer.graph;
 
 import interactive.analyzer.file.tools.ImageFileFilter;
 import interactive.analyzer.graph.shape.Shape;
+import interactive.analyzer.gui.InformativePanel;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
+import interactive.analyzer.options.ObjectFilteringConfiguration;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -17,7 +19,9 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -39,6 +43,11 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     private List<Shape> selectionByDragged;
     private List<ChartSelectionListener> selectionListeners;
 
+    private static InformativePanel informativePanel;
+    private int sumOfOccurence;
+    private double minLowerBound;
+    private double maxUpperBound;
+
     private boolean mousePressed = false;
     private boolean draggedSelection = false;
     private boolean deselectionModeIsOn;
@@ -51,6 +60,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     public GraphPanel() {
         selectionListeners = new ArrayList<ChartSelectionListener>();
         selectionByDragged = new ArrayList<Shape>();
+        reinitializeSelectionInformation();
         paintImage = new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR);
 
         addComponentListener(new ComponentAdapter() {
@@ -65,23 +75,25 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                 updatePaint();
             }
         });
-
+        //TODO problem with single mode selection and multimode selection: some selections are not valid but still visible
         addMouseMotionListener(new MouseAdapter() {
 
             @Override
             public void mouseMoved(MouseEvent e) {
+                final MouseEvent event = e;
                 if (chart == null) {
                     return;
                 }
-                Shape shape = getShapeAtPoint(e.getPoint());
+                Shape shape = getShapeAtPoint(event.getPoint());
                 if (shape != null) {
                     setToolTipText(shape.getTooltipText());
-                    ToolTipManager.sharedInstance().mouseMoved(e);
+                    ToolTipManager.sharedInstance().mouseMoved(event);
                 }
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
+                final MouseEvent event = e;
                 if (chart == null) {
                     return;
                 }
@@ -89,14 +101,13 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                     draggedSelection = true;
                 }
                 deselectionModeIsOn = false;
-                if (e.getModifiersEx() == MouseEvent.BUTTON3_DOWN_MASK) {
+                if (event.getModifiersEx() == MouseEvent.BUTTON3_DOWN_MASK) {
                     deselectionModeIsOn = true;
                 }
 
-                Shape shape = getShapeAtPoint(e.getPoint());
+                Shape shape = getShapeAtPoint(event.getPoint());
                 if (shape != null) {
-                    if (mousePressed) {
-                        logger.trace("mousePressed: " + mousePressed);
+                    if (mousePressed && !deselectionModeIsOn) {
                         boolean select = !deselectionModeIsOn;
                         shape.setSelected(select);
                         shape.setSelectionColor(selectionColor);
@@ -105,41 +116,84 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                         updatePaint();
                     }
                     if (draggedSelection) {
-                        selectionByDragged.add(shape);
+                        if (deselectionModeIsOn) {
+                            if (!selectionByDragged.contains(shape)) {
+                                return;
+                            }
+                            logger.info("Dragged selection - deselect " + deselectionModeIsOn);
+                            shape.setSelected(false);
+                            selectionByDragged.remove(shape);
+                            sumOfOccurence -= shape.getOccurence();
+                            updatePaint();
+                            Collections.sort(selectionByDragged);
+                            if (selectionByDragged.isEmpty()) {
+                                //if is selection empty then show no info
+                                clearInformationAboutSelection();
+                            } else {
+                                //show info about current selection
+                                minLowerBound = selectionByDragged.get(0).getLowerBound();
+                                maxUpperBound = selectionByDragged.get(selectionByDragged.size() - 1).getUpperBound();
+                                showInformationAboutSelection(sumOfOccurence, minLowerBound, maxUpperBound);
+                            }
+                            logger.info("Deleted shape, selection size:" + selectionByDragged.size());
+                        } else {
+                            if (selectionByDragged.contains(shape)) {
+                                return;
+                            }
+                            selectionByDragged.add(shape);
+                            sumOfOccurence += shape.getOccurence();
+                            double sMin = shape.getLowerBound();
+                            double sMax = shape.getUpperBound();
+                            minLowerBound = (sMin < minLowerBound) ? sMin : minLowerBound;
+                            maxUpperBound = (sMax > maxUpperBound) ? sMax : maxUpperBound;
+                            showInformationAboutSelection(sumOfOccurence, minLowerBound, maxUpperBound);
+                        }
+
                     }
+                    logger.info("SelectionByDragged - size" + selectionByDragged.size());
                 }
+
             }
         });
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                logger.info("Single mode selection");
+                final MouseEvent event = e;
                 if (chart == null) {
                     return;
                 }
-                logger.trace("mousePressed: " + mousePressed);
-                Shape shape = getShapeAtPoint(e.getPoint());
+                logger.trace("mouseClicked: " + mousePressed);
+                Shape shape = getShapeAtPoint(event.getPoint());
                 if (shape != null) {
+                    clearAllSelectionsEvent();
                     logger.trace(shape.getID() + ", " + shape.getTooltipText());
                     boolean select = !shape.isSelected();
                     shape.setSelected(select);
                     shape.setSelectionColor(selectionColor);
-
-                    if (select) {
-                        //chart shape was selected
-                        notifySingleBarSelected(shape, selectionColor);
-                    } else {
-                        //chart shape was deselected
-                        notifyBarDeselected(shape);
-                    }
+                    //TODO selectionByDragged should be empty
+                    logger.warn("Selection by dragged: " + selectionByDragged.size());
 
                     //needed to repaint canvas
                     updatePaint();
+
+                    if (select) {
+                        showInformationAboutSelection(shape.getOccurence(), shape.getLowerBound(), shape.getUpperBound());
+                        //chart shape was selected
+                        notifySingleBarSelected(shape, selectionColor);
+                    } else {
+                        clearInformationAboutSelection();
+                        //chart shape was deselected
+                        notifyBarDeselected(shape);
+
+                    }
                 }
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
+                logger.info("Mouse button " + e.getButton());
                 if (chart == null) {
                     return;
                 }
@@ -148,13 +202,15 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                final MouseEvent event = e;
                 if (chart == null) {
                     return;
                 }
-                logger.trace("" + e.getPoint());
+                logger.trace("");
                 mousePressed = false;
                 //multiple selection by mouse dragged
                 if (draggedSelection) {
+                    logger.trace("dragged selection");
                     for (Shape shapeByDragged : selectionByDragged) {
                         if (deselectionModeIsOn) {
                             //chart shape was deselected
@@ -164,12 +220,25 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                             notifyBarSelected(shapeByDragged, selectionColor);
                         }
                     }
-                    selectionByDragged = new ArrayList<Shape>();
+                    //reinitializeSelectionInformation();
                 }
-
                 draggedSelection = false;
             }
         });
+    }
+
+    /**
+     Reinitialize collection with dragged shape, sum of occurrences, minimal lower bound and maximal lower bound
+     */
+    private void reinitializeSelectionInformation() {
+        logger.info("Reinit of dragged selections");
+        sumOfOccurence = 0;
+        minLowerBound = Integer.MAX_VALUE;
+        maxUpperBound = Integer.MIN_VALUE;
+    }
+
+    public void setInformativePanel(InformativePanel panel) {
+        GraphPanel.informativePanel = panel;
     }
 
     public Color getSelectionColor() {
@@ -180,7 +249,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         this.selectionColor = selectionColor;
     }
 
-    public void changeSelectionColor(Color oldC, Color newC) {
+    public void changeSelectionColor(final Color oldC, final Color newC) {
         if (chart == null) {
             return;
         }
@@ -190,10 +259,38 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                 notifyBarSelected(shape, newC);
             }
         }
-        updatePaint();
     }
 
-    public void deselectShapeWithColor(Color color) {
+    //TODO make it repaint after change decimal places
+    private void showInformationAboutSelection(int occurence, double lowerBound,
+            double upperBound) {
+        logger.info("Show info about selection");
+        int decimalPlaces = ObjectFilteringConfiguration.getDecimalPlacesForInfoPanel();
+        DecimalFormat df = new DecimalFormat(getDecimalFormat(decimalPlaces));
+        informativePanel.setCountFieldValue(df.format(occurence));
+        informativePanel.setLowerBoundField(df.format(lowerBound));
+        informativePanel.setUpperBoundField(df.format(upperBound));
+    }
+
+    private String getDecimalFormat(int decimalPlaces) {
+        if (decimalPlaces == 0) {
+            return "#";
+        }
+        String format = "#.";
+        for (int i = 0; i < decimalPlaces; i++) {
+            format = format.concat("#");
+        }
+        return format;
+    }
+
+    private void clearInformationAboutSelection() {
+        logger.info("Clearing information about selection");
+        informativePanel.setCountFieldValue("");
+        informativePanel.setLowerBoundField("");
+        informativePanel.setUpperBoundField("");
+    }
+
+    public void deselectShapeWithColor(final Color color) {
         if (chart == null) {
             return;
         }
@@ -203,6 +300,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                 notifyBarDeselected(shape);
             }
         }
+        //TODO updating of graph should be before sending notification
         updatePaint();
     }
 
@@ -405,10 +503,12 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         if (chart != null) {
             chart.clearAllSelections();
         }
+        updatePaint();
+
         for (ChartSelectionListener listener : selectionListeners) {
             listener.clearBarSelectionsEvent();
         }
-        updatePaint();
     }
     // </editor-fold>
+
 }

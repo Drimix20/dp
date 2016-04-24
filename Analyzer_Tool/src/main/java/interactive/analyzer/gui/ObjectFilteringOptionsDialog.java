@@ -22,7 +22,9 @@ public class ObjectFilteringOptionsDialog extends javax.swing.JDialog {
     /** A return status code - returned if OK button has been pressed */
     public static final int RET_OK = 1;
 
-    /** Creates new form ObjectFilteringOptionsDialog */
+    /** Creates new form ObjectFilteringOptionsDialog
+     * @param parent
+     * @param modal */
     public ObjectFilteringOptionsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -41,6 +43,7 @@ public class ObjectFilteringOptionsDialog extends javax.swing.JDialog {
 
         barBackgroundColorThumbnail.setBackground(ObjectFilteringConfiguration.getBarBackgroundColor());
         barBorderColorThumbnail.setBackground(ObjectFilteringConfiguration.getBarBorderColor());
+        decimalPlacesForInfoPanelSpinner.setValue(ObjectFilteringConfiguration.getDecimalPlacesForInfoPanel());
     }
 
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -66,6 +69,8 @@ public class ObjectFilteringOptionsDialog extends javax.swing.JDialog {
         barBorderColorThumbnail = new javax.swing.JPanel();
         selectBorderColorButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
+        jLabel3 = new javax.swing.JLabel();
+        decimalPlacesForInfoPanelSpinner = new javax.swing.JSpinner();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -131,6 +136,10 @@ public class ObjectFilteringOptionsDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel3.setText("Decimal places in info:");
+
+        decimalPlacesForInfoPanelSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -143,21 +152,25 @@ public class ObjectFilteringOptionsDialog extends javax.swing.JDialog {
                         .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton))
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(34, 34, 34)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(barBackgroundColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(barBorderColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2))
+                                .addGap(34, 34, 34)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(barBackgroundColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(barBorderColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel3))
                         .addGap(33, 33, 33)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(selectBackgroundColorButton)
-                            .addComponent(selectBorderColorButton))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(decimalPlacesForInfoPanelSpinner)
+                            .addComponent(selectBackgroundColorButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(selectBorderColorButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cancelButton, okButton});
@@ -176,8 +189,12 @@ public class ObjectFilteringOptionsDialog extends javax.swing.JDialog {
                     .addComponent(barBorderColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(selectBorderColorButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(decimalPlacesForInfoPanelSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
                     .addComponent(okButton))
@@ -192,6 +209,7 @@ public class ObjectFilteringOptionsDialog extends javax.swing.JDialog {
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         ObjectFilteringConfiguration.setBarBackgroundColor(barBackgroundColorThumbnail.getBackground());
         ObjectFilteringConfiguration.setBarBorderColor(barBorderColorThumbnail.getBackground());
+        ObjectFilteringConfiguration.setDecimalPlacesForInfoPanel((Integer) decimalPlacesForInfoPanelSpinner.getValue());
 
         doClose(RET_OK);
     }//GEN-LAST:event_okButtonActionPerformed
@@ -270,8 +288,10 @@ public class ObjectFilteringOptionsDialog extends javax.swing.JDialog {
     private javax.swing.JPanel barBackgroundColorThumbnail;
     private javax.swing.JPanel barBorderColorThumbnail;
     private javax.swing.JButton cancelButton;
+    private javax.swing.JSpinner decimalPlacesForInfoPanelSpinner;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton okButton;
     private javax.swing.JButton selectBackgroundColorButton;

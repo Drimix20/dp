@@ -1,12 +1,14 @@
 package afm.analyzer.gui;
 
-import afm.analyzer.utils.ClassFinder;
-import afm.analyzer.utils.ClassInstantiater;
 import afm.analyzer.measurements.AbstractMeasurement;
+import afm.analyzer.measurements.list.AreaMeasurement;
+import afm.analyzer.measurements.list.AverageIntensityMeasurement;
+import afm.analyzer.measurements.list.VolumeMeasurement;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.SystemColor;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -52,20 +54,16 @@ public class MeasurementsElementManager extends Thread {
             }
         });
 
-        //TODO automaticaly adds instances of measurements in package afm.analyzer.measurements.list; add function to skip errorneus instantiate class
         JPanel columnpanel = createColumnPanelForOptionElements(backgroundPanel);
-        List<Class> result = ClassFinder.find("afm.analyzer.measurements.list");
-        List<Object> instantiatedClasses = null;
-        try {
-            instantiatedClasses = ClassInstantiater.instantiateClassesWithoutArgument(result);
-        } catch (IllegalAccessException ex) {
+        List<AbstractMeasurement> instantiatedClasses = new ArrayList<AbstractMeasurement>();
+        //TODO there is need to add an measurement to the list for view on gui
+        instantiatedClasses.add(new AreaMeasurement());
+        instantiatedClasses.add(new AverageIntensityMeasurement());
+        instantiatedClasses.add(new VolumeMeasurement());
 
-        } catch (InstantiationException ex) {
-
-        }
         int rowIndex = 1;
-        for (int i = 0; i < result.size(); i++) {
-            final MeasurementRowPanel rowPanel = new MeasurementRowPanel((AbstractMeasurement) instantiatedClasses.get(i), selectedMeasurements, false);
+        for (AbstractMeasurement instantiatedMeasurement : instantiatedClasses) {
+            final MeasurementRowPanel rowPanel = new MeasurementRowPanel(instantiatedMeasurement, selectedMeasurements, false);
             columnpanel.add(rowPanel);
             if (rowIndex % 2 == 0) {
                 rowPanel.setBackground(SystemColor.inactiveCaptionBorder);

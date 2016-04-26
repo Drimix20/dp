@@ -11,6 +11,7 @@ import scaler.module.types.LengthUnit;
  * @author Drimal
  */
 public abstract class AbstractMeasurement {
+
     public static final LengthUnit RESULT_NANOMETER_UNIT = LengthUnit.NANOMETER;
 
     public enum MeasurementWithOption {
@@ -43,7 +44,8 @@ public abstract class AbstractMeasurement {
     }
 
     public abstract double compute(Roi roi, ImagePlus origImage,
-            ImageProcessor binary, ScalerModule scalerModule);
+            ImageProcessor binary, ScalerModule scalerModule,
+            LengthUnit resultUnit);
 
     @Override
     public int hashCode() {

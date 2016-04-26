@@ -25,7 +25,7 @@ public class VolumeMeasurement extends AbstractMeasurement {
 
     @Override
     public double compute(Roi roi, ImagePlus origImage, ImageProcessor binary,
-            ScalerModule scalerModule) {
+            ScalerModule scalerModule, LengthUnit resultUnit) {
         double intensitySum = 0;
         double count = 0;
 
@@ -45,13 +45,13 @@ public class VolumeMeasurement extends AbstractMeasurement {
         LengthUnit dimensionUnit = LengthUnit.parseFromAbbreviation(calibration.getUnit().trim());
 
         double averageIntensity = intensitySum / count;
-        double convertedAverageIntensity = UnitConvertor.convertValueFromUnitToUnit(averageIntensity, heightUnit, AbstractMeasurement.RESULT_NANOMETER_UNIT);
+        double convertedAverageIntensity = UnitConvertor.convertValueFromUnitToUnit(averageIntensity, heightUnit, resultUnit);
 
         double area = count * calibration.pixelWidth * calibration.pixelHeight;
-        double convertedArea = UnitConvertor.convertValueWithPowerOfExponent(area, dimensionUnit, RESULT_NANOMETER_UNIT, 2);
+        double convertedArea = UnitConvertor.convertValueWithPowerOfExponent(area, dimensionUnit, resultUnit, 2);
 
         double volumeInUnit = convertedArea * convertedAverageIntensity;
-        logger.trace("Unit = " + RESULT_NANOMETER_UNIT + "saceldAverageInensity: " + convertedAverageIntensity + ", area: " + convertedArea + ", volume: " + volumeInUnit);
+        logger.trace("Unit = " + resultUnit + "saceldAverageInensity: " + convertedAverageIntensity + ", area: " + convertedArea + ", volume: " + volumeInUnit);
         return volumeInUnit;
     }
 

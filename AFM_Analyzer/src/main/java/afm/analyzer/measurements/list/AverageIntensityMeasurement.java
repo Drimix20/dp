@@ -25,7 +25,7 @@ public class AverageIntensityMeasurement extends AbstractMeasurement {
 
     @Override
     public double compute(Roi roi, ImagePlus origImage, ImageProcessor binary,
-            ScalerModule scalerModule) {
+            ScalerModule scalerModule, LengthUnit resultUnit) {
         double intensitySum = 0;
         int count = 0;
 
@@ -45,7 +45,7 @@ public class AverageIntensityMeasurement extends AbstractMeasurement {
         LengthUnit heightUnit = LengthUnit.parseFromAbbreviation(calibration.getValueUnit().trim());
 
         double averageIntensity = intensitySum / count;
-        double convertedAverageIntensity = UnitConvertor.convertValueFromUnitToUnit(averageIntensity, heightUnit, AbstractMeasurement.RESULT_NANOMETER_UNIT);
+        double convertedAverageIntensity = UnitConvertor.convertValueFromUnitToUnit(averageIntensity, heightUnit, resultUnit);
         return convertedAverageIntensity;
     }
 }

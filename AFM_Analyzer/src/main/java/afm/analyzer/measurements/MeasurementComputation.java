@@ -18,13 +18,13 @@ public class MeasurementComputation {
     public AbstractMeasurementResult compute(ChannelContainer container,
             ImageSegments segmentedImage, AbstractMeasurement measure) {
         ImageProcessor thresholded = segmentedImage.getThresholdedImageProcessor();
-
+        //TODO unit of measurement result should be able defined by user
         ScalerModule scalerModule = new ScalerModule(container.getGeneralMetadata(), container.getChannelMetadata());
         AbstractMeasurementResult results = new MeasurementResult(measure.getLabel(), AbstractMeasurement.RESULT_NANOMETER_UNIT.getAbbreviation(), measure.getUnitExponent());
 
         for (Roi roi : segmentedImage.getRois()) {
             int labelIndex = Integer.parseInt(roi.getName());
-            double computedResult = measure.compute(roi, container.getImagePlus(), thresholded, scalerModule);
+            double computedResult = measure.compute(roi, container.getImagePlus(), thresholded, scalerModule, AbstractMeasurement.RESULT_NANOMETER_UNIT);
             results.addResult(labelIndex, computedResult);
         }
 

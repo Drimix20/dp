@@ -11,8 +11,7 @@ import scaler.module.ScalerModule;
 import scaler.module.types.LengthUnit;
 import scaler.module.types.UnitConvertor;
 
-/**
- *
+/** *
  * @author Drimal
  */
 public class AreaMeasurement extends AbstractMeasurement {
@@ -25,7 +24,7 @@ public class AreaMeasurement extends AbstractMeasurement {
 
     @Override
     public double compute(Roi roi, ImagePlus origImage, ImageProcessor binary,
-            ScalerModule scalerModule) {
+            ScalerModule scalerModule, LengthUnit unit) {
         int count = 0;
 
         Rectangle bounds = roi.getBounds();

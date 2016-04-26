@@ -3,7 +3,6 @@ package afm.opener.common;
 import configuration.module.PluginConfiguration;
 import afm.opener.gui.ChannelListElement;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.SystemColor;
 import java.io.File;
@@ -95,7 +94,6 @@ public class ImageOptionManager extends Thread {
         JPanel columnPanel = new JPanel();
         backgroundPanel.add(columnPanel, BorderLayout.NORTH);
         columnPanel.setLayout(new GridLayout(0, 1, 0, 1));
-        columnPanel.setBackground(Color.ORANGE);
         return columnPanel;
     }
 }

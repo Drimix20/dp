@@ -68,8 +68,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        prefilteringLabel = new javax.swing.JLabel();
-        prefilteringOptionButton = new javax.swing.JButton();
         measurementsLabel = new javax.swing.JLabel();
         measurementsPanel = new javax.swing.JScrollPane();
         cancelButton = new javax.swing.JButton();
@@ -86,15 +84,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         setTitle("AFM Analyzer");
         setMinimumSize(new java.awt.Dimension(380, 450));
         setPreferredSize(new java.awt.Dimension(380, 655));
-
-        prefilteringLabel.setText("Prefiltering");
-
-        prefilteringOptionButton.setText("Options");
-        prefilteringOptionButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clickOnPrefilteringOptions(evt);
-            }
-        });
 
         measurementsLabel.setText("Measurements");
 
@@ -198,50 +187,29 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                             .addComponent(measurementsPanel, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(prefilteringOptionButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(measureButton)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(cancelButton))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(prefilteringLabel)
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addComponent(measureButton)
+                                .addGap(18, 18, 18)
+                                .addComponent(cancelButton)))
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(prefilteringLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(prefilteringOptionButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(measurementsLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(measurementsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
+                .addComponent(measurementsLabel)
+                .addGap(18, 18, 18)
+                .addComponent(measurementsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
                     .addComponent(measureButton))
-                .addContainerGap())
+                .addGap(15, 15, 15))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void clickOnPrefilteringOptions(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clickOnPrefilteringOptions
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                PrefilteringDialog prefilteringOption = new PrefilteringDialog(null, rootPaneCheckingEnabled);
-                prefilteringOption.setVisible(true);
-            }
-        });
-    }//GEN-LAST:event_clickOnPrefilteringOptions
 
     private void segmentationPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_segmentationPreviewButtonActionPerformed
         String labelBtn = evt.getActionCommand();
@@ -433,8 +401,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     private javax.swing.JButton measureButton;
     private javax.swing.JLabel measurementsLabel;
     private javax.swing.JScrollPane measurementsPanel;
-    private javax.swing.JLabel prefilteringLabel;
-    private javax.swing.JButton prefilteringOptionButton;
     private javax.swing.JComboBox segmentationMethodComboBox;
     private javax.swing.JButton segmentationOptionButton;
     private javax.swing.JButton segmentationPreviewButton;

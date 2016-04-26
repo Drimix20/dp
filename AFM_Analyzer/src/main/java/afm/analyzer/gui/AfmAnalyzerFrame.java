@@ -87,7 +87,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
         measurementsLabel.setText("Measurements");
 
-        measurementsPanel.setBackground(new java.awt.Color(255, 153, 0));
         measurementsPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         cancelButton.setText("Cancel");

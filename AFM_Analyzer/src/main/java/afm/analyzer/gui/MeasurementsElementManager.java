@@ -5,7 +5,6 @@ import afm.analyzer.measurements.list.AreaMeasurement;
 import afm.analyzer.measurements.list.AverageIntensityMeasurement;
 import afm.analyzer.measurements.list.VolumeMeasurement;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.SystemColor;
 import java.util.ArrayList;
@@ -82,7 +81,6 @@ public class MeasurementsElementManager extends Thread {
         JPanel columnPanel = new JPanel();
         backgroundPanel.add(columnPanel, BorderLayout.NORTH);
         columnPanel.setLayout(new GridLayout(0, 1, 0, 1));
-        columnPanel.setBackground(Color.ORANGE);
         return columnPanel;
     }
 

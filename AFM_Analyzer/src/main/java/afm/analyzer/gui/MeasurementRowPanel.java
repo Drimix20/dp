@@ -15,6 +15,9 @@ public class MeasurementRowPanel extends JPanel {
 
     /**
      * Creates new form MeasurementJPanel
+     * @param measurement
+     * @param selectedMeasurements
+     * @param enableOptions
      */
     public MeasurementRowPanel(AbstractMeasurement measurement,
             List<AbstractMeasurement> selectedMeasurements,
@@ -50,7 +53,6 @@ public class MeasurementRowPanel extends JPanel {
             .addGap(0, 39, Short.MAX_VALUE)
         );
 
-        setBackground(new java.awt.Color(0, 255, 255));
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         nameLabel.setText("Default_Name");

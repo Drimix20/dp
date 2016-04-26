@@ -38,7 +38,7 @@ public enum LengthUnit {
      @param abbreviation
      @return object of enum LengthUnit
      */
-    public static LengthUnit parse(String abbreviation) {
+    public static LengthUnit parseFromAbbreviation(String abbreviation) {
         if (abbreviation.equals(METER.getAbbreviation())) {
             return METER;
         } else if (abbreviation.equals(DECIMETER.getAbbreviation())) {

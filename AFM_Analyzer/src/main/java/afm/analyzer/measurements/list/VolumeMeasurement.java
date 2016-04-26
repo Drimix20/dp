@@ -8,6 +8,8 @@ import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import java.awt.Rectangle;
 import org.apache.log4j.Logger;
+import scaler.module.types.LengthUnit;
+import scaler.module.types.UnitConvertor;
 
 /**
  *
@@ -18,7 +20,7 @@ public class VolumeMeasurement extends AbstractMeasurement {
     private static Logger logger = Logger.getLogger(VolumeMeasurement.class);
 
     public VolumeMeasurement() {
-        super("Volume measure", "^3");
+        super("Volume measure", 3);
     }
 
     @Override
@@ -39,10 +41,17 @@ public class VolumeMeasurement extends AbstractMeasurement {
         }
 
         Calibration calibration = origImage.getCalibration();
-        double scaledAverageIntensityInUnit = intensitySum / count;
-        double scaledAreaInUnit = count * calibration.pixelHeight * calibration.pixelHeight;
-        double volumeInUnit = scaledAreaInUnit * scaledAverageIntensityInUnit;
-        logger.trace("Unit = " + origImage.getCalibration().getUnit() + "saceldAverageInensity: " + scaledAverageIntensityInUnit + ", area: " + scaledAreaInUnit + ", volume: " + volumeInUnit);
+        LengthUnit heightUnit = LengthUnit.parseFromAbbreviation(calibration.getValueUnit().trim());
+        LengthUnit dimensionUnit = LengthUnit.parseFromAbbreviation(calibration.getUnit().trim());
+
+        double averageIntensity = intensitySum / count;
+        double convertedAverageIntensity = UnitConvertor.convertValueFromUnitToUnit(averageIntensity, heightUnit, AbstractMeasurement.RESULT_NANOMETER_UNIT);
+
+        double area = count * calibration.pixelWidth * calibration.pixelHeight;
+        double convertedArea = UnitConvertor.convertValueWithPowerOfExponent(area, dimensionUnit, RESULT_NANOMETER_UNIT, 2);
+
+        double volumeInUnit = convertedArea * convertedAverageIntensity;
+        logger.trace("Unit = " + RESULT_NANOMETER_UNIT + "saceldAverageInensity: " + convertedAverageIntensity + ", area: " + convertedArea + ", volume: " + volumeInUnit);
         return volumeInUnit;
     }
 

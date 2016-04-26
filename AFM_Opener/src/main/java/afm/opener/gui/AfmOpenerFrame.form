@@ -235,9 +235,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value=" Height value unit:"/>
       </Properties>
-      <AccessibilityProperties>
-        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=" Height value unit:"/>
-      </AccessibilityProperties>
     </Component>
     <Component class="javax.swing.JComboBox" name="calibrationUnitComboBox">
       <Properties>

@@ -18,6 +18,8 @@
         </layout>
     </appender>
 
+    <logger name="afm.analyzer.measurements.list.VolumeMeasurement"> <level value="trace"/></logger>
+
     <root>
         <priority value="INFO"/>
         <appender-ref ref="STDOUT"/>

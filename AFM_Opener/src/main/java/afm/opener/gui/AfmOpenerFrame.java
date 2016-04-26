@@ -297,8 +297,8 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
 
         if (calibrateImageCheckbox.isSelected()) {
             try {
-                LengthUnit dimensionUnit = LengthUnit.parse((String) dimensionsUnitComboBox.getSelectedItem());
-                LengthUnit calibrationUnit = LengthUnit.parse((String) calibrationUnitComboBox.getSelectedItem());
+                LengthUnit dimensionUnit = LengthUnit.parseFromAbbreviation((String) dimensionsUnitComboBox.getSelectedItem());
+                LengthUnit calibrationUnit = LengthUnit.parseFromAbbreviation((String) calibrationUnitComboBox.getSelectedItem());
                 calibrateImages(loadedImages, dimensionUnit, calibrationUnit);
             } catch (UnsupportedScalingType ex) {
                 IJ.error(ex.toString());

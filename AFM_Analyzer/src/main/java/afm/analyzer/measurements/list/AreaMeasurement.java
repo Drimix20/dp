@@ -8,6 +8,8 @@ import ij.process.ImageProcessor;
 import java.awt.Rectangle;
 import org.apache.log4j.Logger;
 import scaler.module.ScalerModule;
+import scaler.module.types.LengthUnit;
+import scaler.module.types.UnitConvertor;
 
 /**
  *
@@ -18,7 +20,7 @@ public class AreaMeasurement extends AbstractMeasurement {
     private static Logger logger = Logger.getLogger(AreaMeasurement.class);
 
     public AreaMeasurement() {
-        super("Area measurement", "^2");
+        super("Area measurement", 2);
     }
 
     @Override
@@ -35,9 +37,17 @@ public class AreaMeasurement extends AbstractMeasurement {
                 }
             }
         }
+
         Calibration calibration = origImage.getCalibration();
-        logger.trace("Count: " + count + " * pixelYsize=" + calibration.pixelWidth + " * pixelYsize=" + calibration.pixelHeight + "[" + calibration.getUnit() + getUnitRegulation() + "]");
-        return count * calibration.pixelWidth * calibration.pixelHeight;
+        LengthUnit dimensionUnit = LengthUnit.parseFromAbbreviation(calibration.getUnit().trim());
+
+        double area = count * calibration.pixelWidth * calibration.pixelHeight;
+        double convertedArea = UnitConvertor.convertValueWithPowerOfExponent(area, dimensionUnit, RESULT_NANOMETER_UNIT, getUnitExponent());
+        logger.trace("Roi: " + roi.getName());
+        logger.trace("Area: " + area + "= " + count + " * pixelYsize=" + calibration.pixelWidth + " * pixelYsize=" + calibration.pixelHeight + "[" + dimensionUnit + "^" + getUnitExponent() + "]");
+        logger.trace("Converted area " + convertedArea + "[" + LengthUnit.NANOMETER + "^" + getUnitExponent() + "]");
+        logger.trace("END Roi: " + roi.getName());
+        return convertedArea;
     }
 
 }

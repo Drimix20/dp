@@ -4,12 +4,14 @@ import scaler.module.ScalerModule;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
+import scaler.module.types.LengthUnit;
 
 /**
  *
  * @author Drimal
  */
 public abstract class AbstractMeasurement {
+    public static final LengthUnit RESULT_NANOMETER_UNIT = LengthUnit.NANOMETER;
 
     public enum MeasurementWithOption {
 
@@ -17,11 +19,11 @@ public abstract class AbstractMeasurement {
     }
 
     protected String label;
-    protected String unitRegulation;
+    protected int unitExponent;
 
-    public AbstractMeasurement(String label, String unitRegulation) {
+    public AbstractMeasurement(String label, int unitExponent) {
         this.label = label;
-        this.unitRegulation = unitRegulation;
+        this.unitExponent = unitExponent;
     }
 
     /**
@@ -32,8 +34,12 @@ public abstract class AbstractMeasurement {
         return label;
     }
 
-    public String getUnitRegulation() {
-        return unitRegulation;
+    /**
+     Regulation defined which exponent use for unit convert
+     @return
+     */
+    public int getUnitExponent() {
+        return unitExponent;
     }
 
     public abstract double compute(Roi roi, ImagePlus origImage,

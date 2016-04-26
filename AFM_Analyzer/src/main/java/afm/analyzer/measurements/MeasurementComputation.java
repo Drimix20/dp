@@ -19,11 +19,8 @@ public class MeasurementComputation {
             ImageSegments segmentedImage, AbstractMeasurement measure) {
         ImageProcessor thresholded = segmentedImage.getThresholdedImageProcessor();
 
-        String calibrationUnit = container.getImagePlus().getCalibration().getUnit();
-        logger.trace(String.format("Calibration unit %s", calibrationUnit));
-
         ScalerModule scalerModule = new ScalerModule(container.getGeneralMetadata(), container.getChannelMetadata());
-        AbstractMeasurementResult results = new MeasurementResult(measure.getLabel(), calibrationUnit, measure.getUnitRegulation());
+        AbstractMeasurementResult results = new MeasurementResult(measure.getLabel(), AbstractMeasurement.RESULT_NANOMETER_UNIT.getAbbreviation(), measure.getUnitExponent());
 
         for (Roi roi : segmentedImage.getRois()) {
             int labelIndex = Integer.parseInt(roi.getName());

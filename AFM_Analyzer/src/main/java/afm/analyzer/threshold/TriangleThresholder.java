@@ -16,6 +16,7 @@ public class TriangleThresholder implements ImageThresholdStrategy {
     private double upperThreshold;
     private double lowerThreshold;
 
+    @Override
     public ImageProcessor makeBinary(ImagePlus originalImg) {
         IJ.setAutoThreshold(originalImg, "Triangle");
         Prefs.blackBackground = false;

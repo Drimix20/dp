@@ -243,7 +243,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     private void measureButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_measureButtonActionPerformed
         thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
         segmentationConfDialog = ThresholderExecutor.getSegmentationConfigDialog(getSelectedThresholdStrategy());
-
+        //TODO as new thread
         logger.info("Start computing");
 
         Segmentation segmentation = new Segmentation();
@@ -276,7 +276,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                         //Increment row counter just for first measurement
                         resultTable.incrementCounter();
                     }
-                    resultTable.setValue(measRes.getMeasurementName() + " [" + measRes.getUnit() + measRes.getUnitRegulation() + "] ", (roiObjectId - 1), (Double) measRes.getResultForRoiKey(roiObjectId));
+                    resultTable.setValue(measRes.getMeasurementName() + " [" + measRes.getUnit() + "^" + measRes.getUnitExponent() + "] ", (roiObjectId - 1), (Double) measRes.getResultForRoiKey(roiObjectId));
                 }
                 increaseRowCounter = false;
             }

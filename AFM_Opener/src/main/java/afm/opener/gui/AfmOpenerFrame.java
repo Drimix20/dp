@@ -161,6 +161,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         });
 
         dimensionsUnitComboBox.setModel(new DefaultComboBoxModel(LengthUnit.retrieveAbbreviations()));
+        dimensionsUnitComboBox.setSelectedIndex(4);
         dimensionsUnitComboBox.setSelectedItem(LengthUnit.MICROMETER);
 
         dimensionUnitLabel.setText(" Dimensions Unit:");
@@ -169,6 +170,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         calibrationUnitLabel.setText(" Height value unit:");
 
         calibrationUnitComboBox.setModel(new DefaultComboBoxModel(LengthUnit.retrieveAbbreviations()));
+        calibrationUnitComboBox.setSelectedIndex(5);
         calibrationUnitComboBox.setSelectedItem(LengthUnit.NANOMETER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -245,7 +247,6 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         );
 
         dimensionUnitLabel.getAccessibleContext().setAccessibleName("Dimensions Unit:");
-        calibrationUnitLabel.getAccessibleContext().setAccessibleName(" Height value unit:");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

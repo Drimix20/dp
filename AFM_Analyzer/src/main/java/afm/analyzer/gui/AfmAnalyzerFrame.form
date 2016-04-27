@@ -167,6 +167,9 @@
               <Connection code="ThresholderExecutor.getStrategiesName()" type="code"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="segmentationMethodComboBoxItemStateChanged"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JComboBox(strategiesName)"/>
           </AuxValues>

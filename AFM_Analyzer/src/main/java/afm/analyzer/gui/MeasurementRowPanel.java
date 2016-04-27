@@ -2,7 +2,10 @@ package afm.analyzer.gui;
 
 import afm.analyzer.measurements.AbstractMeasurement;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
+import org.apache.log4j.Logger;
+import scaler.module.types.LengthUnit;
 
 /**
  *
@@ -10,6 +13,7 @@ import javax.swing.JPanel;
  */
 public class MeasurementRowPanel extends JPanel {
 
+    private static final Logger logger = Logger.getLogger(MeasurementRowPanel.class);
     private List<AbstractMeasurement> selectedMeasurements;
     private AbstractMeasurement measurement;
 
@@ -23,7 +27,6 @@ public class MeasurementRowPanel extends JPanel {
             List<AbstractMeasurement> selectedMeasurements,
             boolean enableOptions) {
         initComponents();
-        jButton1.setEnabled(enableOptions);
         this.measurement = measurement;
         this.selectedMeasurements = selectedMeasurements;
         this.nameLabel.setText(measurement.getLabel());
@@ -40,7 +43,7 @@ public class MeasurementRowPanel extends JPanel {
         measurementGuiElement = new javax.swing.JPanel();
         nameLabel = new javax.swing.JLabel();
         checkBox = new javax.swing.JCheckBox();
-        jButton1 = new javax.swing.JButton();
+        unitComboBox = new javax.swing.JComboBox();
 
         javax.swing.GroupLayout measurementGuiElementLayout = new javax.swing.GroupLayout(measurementGuiElement);
         measurementGuiElement.setLayout(measurementGuiElementLayout);
@@ -67,7 +70,13 @@ public class MeasurementRowPanel extends JPanel {
             }
         });
 
-        jButton1.setText("Opt");
+        unitComboBox.setModel(new DefaultComboBoxModel(LengthUnit.retrieveAbbreviations()));
+        unitComboBox.setSelectedIndex(5);
+        unitComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                unitComboBoxItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -76,9 +85,9 @@ public class MeasurementRowPanel extends JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addComponent(unitComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(checkBox)
                 .addContainerGap())
         );
@@ -86,14 +95,19 @@ public class MeasurementRowPanel extends JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(checkBox)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jButton1)
-                .addComponent(nameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(unitComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void checkBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxActionPerformed
         manageMeasurementIntoSelectedMeasurements();
     }//GEN-LAST:event_checkBoxActionPerformed
+
+    private void unitComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_unitComboBoxItemStateChanged
+        String unit = (String) evt.getItem();
+        measurement.setResultUnit(LengthUnit.parseFromAbbreviation(unit));
+    }//GEN-LAST:event_unitComboBoxItemStateChanged
 
     private void manageMeasurementIntoSelectedMeasurements() {
         if (checkBox.isSelected()) {
@@ -105,8 +119,8 @@ public class MeasurementRowPanel extends JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox checkBox;
-    private javax.swing.JButton jButton1;
     private javax.swing.JPanel measurementGuiElement;
     private javax.swing.JLabel nameLabel;
+    private javax.swing.JComboBox unitComboBox;
     // End of variables declaration//GEN-END:variables
 }

@@ -43,9 +43,9 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="nameLabel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="83" max="32767" attributes="0"/>
-              <Component id="jButton1" min="-2" pref="22" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <EmptySpace pref="42" max="32767" attributes="0"/>
+              <Component id="unitComboBox" min="-2" pref="67" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="checkBox" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -55,8 +55,8 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="checkBox" alignment="0" min="-2" max="-2" attributes="0"/>
           <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-              <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
-              <Component id="nameLabel" alignment="3" max="32767" attributes="0"/>
+              <Component id="nameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Component id="unitComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -82,10 +82,18 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JComboBox" name="unitComboBox">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Opt"/>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="new DefaultComboBoxModel(LengthUnit.retrieveAbbreviations())" type="code"/>
+        </Property>
+        <Property name="selectedIndex" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="5" type="code"/>
+        </Property>
       </Properties>
+      <Events>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="unitComboBoxItemStateChanged"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

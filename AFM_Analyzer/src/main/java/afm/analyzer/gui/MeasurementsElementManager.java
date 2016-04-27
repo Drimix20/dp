@@ -62,7 +62,7 @@ public class MeasurementsElementManager extends Thread {
 
         int rowIndex = 1;
         for (AbstractMeasurement instantiatedMeasurement : instantiatedClasses) {
-            final MeasurementRowPanel rowPanel = new MeasurementRowPanel(instantiatedMeasurement, selectedMeasurements, false);
+            final MeasurementRowPanel rowPanel = new MeasurementRowPanel(instantiatedMeasurement, selectedMeasurements, true);
             columnpanel.add(rowPanel);
             if (rowIndex % 2 == 0) {
                 rowPanel.setBackground(SystemColor.inactiveCaptionBorder);

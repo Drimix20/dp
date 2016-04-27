@@ -41,7 +41,7 @@ public class AreaMeasurement extends AbstractMeasurement {
         LengthUnit dimensionUnit = LengthUnit.parseFromAbbreviation(calibration.getUnit().trim());
 
         double area = count * calibration.pixelWidth * calibration.pixelHeight;
-        double convertedArea = UnitConvertor.convertValueWithPowerOfExponent(area, dimensionUnit, RESULT_NANOMETER_UNIT, getUnitExponent());
+        double convertedArea = UnitConvertor.convertValueWithPowerOfExponent(area, dimensionUnit, unit, getUnitExponent());
         logger.trace("Roi: " + roi.getName());
         logger.trace("Area: " + area + "= " + count + " * pixelYsize=" + calibration.pixelWidth + " * pixelYsize=" + calibration.pixelHeight + "[" + dimensionUnit + "^" + getUnitExponent() + "]");
         logger.trace("Converted area " + convertedArea + "[" + LengthUnit.NANOMETER + "^" + getUnitExponent() + "]");

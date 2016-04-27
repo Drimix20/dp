@@ -12,8 +12,7 @@ import scaler.module.types.LengthUnit;
  */
 public abstract class AbstractMeasurement {
 
-    public static final LengthUnit RESULT_NANOMETER_UNIT = LengthUnit.NANOMETER;
-
+//    public static final LengthUnit RESULT_NANOMETER_UNIT = LengthUnit.NANOMETER;
     public enum MeasurementWithOption {
 
         YES, NO;
@@ -21,10 +20,12 @@ public abstract class AbstractMeasurement {
 
     protected String label;
     protected int unitExponent;
+    protected LengthUnit resultUnit;
 
     public AbstractMeasurement(String label, int unitExponent) {
         this.label = label;
         this.unitExponent = unitExponent;
+        resultUnit = LengthUnit.NANOMETER;
     }
 
     /**
@@ -36,6 +37,22 @@ public abstract class AbstractMeasurement {
     }
 
     /**
+     Set unit of computed results
+     @param unit unit of result
+     */
+    public void setResultUnit(LengthUnit unit) {
+        this.resultUnit = unit;
+    }
+
+    /**
+     Get unit of computed results
+     @return unit of result
+     */
+    public LengthUnit getResultUnit() {
+        return resultUnit;
+    }
+
+    /**
      Regulation defined which exponent use for unit convert
      @return
      */
@@ -43,6 +60,15 @@ public abstract class AbstractMeasurement {
         return unitExponent;
     }
 
+    /**
+     Compute measurement result for defined roi in specific result unit
+     @param roi region of interest
+     @param origImage original image with height values
+     @param binary thresholded image
+     @param scalerModule module for scaling computation
+     @param resultUnit unit of result
+     @return computed result for specific roi
+     */
     public abstract double compute(Roi roi, ImagePlus origImage,
             ImageProcessor binary, ScalerModule scalerModule,
             LengthUnit resultUnit);

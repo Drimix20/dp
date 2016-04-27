@@ -32,6 +32,8 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     private String[] strategiesName;
     private List<AbstractMeasurement> selectedMeasurements;
     private List<ChannelContainer> selectedChannelContainer;
+    List<ImageSegments> segmentImages;
+    boolean segmentationChanged = false;
     private ImageThresholdStrategy thresholder;
     private SegmentationConfigDialog segmentationConfDialog;
 
@@ -43,6 +45,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         initComponents();
         selectedMeasurements = new ArrayList<AbstractMeasurement>();
         selectedChannelContainer = new ArrayList<ChannelContainer>();
+        segmentImages = new ArrayList<ImageSegments>();
         segmentationOptionButton.setEnabled(false);
 
         MeasurementsElementManager elementManager = new MeasurementsElementManager(measurementsPanel);
@@ -106,6 +109,11 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Segmentation"));
 
         segmentationMethodComboBox.setSelectedItem(ThresholderExecutor.getStrategiesName());
+        segmentationMethodComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                segmentationMethodComboBoxItemStateChanged(evt);
+            }
+        });
 
         segmentationOptionButton.setText("Options");
         segmentationOptionButton.addActionListener(new java.awt.event.ActionListener() {
@@ -242,23 +250,26 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
     private void measureButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_measureButtonActionPerformed
         thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
         segmentationConfDialog = ThresholderExecutor.getSegmentationConfigDialog(getSelectedThresholdStrategy());
-        //TODO as new thread
         logger.info("Start computing");
 
-        Segmentation segmentation = new Segmentation();
-        List<ImageSegments> segmentImages = segmentation.segmentImages(selectedChannelContainer, thresholder);
+        if (segmentImages.isEmpty() || segmentationChanged) {
+            logger.info("Recompute segments");
+            segmentationChanged = false;
+            Segmentation segmentation = new Segmentation();
+            segmentImages = segmentation.segmentImages(selectedChannelContainer, thresholder);
+        }
         MeasurementComputation measComputation = new MeasurementComputation();
+
         //TODO create abstract class as AnalyzerResult and its implementation (because of usage in AfmAnalyzerFrame)
         Map<String, List<AbstractMeasurementResult>> afmAnalyzerResult = new HashMap<String, List<AbstractMeasurementResult>>();
 
         for (int i = 0; i < selectedChannelContainer.size(); i++) {
             ChannelContainer channelContainer = selectedChannelContainer.get(i);
-            ImagePlus imagePlus = channelContainer.getImagePlus();
 
             ImageSegments segmentImage = segmentImages.get(i);
             List<AbstractMeasurementResult> measurementResultsForImage = new ArrayList<AbstractMeasurementResult>();
             for (AbstractMeasurement am : selectedMeasurements) {
-                AbstractMeasurementResult computedResult = measComputation.compute(selectedChannelContainer.get(i), segmentImage, am);
+                AbstractMeasurementResult computedResult = measComputation.compute(channelContainer, segmentImage, am);
                 measurementResultsForImage.add(computedResult);
             }
             afmAnalyzerResult.put(channelContainer.getFile().getName(), measurementResultsForImage);
@@ -266,7 +277,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
         boolean increaseRowCounter = true;
         ResultsTable resultTable = new ResultsTable();
-        resultTable.setPrecision(16);
         for (Map.Entry<String, List<AbstractMeasurementResult>> entrySet : afmAnalyzerResult.entrySet()) {
             String key = entrySet.getKey();//imageFilename
             for (AbstractMeasurementResult measRes : entrySet.getValue()) {
@@ -275,7 +285,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                         //Increment row counter just for first measurement
                         resultTable.incrementCounter();
                     }
-                    resultTable.setValue(measRes.getMeasurementName() + " [" + measRes.getUnit() + "^" + measRes.getUnitExponent() + "] ", (roiObjectId - 1), (Double) measRes.getResultForRoiKey(roiObjectId));
+                    resultTable.setValue(measRes.getMeasurementName() + " [" + measRes.getUnit() + "^" + measRes.getUnitExponent() + "] ", (roiObjectId - 1), ResultsTable.d2s((Double) measRes.getResultForRoiKey(roiObjectId), 9));
                 }
                 increaseRowCounter = false;
             }
@@ -314,6 +324,11 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
             visibilityOfSelectionOfSegmentedImages(false);
         }
     }//GEN-LAST:event_selectSegmentedCheckBoxActionPerformed
+
+    private void segmentationMethodComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_segmentationMethodComboBoxItemStateChanged
+        //Segmentation method was changed so recomputation of segments is needed
+        segmentationChanged = true;
+    }//GEN-LAST:event_segmentationMethodComboBoxItemStateChanged
 
     private void visibilityOfSelectionOfSegmentedImages(
             boolean setSegmentedImagesComboBoxVisible) {

@@ -9,7 +9,6 @@ import interactive.analyzer.result.table.AbstractInteractiveTableModel;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.listeners.ImageSelectionListener;
-import interactive.analyzer.listeners.ManageTagListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
@@ -41,10 +40,9 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelectionListener, ChartSelectionListener, ManageTagListener {
+public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelectionListener, ChartSelectionListener {
 
     //TODO thread safe collection of data
-
     private static Logger logger = Logger.getLogger(InteractiveAnalyzerResultFrame.class);
 
     enum TableSelectionMode {
@@ -481,17 +479,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     }
     // </editor-fold>
 
-    @Override
-    public void newTagCreatedEvent(int id, Color color) {
-        TableModel model = jTable1.getModel();
-        for (int row = 0; row < model.getRowCount(); row++) {
-            Color rowColor = TableColorSelectionManager.getInstance().getColorForRow(row);
-            if (rowColor != null && rowColor.equals(color)) {
-                setValueToSelectionColumn(model, id, row);
-            }
-        }
-    }
-
     private void clearTableSelection() {
         selectionMode = CLEAR_SELECTIONS_IN_TABLE;
         jTable1.clearSelection();
@@ -661,7 +648,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         logger.info("Show histogram");
         if (objectFilteringFrame == null) {
             objectFilteringFrame = new ObjectFilteringFrame((AbstractInteractiveTableModel) tableModel);
-            objectFilteringFrame.addManageTagListener((ManageTagListener) this);
             objectFilteringFrame.addChartSelectionListener(this);
             objectFilteringFrame.addChartSelectionListener((ChartSelectionListener) interactiveImageWindow);
             this.addTableSelectionListener((TableSelectionListener) objectFilteringFrame.getGraphPanel());

@@ -10,7 +10,6 @@ import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.HistogramBin;
 import interactive.analyzer.histogram.HistogramImproved;
 import interactive.analyzer.listeners.ChartSelectionListener;
-import interactive.analyzer.listeners.ManageTagListener;
 import interactive.analyzer.options.ObjectFilteringConfiguration;
 import interactive.analyzer.result.table.AbstractInteractiveTableModel;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
@@ -19,7 +18,6 @@ import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -36,7 +34,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
     private AbstractInteractiveTableModel tableModel;
     private TableColorSelectionManager selectionManager;
-    private List<ManageTagListener> tagListeners;
     private String selectedColumnName;
     private double minColumnValue;
     private double maxColumnValue;
@@ -46,7 +43,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
      * @param tableModel
      */
     public ObjectFilteringFrame(AbstractInteractiveTableModel tableModel) {
-        tagListeners = new ArrayList<ManageTagListener>();
         selectionManager = TableColorSelectionManager.getInstance();
         this.tableModel = tableModel;
         initComponents();
@@ -56,20 +52,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         logger.trace("Frame width=" + getWidth() + ", height=" + getHeight() + javax.swing.UIManager.getLookAndFeel());
     }
-
-    // <editor-fold defaultstate="collapsed" desc="Manage ManageTagListener...">
-    public boolean addManageTagListener(ManageTagListener listener) {
-        return tagListeners.add(listener);
-    }
-
-    public boolean removeManageTagListener(ManageTagListener listener) {
-        return tagListeners.remove(listener);
-    }
-
-    public void removeAllManageTagListeners() {
-        tagListeners.clear();
-    }
-    // </editor-fold>
 
     public Color getCurrentSelectionColor() {
         return selectionManager.getCurrentSelectionColor();

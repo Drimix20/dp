@@ -63,7 +63,7 @@ public class AfmAnalyzerResultTable extends JTable {
             throw new IllegalArgumentException("Color is null");
         }
         rowBounds(row);
-        selectionManager.addRowToColorSelection(color, row);
+        selectionManager.addRowToSelection(color, row);
 
         return true;
     }
@@ -72,7 +72,7 @@ public class AfmAnalyzerResultTable extends JTable {
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
         }
-        selectionManager.addRowsToColorSelection(color, rows);
+        selectionManager.addRowsToSelection(color, rows);
 
         return true;
     }
@@ -87,14 +87,14 @@ public class AfmAnalyzerResultTable extends JTable {
             throw new IllegalArgumentException("Color is null");
         }
         rowBounds(row);
-        selectionManager.removeRowFromColorSelection(color, row);
+        selectionManager.removeRowFromSelection(row);
     }
 
     public void removeRowsFromColorSelection(Color color, int... rows) {
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
         }
-        selectionManager.removeRowsFromColorSelection(color, rows);
+        selectionManager.removeRowsFromSelection(rows);
     }
 
     @Override
@@ -124,13 +124,13 @@ public class AfmAnalyzerResultTable extends JTable {
     }
 
     private void colorComponent(int row, Component comp) {
-        Color selectionColor = null;
-        selectionColor = selectionManager.getColorForRow(row);
-        if (selectionColor == null && isRowSelected(row)) {
+        Color selectionColor = selectionManager.getCurrentSelectionColor();
+        if (isRowSelected(row)) {
             //selection performed by click on table row
             selectionColor = selectionManager.getCurrentSelectionColor();
-        }
-        if (selectionColor == null) {
+        } else if (selectionManager.isRowInSelection(row)) {
+            selectionColor = selectionManager.getCurrentSelectionColor();
+        } else {
             //row is not selected
             selectionColor = DEFAULT_BACKGROUND_ROW_COLOR;
         }

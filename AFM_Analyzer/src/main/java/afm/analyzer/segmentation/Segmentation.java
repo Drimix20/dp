@@ -50,13 +50,8 @@ public class Segmentation {
             analyzer.analyze(new ImagePlus("", binaryIp));
             segmentedImage.setRois(computeRoiOfSegments(roiManager));
 
-            //TODO creation of segmented image without rois and showing it
+            //TODO don't show segmented image
             ImagePlus segmentedImgWithRois = new ImagePlus("Segmented image", segmentedImage.getThresholdedImageProcessor().duplicate());
-//            for (Roi roi : segmentedImage.getRois()) {
-//                //draw roi at fixed location and not resizable
-//                roi.setNonScalable(true);
-//                roiManager.add(segmentedImgWithRois, roi, ((ExtendedRoi) roi).getLabel());
-//            }
             segmentedImgWithRois.show();
             resultsTable.reset();
             roiManager.reset();
@@ -68,6 +63,29 @@ public class Segmentation {
         }
 
         return segmentedImages;
+    }
+
+    public List<ImageSegments> segmentImage(
+            ImagePlus binaryImp) {
+
+        List<ImageSegments> segments = new ArrayList<ImageSegments>();
+        ResultsTable resultsTable = new ResultsTable();
+        RoiManager roiManager = new RoiManager(true);
+
+        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE,
+                Measurements.ADD_TO_OVERLAY | Measurements.RECT,
+                resultsTable, getMinPixelSize(), getMaxPixelSize(),
+                getMinCircularity(), getMaxCircularity());
+        ParticleAnalyzer.setRoiManager(roiManager);
+        ParticleAnalyzer.setLineWidth(1);
+
+        ImageSegments segmentedImage = new ImageSegments();
+        analyzer.analyze(binaryImp);
+        segmentedImage.setRois(computeRoiOfSegments(roiManager));
+        segmentedImage.setThresholdedIp(binaryImp.getProcessor());
+        segments.add(segmentedImage);
+
+        return segments;
     }
 
     public List<ImageProcessor> makeBinaryImages(
@@ -91,15 +109,8 @@ public class Segmentation {
     public List<Roi> computeRoiOfSegments(RoiManager roiManager) {
         List<Roi> rois = new ArrayList<Roi>();
         Roi[] roisAsArray = roiManager.getRoisAsArray();
-//        int[] selectedIndexes = new int[roisAsArray.length];
-//        for (int i = 0; i < roisAsArray.length; i++) {
-//            selectedIndexes[i] = i;
-//        }
-//        roiManager.setSelectedIndexes(selectedIndexes);
-//        roiManager.runCommand("Delete");
 
         for (int i = 0; i < roisAsArray.length; i++) {
-            //TODO check name before setting index
             Roi r = roisAsArray[i];
             r.setName((i + 1) + "");
             rois.add(r);

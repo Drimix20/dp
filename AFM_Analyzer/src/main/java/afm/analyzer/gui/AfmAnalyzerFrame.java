@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import afm.opener.selector.ChannelContainer;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
+import java.awt.event.ItemEvent;
 import java.util.Arrays;
 
 /**
@@ -28,12 +29,14 @@ import java.util.Arrays;
  */
 public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
+    //TODO review computation of image
     private static Logger logger = Logger.getLogger(AfmAnalyzerFrame.class);
     private String[] strategiesName;
     private List<AbstractMeasurement> selectedMeasurements;
     private List<ChannelContainer> selectedChannelContainer;
     List<ImageSegments> segmentImages;
-    boolean segmentationChanged = false;
+    private boolean segmentationChanged = false;
+    private boolean selectSegmentedImageManually = false;
     private ImageThresholdStrategy thresholder;
     private SegmentationConfigDialog segmentationConfDialog;
 
@@ -140,6 +143,11 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
         segmentedImagesComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         segmentedImagesComboBox.setEnabled(false);
+        segmentedImagesComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                segmentedImagesComboBoxItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -260,7 +268,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         }
         MeasurementComputation measComputation = new MeasurementComputation();
 
-        //TODO create abstract class as AnalyzerResult and its implementation (because of usage in AfmAnalyzerFrame)
         Map<String, List<AbstractMeasurementResult>> afmAnalyzerResult = new HashMap<String, List<AbstractMeasurementResult>>();
 
         for (int i = 0; i < selectedChannelContainer.size(); i++) {
@@ -316,12 +323,17 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                 segmentedImagesComboBox.addItem(imageTitles[i]);
             }
 
-            if (imageTitles.length == 1 && imageTitles[0] == "NONE") {
+            if (imageTitles.length == 0) {
                 segmentedImagesComboBox.setEnabled(false);
             }
+            selectSegmentedImageManually = true;
+            segmentationChanged = false;
         } else {
             //disable selection of opened images
             visibilityOfSelectionOfSegmentedImages(false);
+            segmentImages = new ArrayList<ImageSegments>();
+            selectSegmentedImageManually = false;
+            segmentationChanged = true;
         }
     }//GEN-LAST:event_selectSegmentedCheckBoxActionPerformed
 
@@ -329,6 +341,17 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         //Segmentation method was changed so recomputation of segments is needed
         segmentationChanged = true;
     }//GEN-LAST:event_segmentationMethodComboBoxItemStateChanged
+
+    private void segmentedImagesComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_segmentedImagesComboBoxItemStateChanged
+        //Selected segmented image from opened images
+        if (evt.getStateChange() == ItemEvent.DESELECTED || !selectSegmentedImageManually) {
+            return;
+        }
+        logger.info("Selected segment image: " + (String) evt.getItem());
+        ImagePlus image = WindowManager.getImage((String) evt.getItem());
+        Segmentation segmentation = new Segmentation();
+        segmentImages = segmentation.segmentImage(image);
+    }//GEN-LAST:event_segmentedImagesComboBoxItemStateChanged
 
     private void visibilityOfSelectionOfSegmentedImages(
             boolean setSegmentedImagesComboBoxVisible) {
@@ -342,7 +365,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         int[] wList = WindowManager.getIDList();
         if (wList == null) {
             IJ.showMessage("No image is open");
-            return new String[]{"NONE"};
+            return new String[]{};
         } else {
             String[] imageTitles = new String[wList.length];
             for (int i = 0; i < wList.length; i++) {

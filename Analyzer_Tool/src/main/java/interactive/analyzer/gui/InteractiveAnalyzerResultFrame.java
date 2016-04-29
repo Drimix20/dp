@@ -6,20 +6,21 @@ import static interactive.analyzer.gui.InteractiveAnalyzerResultFrame.TableSelec
 import interactive.analyzer.histogram.HistogramOptionDialog;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.result.table.AbstractInteractiveTableModel;
-import interactive.analyzer.result.table.AfmAnalyzerResultTable;
-import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.TableSelectionListener;
 import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
 import interactive.analyzer.presenter.Roi;
+import interactive.analyzer.result.table.AfmAnalyzerResultTable;
+import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.result.table.DecimalPrecisionRenderer;
 import interactive.analyzer.result.table.TableColorSelectionManager;
-import interactive.analyzer.selection.Tag;
 import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
@@ -42,12 +43,12 @@ import org.apache.log4j.Logger;
  */
 public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelectionListener, ChartSelectionListener {
 
-    //TODO thread safe collection of data
+    //TODO problem with dragged scrolling
     private static Logger logger = Logger.getLogger(InteractiveAnalyzerResultFrame.class);
 
     enum TableSelectionMode {
 
-        SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, CLEAR_SELECTIONS_IN_TABLE, NONE;
+        SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, DRAGGED_MOVE, CLEAR_SELECTIONS_IN_TABLE, NONE;
     }
 
     private static final int CTRL_WITH_LMB_DOWN = CTRL_DOWN_MASK | BUTTON1_DOWN_MASK;
@@ -64,6 +65,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
     private TableSelectionMode selectionMode = NONE;
     private boolean notificationSendViaListener = false;
+    private int lastSelectedObjectByDragged = -1;
+    private boolean mousePressed = false;
 
     /**
      * Base constructor. TableModel is automatically set up in initComponents to default
@@ -74,14 +77,25 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
      * @param tableHeaderTooltips tooltips for header row
      */
     public InteractiveAnalyzerResultFrame(ImageWindowI interactiveImageWindow,
-            List<String> tableColumnNames,
-            List<String> tableHeaderTooltips) {
+            List<String> tableColumnNames, List<String> tableHeaderTooltips) {
         this.interactiveImageWindow = interactiveImageWindow;
         this.tableColumnNames = tableColumnNames;
         this.tableHeaderTooltips = tableHeaderTooltips;
         selectedColumnName = tableColumnNames.get(0);
         selectionManager = TableColorSelectionManager.getInstance();
         initComponents();
+        this.jScrollPane1.getVerticalScrollBar().setUnitIncrement(1);
+        this.jScrollPane1.getVerticalScrollBar().setBlockIncrement(1);
+        this.jScrollPane1.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+            @Override
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                // The user scrolled the List (using the bar, mouse wheel or something else):
+                if (e.getAdjustmentType() == AdjustmentEvent.TRACK) {
+                    // Jump to the next "block" (which is a row".
+                    e.getAdjustable().setBlockIncrement(1);
+                }
+            }
+        });
     }
 
     /**
@@ -178,10 +192,13 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                         return;
                     }
 
-                    if (selectionMode == SINGLE_CLICK) {
+                    boolean needRepaint = false;
+                    if (selectionMode.equals(SINGLE_CLICK)) {
                         logger.trace("Single row selection");
+                        needRepaint = true;
                         singleRowSelectionInTable(jTable1, tableModel, selectedColumnName);
-                    } else if (selectionMode == CLICK_WITH_SHIFT && !notificationSendViaListener) {
+                    } else if (selectionMode.equals(CLICK_WITH_SHIFT) && !notificationSendViaListener) {
+                        needRepaint = true;
                         logger.trace("Multiple selection via pressed shift");
                         //multiple selection via pressed shift on table
                         int minSelectionIndex = jTable1.getSelectionModel().getMinSelectionIndex();
@@ -190,12 +207,14 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                             multipleRowsSelectionInTable(i, jTable1, selectedColumnName);
                         }
                     } else if (selectionMode == CLICK_WITH_CTRL) {
+                        needRepaint = true;
                         logger.trace("Multiple selection via pressed ctrl");
                         int rowIndex = jTable1.getSelectionModel().getLeadSelectionIndex();
                         multipleRowsSelectionInTable(rowIndex, jTable1, selectedColumnName);
                     }
-
-                    jTable1.repaint();
+                    if (needRepaint) {
+                        jTable1.repaint();
+                    }
                 }
             });
             jTable1.addMouseListener(new MouseAdapter() {
@@ -203,22 +222,24 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     notificationSendViaListener = false;
-
-                    super.mouseClicked(e);
+                    mousePressed = false;
                 }
 
                 @Override
                 public void mousePressed(MouseEvent e) {
+                    notificationSendViaListener = false;
+                    mousePressed = true;
                     retrieveCurrentSelectionMode(e);
-
-                    super.mousePressed(e);
                 }
 
                 @Override
                 public void mouseReleased(MouseEvent e) {
+                    notificationSendViaListener = false;
+                    mousePressed = false;
+                    if (selectionMode.equals(DRAGGED_MOVE)) {
+                        jTable1.repaint();
+                    }
                     retrieveCurrentSelectionMode(e);
-
-                    super.mouseReleased(e);
                 }
 
                 private void retrieveCurrentSelectionMode(MouseEvent e) {
@@ -233,6 +254,44 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                     } else {
                         selectionMode = NONE;
                     }
+                }
+
+            });
+            jTable1.addMouseMotionListener(new MouseAdapter() {
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    if (mousePressed) {
+                        clearTableSelectionAndNotifyListeners();
+                    }
+
+                    notificationSendViaListener = false;
+                    selectionMode = DRAGGED_MOVE;
+
+                    int leadSelectionRowIndex = jTable1.getSelectionModel().getLeadSelectionIndex();
+                    if (leadSelectionRowIndex != lastSelectedObjectByDragged) {
+                        logger.trace("Dragged selection on row " + leadSelectionRowIndex);
+
+                        Integer roiIdFromRow = getRoiIdFromRow(leadSelectionRowIndex);
+                        if (roiIdFromRow == null) {
+                            return;
+                        }
+                        notifyMultipleRowsSelected(leadSelectionRowIndex, roiIdFromRow, selectionManager.getCurrentSelectionColor());
+                        lastSelectedObjectByDragged = jTable1.getSelectionModel().getLeadSelectionIndex();
+                    }
+                    mousePressed = false;
+//                    int lastVisibleRow = getIndexOfLastVisibleRow(jTable1);
+//                    logger.warn("Last visible row: " + lastVisibleRow);
+//                    if (leadSelectionRowIndex == lastVisibleRow) {
+//                        logger.error("Need to translate to other row");
+//                        jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(lastVisibleRow + 1, 0, false)));
+//                    }
+                }
+
+                private int getIndexOfLastVisibleRow(JTable table) {
+                    Rectangle visibleRect = table.getVisibleRect();
+                    visibleRect.translate(0, visibleRect.height);
+                    return table.rowAtPoint(visibleRect.getLocation());
                 }
 
             });
@@ -254,9 +313,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         clearTableSelection();
         int rowIndex = jTable.getSelectionModel().getLeadSelectionIndex();
-        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(selectionManager.getCurrentSelectionColor(), rowIndex
-        );
-        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
+        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(selectionManager.getCurrentSelectionColor(), rowIndex);
+        //TODO enable tagManager
+//        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
         notifySingleRowSelected(rowIndex, columnValue, selectionManager.getCurrentSelectionColor());
     }
 
@@ -271,7 +330,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         double columnValue = (Double) jTable1.getValueAt(rowIndex, columnIndex);
         ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(selectionManager.getCurrentSelectionColor(), rowIndex);
-        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
+        //TODO enable tagManager
+//        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
         notifyMultipleRowsSelected(rowIndex, columnValue, selectionManager.getCurrentSelectionColor());
     }
 
@@ -343,7 +403,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     }
 
     /**
-     * Notify all listeners to clear all selections
+     * Notify all subscribers to clear all selections
      */
     public void notifyClearAll() {
         for (TableSelectionListener listener : tableSelectionListeners) {
@@ -360,7 +420,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         int rowIndex = roiLabel - 1;
         jTable1.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
-        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
+        //TODO enable tagManager
+//        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
         jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(rowIndex, 0, true)));
     }
 
@@ -372,7 +433,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         int rowIndex = roiLabel - 1;
         jTable1.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
-        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
+        //TODO enable tagManager
+//        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
         jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(rowIndex, 0, true)));
     }
 
@@ -403,8 +465,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
 
-                addSelectionIdToRow(color, rowIndex);
-
+                //TODO enable tagManager
+                //addSelectionIdToRow(color, rowIndex);
                 notifyMultipleRowsSelected(rowIndex, val, color);
                 lastRowIndex = rowIndex;
             }
@@ -430,8 +492,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                 ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
 
-                addSelectionIdToRow(color, rowIndex);
-
+                //TODO enable tagManager
+//                addSelectionIdToRow(color, rowIndex);
                 notifyMultipleRowsSelected(rowIndex, val, color);
                 lastRowIndex = rowIndex;
             }
@@ -440,16 +502,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(lastRowIndex, 0, true)));
         }
         jTable1.repaint();
-    }
-
-    private void addSelectionIdToRow(Color color, int rowIndex) {
-        Tag t = TagManager.getInstance().getTagByColor(color);
-        logger.trace(t);
-        if (t == null) {
-            setValueToSelectionColumn(tableModel, null, rowIndex);
-        } else {
-            setValueToSelectionColumn(tableModel, t.getId(), rowIndex);
-        }
     }
 
     @Override
@@ -479,6 +531,19 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     }
     // </editor-fold>
 
+    //TODO TagManager - co s tim??
+//    private void addSelectionIdToRow(Color color, int rowIndex) {
+//        Tag t = TagManager.getInstance().getTagByColor(color);
+//        logger.trace(t);
+//        if (t == null) {
+//            setValueToSelectionColumn(tableModel, null, rowIndex);
+//        } else {
+//            setValueToSelectionColumn(tableModel, t.getId(), rowIndex);
+//        }
+//    }
+    /**
+     * Method clear all selections in table
+     */
     private void clearTableSelection() {
         selectionMode = CLEAR_SELECTIONS_IN_TABLE;
         jTable1.clearSelection();
@@ -516,7 +581,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private void initComponents() {
 
         jMenuItem1 = new javax.swing.JMenuItem();
-        jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = createTableInstance();
         jPanel1 = new javax.swing.JPanel();
         showHistogram = new javax.swing.JButton();
@@ -565,13 +629,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(clearSelectionsButton))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(showHistogram)))
+                    .addComponent(clearSelectionsButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(showHistogram, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -682,6 +743,15 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         notifyRedrawAll();
     }//GEN-LAST:event_optionMeniItemActionPerformed
 
+    /**
+     * This notify all subscribers to redraw graphics
+     */
+    private void notifyRedrawAll() {
+        for (TableSelectionListener listener : tableSelectionListeners) {
+            listener.redrawAllEvent();
+        }
+    }
+
     private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
         TextTableExporter exporter = new TextTableExporter();
         exporter.export(interactiveImageWindow.getImageTitle(), jTable1, TagManager.getInstance(), TableColorSelectionManager.getInstance());
@@ -697,12 +767,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         clearTableSelection();
         for (TableSelectionListener listener : tableSelectionListeners) {
             listener.clearAllSelectionsEvent();
-        }
-    }
-
-    private void notifyRedrawAll() {
-        for (TableSelectionListener listener : tableSelectionListeners) {
-            listener.redrawAllEvent();
         }
     }
 
@@ -761,8 +825,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private final javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
+    private volatile javax.swing.JTable jTable1;
     private javax.swing.JMenuItem optionMeniItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem showHelpMenuItem;

@@ -59,6 +59,7 @@ public class AfmAnalyzerResultTable extends JTable {
     }
 
     public boolean addRowToColorSelection(Color color, int row) {
+        logger.info("row: " + row);
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
         }
@@ -129,6 +130,7 @@ public class AfmAnalyzerResultTable extends JTable {
             //selection performed by click on table row
             selectionColor = selectionManager.getCurrentSelectionColor();
         } else if (selectionManager.isRowInSelection(row)) {
+            logger.trace("Selection color for row " + row);
             selectionColor = selectionManager.getCurrentSelectionColor();
         } else {
             //row is not selected

@@ -19,6 +19,8 @@
 
     <logger name="interactive.analyzer.gui.ObjectFilteringFrame"> <level value="trace"/></logger>
     <logger name="interactive.analyzer.graph.GraphPanel"> <level value="info"/></logger>
+    <logger name="interactive.analyzer.gui.InteractiveAnalyzerResultFrame"> <level value="warn"/></logger>
+    <logger name="interactive.analyzer.presenter"> <level value="NONE"/></logger>
 
     <root>
         <priority value="INFO"/>

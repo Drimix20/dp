@@ -33,7 +33,6 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     private ImagePlus duplicatedImp;
     private String imageName;
     private OverlayManager overlayManager;
-    private List<Roi> rois;
 
     public InteractiveImageWindow(ImagePlus imp, List<Roi> rois) {
         validate(imp, rois);
@@ -45,9 +44,8 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         duplicatedImp.setTitle(frameTitle + ":" + imageName);
         duplicatedImp.setOverlay(null);
 
-        this.rois = rois;
-        overlayManager = new OverlayManager(this.rois, duplicatedImp);
-        overlayManager.drawRois();
+        overlayManager = new OverlayManager(rois, duplicatedImp);
+        overlayManager.drawAllRois();
 
         duplicatedImp.show();
         registerMouseListenerToImageCanvas(duplicatedImp.getCanvas());
@@ -147,13 +145,13 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
                     if (modifiersEx == CTRL_DOWN_MASK) {
                         logger.trace("Selection with ctrl key down: " + selectedRoi.getName() + " roi name");
                         overlayManager.addRoiToSelection(selectedRoi, DEFAULT_STROKE_ROI_COLOR);
-                        overlayManager.drawRois();
+                        overlayManager.drawRoi(selectedRoi.getName());
                         notifyMultipleSelectionRoi(Arrays.asList(selectedRoi));
                     } else {
                         logger.trace("Single selection: " + selectedRoi.getName() + " roi name");
                         overlayManager.deselectAll();
                         overlayManager.selectRoi(selectedRoi, DEFAULT_STROKE_ROI_COLOR);
-                        overlayManager.drawRois();
+                        overlayManager.drawAllRois();
                         notifySingleSelectionRoi(selectedRoi);
                     }
                 }
@@ -183,6 +181,9 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         }
     }
 
+    /**
+     Notify all subscribers to clear all selections
+     */
     public void notifyClearAllSelections() {
         for (ImageSelectionListener listener : roiSelectedListeners) {
             listener.clearAllSelectionsEvent();
@@ -213,7 +214,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         logger.trace("RoiId: " + roiId);
         overlayManager.deselectAll();
         overlayManager.selectRoi(roiId, color);
-        overlayManager.drawRois();
+        overlayManager.drawAllRois();
     }
 
     @Override
@@ -221,19 +222,23 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
             Color color) {
         logger.trace("rowIndex: " + roiId);
         overlayManager.addRoiToSelection(roiId, color);
-        overlayManager.drawRois();
+        overlayManager.drawRoi(roiId);
     }
 
     @Override
     public void rowDeselectedEvent(int roiId) {
         logger.trace("rowIndex: " + roiId);
         overlayManager.deselectRoi(roiId, DEFAULT_STROKE_ROI_COLOR);
-        overlayManager.drawRois();
+        overlayManager.drawRoi(roiId);
     }
 
+    /**
+     Redraw all rois
+     */
     @Override
     public void redrawAllEvent() {
-        overlayManager.drawRois();
+        logger.warn("Drawing all rois");
+        overlayManager.drawAllRois();
     }
 
     @Override

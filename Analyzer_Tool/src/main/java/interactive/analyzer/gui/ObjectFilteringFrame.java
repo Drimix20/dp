@@ -321,13 +321,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_SaveActionPerformed
 
-    private void setCurrentSelectionColor(Color color) {
-        selectionManager.setCurrentSelectionColor(color);
-        if (graphPanel != null) {
-            graphPanel.setSelectionColor(color);
-        }
-    }
-
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         if (IJ.showMessageWithCancel("Object filtering frame", "Are you sure to delete all selections?")) {
             informativePanel1.setCountFieldValue("");

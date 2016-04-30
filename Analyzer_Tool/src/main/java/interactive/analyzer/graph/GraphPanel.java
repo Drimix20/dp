@@ -555,6 +555,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                 logger.trace("Shape selected: " + shape.getID());
                 shape.setSelected(true);
                 shape.setSelectionColor(selectionColor);
+                selectionByDragged.add(shape);
                 break;
             }
         }

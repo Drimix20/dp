@@ -55,8 +55,8 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
          */
         MULTI_MODE_DESELECTION;
     }
-    private Graphics2D graphics2D;
-    private BufferedImage paintImage;
+    private volatile Graphics2D graphics2D;
+    private volatile BufferedImage paintImage;
     private Chart chart;
     private Color selectionColor;
     private List<Shape> selectionByDragged;
@@ -207,7 +207,6 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         //needed to repaint canvas
         updatePaint();
         if (select) {
-            //clearSelectionsInGraph();
             //Show information of selected object
             showInformationAboutSelection(shape.getOccurence(), shape.getLowerBound(), shape.getUpperBound());
             //chart shape was selected
@@ -350,7 +349,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                 notifyBarDeselected(shape);
             }
         }
-        //TODO updating of graph should be before sending notification
+
         updatePaint();
     }
 
@@ -491,7 +490,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     /**
      * Method must be called when graph panel canvas is changed for redrawing
      */
-    public void updatePaint() {
+    public synchronized void updatePaint() {
         if (paintImage.getWidth() != getWidth() || paintImage.getHeight() != getHeight()) {
             paintImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         }
@@ -528,7 +527,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     @Override
     public void singleRowSelectedEvent(int roiId, double value,
             Color color) {
-        logger.trace("rowIndex: " + roiId);
+        logger.trace("roiId: " + roiId);
         if (chart == null) {
             return;
         }
@@ -545,14 +544,15 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     @Override
-    public void multipleRowsSelectedEvent(int roiId, double value,
+    public synchronized void multipleRowsSelectedEvent(int roiId, double value,
             Color color) {
-        logger.trace("rowIndex: " + roiId);
+        logger.trace("roiId: " + roiId);
         if (chart == null) {
             return;
         }
         for (Shape shape : chart.getDrawShapes()) {
             if (shape.isValueInRange(value)) {
+                logger.trace("Shape selected: " + shape.getID());
                 shape.setSelected(true);
                 shape.setSelectionColor(selectionColor);
                 break;
@@ -563,7 +563,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
     @Override
     public void rowDeselectedEvent(int roiId) {
-        logger.trace("rowIndex: " + roiId);
+        logger.trace("roiId: " + roiId);
         //not needed
     }
 

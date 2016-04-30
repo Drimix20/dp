@@ -280,11 +280,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                     if (leadSelectionRowIndex != lastSelectedObjectByDragged) {
                         logger.trace("Dragged selection on row " + leadSelectionRowIndex);
 
-                        Integer roiIdFromRow = getRoiIdFromRow(leadSelectionRowIndex);
-                        if (roiIdFromRow == null) {
-                            return;
-                        }
-                        notifyMultipleRowsSelected(leadSelectionRowIndex, roiIdFromRow, selectionManager.getCurrentSelectionColor());
+                        multipleRowsSelectionInTable(leadSelectionRowIndex, jTable1, selectedColumnName);
                         lastSelectedObjectByDragged = jTable1.getSelectionModel().getLeadSelectionIndex();
                     }
                     mousePressed = false;
@@ -744,7 +740,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         //TODO jedna se o chtenou funkcionalitu?
         clearTableSelectionAndNotifyListeners();
 
-        objectFilteringFrame.showWindow(histogramDialog.getSelectedColumnName());
+        selectedColumnName = histogramDialog.getSelectedColumnName();
+        objectFilteringFrame.showWindow(selectedColumnName);
     }//GEN-LAST:event_showHistogramActionPerformed
 
     private void clearSelectionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSelectionsButtonActionPerformed

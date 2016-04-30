@@ -30,7 +30,7 @@ public class HistogramChart implements Chart {
     private int chartWidth;
     private double barWidth;
 
-    private List<Shape> shapes;
+    private volatile List<Shape> shapes;
     private HistogramDataSet data;
 
     public HistogramChart() {
@@ -38,7 +38,7 @@ public class HistogramChart implements Chart {
     }
 
     @Override
-    public void loadData(HistogramDataSet dataSet) {
+    public synchronized void loadData(HistogramDataSet dataSet) {
         validateDataSet(dataSet);
         clearAllSelections();
         this.data = dataSet;
@@ -111,7 +111,7 @@ public class HistogramChart implements Chart {
     }
 
     @Override
-    public List<Shape> getDrawShapes() {
+    public synchronized List<Shape> getDrawShapes() {
         return shapes;
     }
 
@@ -258,7 +258,7 @@ public class HistogramChart implements Chart {
     }
 
     @Override
-    public void clearAllSelections() {
+    public synchronized void clearAllSelections() {
         for (Shape shape : shapes) {
             if (shape.getOccurence() == 0) {
                 continue;

@@ -2,28 +2,14 @@ package interactive.analyzer.presenter;
 
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.listeners.ImageSelectionListener;
+import interactive.analyzer.listeners.ImageWindowObjectListener;
 
 /**
  * Defined methods for image presenter
  * @author Drimal
  */
-public interface ImageWindowI extends ChartSelectionListener {
+public interface ImageWindowI extends ChartSelectionListener, ImageWindowObjectListener {
 
-    /**
-     * Set images which will be shown saved in special object for AFM analyzer
-     * @param channelContainer container contains images to show
-     */
-//    public void setImagesToShow(List<ChannelContainer> channelContainer);
-    /**
-     * Set for each image segment with rois for compute measurements
-     * @param imagesSegments
-     */
-//    public void setImagesSegments(List<ImageSegments> imagesSegments);
-    /**
-     * Set images which will be shown in image window
-     * @param images one image or stack of images to show
-     */
-//    public void setImagesToShow(ImagePlus images);
     /**
      * Configure visible title to image window
      * @param title image window title

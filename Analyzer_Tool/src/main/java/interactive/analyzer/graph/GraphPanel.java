@@ -38,12 +38,22 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
 
     protected enum GraphSelection {
 
-        //single mode selection by left mouse click
-        SingleMode,
-        //multi mode selection by left mouse dragged click
-        MultiModeSelection,
-        //multi mode deselection by left mouse dragged click
-        MultiModeDeselection;
+        /**
+         * Single mode selection by left mouse click
+         */
+        SINGLE_MODE,
+        /**
+         * Initiation of multiple mode selection
+         */
+        INIT_MULTI_MODE_SELECTION,
+        /**
+         * Multi mode selection by left mouse dragged click
+         */
+        MULTI_MODE_SELECTION,
+        /**
+         * Multi mode deselection by left mouse dragged click
+         */
+        MULTI_MODE_DESELECTION;
     }
     private Graphics2D graphics2D;
     private BufferedImage paintImage;
@@ -57,8 +67,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     private double minLowerBound;
     private double maxUpperBound;
 
-    private boolean draggedSelection = false;
-    private boolean deselectionModeIsOn;
+    private boolean initMultipleSelection = false;
 
     private ImageFileFilter[] filefilters = new ImageFileFilter[]{
         new ImageFileFilter("png"),
@@ -107,43 +116,47 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                     return;
                 }
 
-                draggedSelection = event.getModifiersEx() == MouseEvent.BUTTON1_DOWN_MASK;
-                deselectionModeIsOn = event.getModifiersEx() == MouseEvent.BUTTON3_DOWN_MASK;
+                if (initMultipleSelection) {
+                    selectionAction(GraphSelection.INIT_MULTI_MODE_SELECTION, event);
+                }
+
+                boolean draggedSelection = event.getModifiersEx() == MouseEvent.BUTTON1_DOWN_MASK;
+                boolean deselectionModeIsOn = event.getModifiersEx() == MouseEvent.BUTTON3_DOWN_MASK;
 
                 if (draggedSelection) {
-                    selectionAction(GraphSelection.MultiModeSelection, event);
+                    selectionAction(GraphSelection.MULTI_MODE_SELECTION, event);
                 } else if (deselectionModeIsOn) {
-                    selectionAction(GraphSelection.MultiModeDeselection, event);
+                    selectionAction(GraphSelection.MULTI_MODE_DESELECTION, event);
                 }
+                initMultipleSelection = false;
             }
-        });
+        }
+        );
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                selectionAction(GraphSelection.SingleMode, e);
-            }
+        addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e
+                    ) {
+                        selectionAction(GraphSelection.SINGLE_MODE, e);
+                    }
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-                logger.info("Mouse button " + e.getButton());
-                if (chart == null || chart.isEmpty()) {
-                    return;
+                    @Override
+                    public void mousePressed(MouseEvent e
+                    ) {
+                        logger.info("Mouse button " + e.getButton());
+                        if (chart == null || chart.isEmpty()) {
+                            return;
+                        }
+
+                        if (e.getButton() == MouseEvent.BUTTON1) {
+
+                            initMultipleSelection = true;
+                        }
+
+                    }
                 }
-
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    clearAllSelectionsEvent();
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (chart == null || chart.isEmpty()) {
-                    return;
-                }
-                logger.info("Dragged selections: " + selectionByDragged.size());
-            }
-        });
+        );
     }
 
     /**
@@ -153,13 +166,16 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
      */
     public void selectionAction(GraphSelection selectionMode, MouseEvent event) {
         switch (selectionMode) {
-            case SingleMode:
+            case SINGLE_MODE:
                 singleBarSelectionAction(event);
                 break;
-            case MultiModeSelection:
+            case INIT_MULTI_MODE_SELECTION:
+                clearAllSelectionsEvent();
+                break;
+            case MULTI_MODE_SELECTION:
                 multipleBarSelectionAction(event);
                 break;
-            case MultiModeDeselection:
+            case MULTI_MODE_DESELECTION:
                 mulptipleBarDeselectionAction(event);
                 break;
         }
@@ -170,7 +186,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
      If clicked shape is selected then method deselects it.
      @param event
      */
-    private void singleBarSelectionAction(final MouseEvent event) {
+    private synchronized void singleBarSelectionAction(final MouseEvent event) {
         if (chart == null || chart.isEmpty()) {
             return;
         }
@@ -180,16 +196,18 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         }
 
         logger.trace(shape.getID() + ", " + shape.getTooltipText());
-        clearSelectionsInGraph();
         //Select shape clicked on
         boolean select = !shape.isSelected();
+
+        clearAllSelectionsEvent();
+
         shape.setSelected(select);
         shape.setSelectionColor(selectionColor);
 
         //needed to repaint canvas
         updatePaint();
-
         if (select) {
+            //clearSelectionsInGraph();
             //Show information of selected object
             showInformationAboutSelection(shape.getOccurence(), shape.getLowerBound(), shape.getUpperBound());
             //chart shape was selected
@@ -206,7 +224,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
      Multiple bars were selected by mouse dragged with left button clicked.
      @param event
      */
-    private void multipleBarSelectionAction(final MouseEvent event) {
+    private synchronized void multipleBarSelectionAction(final MouseEvent event) {
         Shape shape = getShapeAtPoint(event.getPoint());
         if (shape == null) {
             return;
@@ -228,7 +246,8 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         notifyBarSelected(shape, selectionColor);
     }
 
-    private void mulptipleBarDeselectionAction(final MouseEvent event) {
+    private synchronized void mulptipleBarDeselectionAction(
+            final MouseEvent event) {
         Shape shape = getShapeAtPoint(event.getPoint());
         if (shape == null) {
             return;
@@ -374,7 +393,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                 }
                 logger.trace("Multiple bar selected: " + shape);
                 for (ChartSelectionListener listener : selectionListeners) {
-                    listener.barSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
+                    listener.multipleBarSelectedEvent(shape.getLowerBound(), shape.getUpperBound(), selectionColor);
                 }
             }
         }.run();

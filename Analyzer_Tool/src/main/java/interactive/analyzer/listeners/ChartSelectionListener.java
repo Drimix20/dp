@@ -12,7 +12,7 @@ public interface ChartSelectionListener {
             double upperRangeValue,
             Color color);
 
-    public void barSelectedEvent(double downRangeValue, double upperRangeValue,
+    public void multipleBarSelectedEvent(double downRangeValue, double upperRangeValue,
             Color color);
 
     public void barDeselectedEvent(double downRangeValue,

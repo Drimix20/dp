@@ -251,19 +251,20 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     @Override
     public void singleBarSelectedEvent(double downRangeValue,
             double upperRangeValue, Color color) {
-        logger.trace("Not Implemented");
+        logger.trace("Can not Implemented");
     }
 
     @Override
-    public void barSelectedEvent(double downRangeValue, double upperRangeValue,
+    public void multipleBarSelectedEvent(double downRangeValue,
+            double upperRangeValue,
             Color color) {
-        logger.trace("Not Implemented");
+        logger.trace("Can not Implemented");
     }
 
     @Override
     public void barDeselectedEvent(double downRangeValue,
             double upperRangeValue) {
-        logger.trace("Not Implemented");
+        logger.trace("Can not Implemented");
     }
 
     @Override
@@ -271,4 +272,21 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         overlayManager.deselectAllAndRedraw();
     }
     // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="ImageWindowObjectListener...">
+    @Override
+    public void multipleRoiSelected(int roiId, Color color) {
+        logger.trace("rowId: " + roiId);
+        overlayManager.addRoiToSelection(roiId, color);
+        overlayManager.drawRoi(roiId);
+    }
+
+    @Override
+    public void roiDeselected(int roiId) {
+        logger.trace("rowId: " + roiId);
+        overlayManager.deselectRoi(roiId, DEFAULT_STROKE_ROI_COLOR);
+        overlayManager.drawRoi(roiId);
+    }
+    // </editor-fold>
+
 }

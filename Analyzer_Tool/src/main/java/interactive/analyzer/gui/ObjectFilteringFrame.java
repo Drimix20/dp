@@ -403,9 +403,12 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
     public void showWindow(String selectedColumName) {
         this.selectedColumnName = selectedColumName;
+        graphPanel.setChart(null);
+        graphPanel.updatePaint();
 
         Object[] columnData = ((AbstractInteractiveTableModel) tableModel).getColumnData(selectedColumnName);
         HistogramDataSet computeDataSetFromTable = DataStatistics.computeDataSetFromTable(columnData);
+        binSpinner.setValue(0);
         minColumnValue = computeDataSetFromTable.getMinValue();
         maxColumnValue = computeDataSetFromTable.getMaxValue();
 

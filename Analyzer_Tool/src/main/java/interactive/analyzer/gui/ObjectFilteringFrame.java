@@ -348,7 +348,7 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
 
     private void computeHistogramButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_computeHistogramButtonActionPerformed
         int binNumber = (Integer) binSpinner.getValue();
-        if (binNumber == 0) {
+        if (binNumber <= 0) {
             IJ.showMessage("Count of bin must be greater then zero");
             return;
         }

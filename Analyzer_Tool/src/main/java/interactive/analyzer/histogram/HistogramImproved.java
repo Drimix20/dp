@@ -120,12 +120,15 @@ public class HistogramImproved {
         List<HistogramBin> cumulatedHist = new ArrayList<HistogramBin>();
 
         int occurencePrevious = calculateHistogram.get(0).getOccurence();
+        minOccurence = occurencePrevious;
         cumulatedHist.add(calculateHistogram.get(0));
         for (int i = 1; i < calculateHistogram.size(); i++) {
-            calculateHistogram.get(i).addToOccurence(occurencePrevious);
-            occurencePrevious = calculateHistogram.get(i).getOccurence();
+            HistogramBin histBin = calculateHistogram.get(i);
+            histBin.addToOccurence(occurencePrevious);
+            occurencePrevious = histBin.getOccurence();
+            cumulatedHist.add(histBin);
         }
-
+        maxOccurence = occurencePrevious;
         return cumulatedHist;
     }
 

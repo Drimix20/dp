@@ -146,9 +146,4 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
         return columnData;
     }
 
-    @Override
-    public Object[] getColumnData(int columnIndex, int... rows) {
-        String columnName = getColumnName(columnIndex);
-        return getColumnData(columnName, rows);
-    }
 }

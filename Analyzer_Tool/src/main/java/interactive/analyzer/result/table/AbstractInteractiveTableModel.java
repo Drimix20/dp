@@ -80,14 +80,6 @@ public abstract class AbstractInteractiveTableModel extends AbstractTableModel {
     public abstract Object[] getColumnData(String columnName, int... rows);
 
     /**
-     * Get column data for specific column and rows
-     * @param columnIndex index of column
-     * @param rows indexes of rows
-     * @return
-     */
-    public abstract Object[] getColumnData(int columnIndex, int... rows);
-
-    /**
      * Get column index specified by column name
      * @param columnName
      * @return column index for column with specified name. If no column exists then return -1.

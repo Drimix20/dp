@@ -125,7 +125,7 @@ public class AfmAnalyzerResultTable extends JTable {
     }
 
     private void colorComponent(int row, Component comp) {
-        Color selectionColor = selectionManager.getCurrentSelectionColor();
+        Color selectionColor;
         if (isRowSelected(row)) {
             //selection performed by click on table row
             selectionColor = selectionManager.getCurrentSelectionColor();

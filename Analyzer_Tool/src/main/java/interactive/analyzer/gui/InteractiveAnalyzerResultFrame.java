@@ -9,6 +9,7 @@ import interactive.analyzer.result.table.AbstractInteractiveTableModel;
 import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.ImageWindowObjectListener;
 import interactive.analyzer.listeners.TableSelectionListener;
+import interactive.analyzer.options.ResultTableConfiguration;
 import interactive.analyzer.presenter.ImageWindowI;
 import interactive.analyzer.presenter.InteractiveImageWindow;
 import interactive.analyzer.presenter.Roi;
@@ -20,8 +21,6 @@ import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
@@ -31,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
@@ -88,18 +88,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         imageWindowObjectListeners = new ArrayList<ImageWindowObjectListener>();
         imageWindowObjectListeners.add(interactiveImageWindow);
         initComponents();
-        this.jScrollPane1.getVerticalScrollBar().setUnitIncrement(1);
-        this.jScrollPane1.getVerticalScrollBar().setBlockIncrement(1);
-        this.jScrollPane1.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-            @Override
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                // The user scrolled the List (using the bar, mouse wheel or something else):
-                if (e.getAdjustmentType() == AdjustmentEvent.TRACK) {
-                    // Jump to the next "block" (which is a row".
-                    e.getAdjustable().setBlockIncrement(1);
-                }
-            }
-        });
+        ResultTableConfiguration.getInstance().initValues(jTable1.getColumnCount());
     }
 
     /**
@@ -120,6 +109,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         imageWindowObjectListeners = new ArrayList<ImageWindowObjectListener>();
         imageWindowObjectListeners.add(interactiveImageWindow);
         initComponents();
+        ResultTableConfiguration.getInstance().initValues(jTable1.getColumnCount());
     }
 
     /**
@@ -140,6 +130,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         imageWindowObjectListeners = new ArrayList<ImageWindowObjectListener>();
         imageWindowObjectListeners.add(interactiveImageWindow);
         initComponents();
+        ResultTableConfiguration.getInstance().initValues(jTable1.getColumnCount());
     }
 
     /**
@@ -299,6 +290,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                 }
 
             });
+            jTable1.getTableHeader().addMouseListener(new PopupListener());
             ((AfmAnalyzerResultTable) jTable1).setHeaderTooltips(this.tableHeaderTooltips);
         }
         return jTable1;
@@ -829,6 +821,29 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                 frame.setVisible(true);
             }
         });
+    }
+
+    class PopupListener extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getButton() == MouseEvent.BUTTON3) {
+                int column = jTable1.columnAtPoint(e.getPoint());
+
+                if (column == AfmAnalyzerResultTable.SELECTION_COLUMN_INDEX || column == AfmAnalyzerResultTable.ID_COLUMN_INDEX) {
+                    logger.trace("Column 0 and 1 hasn't configurable decimal places");
+                    return;
+                }
+
+                String columnName = jTable1.getColumnName(column);
+                logger.info("Right click on header column " + columnName);
+                JDialog popup = new DecimalPlacesPopup(column);
+                popup.setTitle(columnName);
+                popup.setLocation(e.getXOnScreen(), e.getYOnScreen());
+                popup.setVisible(true);
+                jTable1.repaint();
+            }
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

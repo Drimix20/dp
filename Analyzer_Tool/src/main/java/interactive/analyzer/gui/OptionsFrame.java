@@ -57,7 +57,8 @@ public class OptionsFrame extends javax.swing.JDialog {
     }
 
     private void initDecimalPlacesSpinner() {
-        decimalPlacesSpinner.setValue(ResultTableConfiguration.getDecimalPlaces());
+        //TODO fix configuration
+        decimalPlacesSpinner.setValue(3);
     }
 
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -338,7 +339,8 @@ public class OptionsFrame extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        ResultTableConfiguration.setDecimalPlaces((Integer) decimalPlacesSpinner.getValue());
+        //TODO fix configuration
+        //ResultTableConfiguration.setDecimalPlaces((Integer) decimalPlacesSpinner.getValue());
         ResultTableConfiguration.setColorEntireRow(colorizedRowCheckBox.isSelected());
 
         ImageWindowConfiguration.setStrokeWidth((Integer) strokeWidthSpinner.getValue());

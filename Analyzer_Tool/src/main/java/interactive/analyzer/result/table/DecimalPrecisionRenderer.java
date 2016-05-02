@@ -30,23 +30,18 @@ public class DecimalPrecisionRenderer extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
         currentColumn = column;
-        return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column); //To change body of generated methods, choose Tools | Templates.
+        return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
     }
 
     @Override
     protected void setValue(Object value) {
-        if (value != null && (currentColumn == AfmAnalyzerResultTable.SELECTION_COLUMN_INDEX || currentColumn == AfmAnalyzerResultTable.ID_COLUMN_INDEX)) {
+        if (value != null) {
+            int decimalPlaces = ResultTableConfiguration.getInstance().getDecimalPlaces(currentColumn);
+            logger.trace("Configure column " + currentColumn + " to decimal places " + decimalPlaces);
             numberValue = (Number) value;
             NumberFormat nf = NumberFormat.getNumberInstance();
-            nf.setMinimumFractionDigits(0);
-            nf.setMaximumFractionDigits(0);
-            nf.setRoundingMode(RoundingMode.HALF_UP);
-            value = nf.format(numberValue.doubleValue());
-        } else if ((value != null) && (value instanceof Number)) {
-            numberValue = (Number) value;
-            NumberFormat nf = NumberFormat.getNumberInstance();
-            nf.setMinimumFractionDigits(ResultTableConfiguration.getDecimalPlaces());
-            nf.setMaximumFractionDigits(ResultTableConfiguration.getDecimalPlaces());
+            nf.setMinimumFractionDigits(decimalPlaces);
+            nf.setMaximumFractionDigits(decimalPlaces);
             nf.setRoundingMode(RoundingMode.HALF_UP);
             value = nf.format(numberValue.doubleValue());
         }

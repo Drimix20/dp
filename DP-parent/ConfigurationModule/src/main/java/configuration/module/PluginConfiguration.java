@@ -17,7 +17,7 @@ import java.util.List;
 public class PluginConfiguration {
 
     public static final String PLUGIN_CONFIGURATION_SCHEMA_XSD_NAME = "pluginConfigurationSchema.xsd";
-    public static final String PLUGIN_CONFIGURATION_XML_NAME = "afmPluginConfiguration.xml";
+    public static final String PLUGIN_CONFIGURATION_XML_NAME = "AfmOpenerConfiguration.xml";
     public static final int TAG_OFFSET_DECIMAL_VALUE = 48;
 
     //image resolution

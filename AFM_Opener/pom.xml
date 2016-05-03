@@ -164,7 +164,7 @@
                                     <directory>src/main/resources</directory>
                                     <filtering>true</filtering>
                                     <includes>
-                                        <include>afmPluginConfiguration.xml</include>
+                                        <include>AfmOpenerConfiguration.xml</include>
                                     </includes>
                                 </resource>
                             </resources>

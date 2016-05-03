@@ -1,6 +1,7 @@
 package interactive.analyzer.listeners;
 
 import java.awt.Color;
+import java.util.Set;
 
 /**
  *
@@ -19,4 +20,6 @@ public interface TableSelectionListener {
     public void redrawAllEvent();
 
     public void clearAllSelectionsEvent();
+
+    public void removeRois(Set<Integer> roiIds);
 }

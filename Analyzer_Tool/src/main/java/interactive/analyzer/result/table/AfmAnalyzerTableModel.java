@@ -1,6 +1,8 @@
 package interactive.analyzer.result.table;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.apache.log4j.Logger;
 
 /**
@@ -23,7 +25,7 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     public AfmAnalyzerTableModel() {
         columnNames = new String[0];
-        data = new Object[0][0];
+        data = new ArrayList<Object[]>();
     }
 
     @Override
@@ -38,14 +40,17 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
     @Override
     public void setValues(Object[][] values) {
         logger.debug("Set table values with rows " + values.length);
-        this.data = values;
+        data = new ArrayList<Object[]>();
+        for (int i = 0; i < values.length; i++) {
+            data.add(values[i]);
+        }
         fireTableDataChanged();
     }
 
     @Override
     public int getRowCount() {
-        logger.trace("Row count " + data.length);
-        return data.length;
+        logger.trace("Row count " + data.size());
+        return data.size();
     }
 
     @Override
@@ -56,10 +61,10 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex < 0 && columnIndex > data.length - 1) {
-            throw new IllegalArgumentException("Column index " + columnIndex + " is out of range <0, " + (data.length - 1));
+        if (columnIndex < 0 && columnIndex > data.size() - 1) {
+            throw new IllegalArgumentException("Column index " + columnIndex + " is out of range <0, " + (data.size() - 1));
         }
-        if (data.length == 0) {
+        if (data.isEmpty()) {
             return Object.class;
         }
         logger.trace("Column index " + columnIndex);
@@ -73,30 +78,30 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (rowIndex < 0 || rowIndex > data.length - 1 || columnIndex < 0 || columnIndex > columnNames.length - 1) {
+        if (rowIndex < 0 || rowIndex > data.size() - 1 || columnIndex < 0 || columnIndex > columnNames.length - 1) {
             throw new IllegalArgumentException("Row index or column index is out of range: row=" + rowIndex + ", col=" + columnIndex);
         }
 
-        return data[rowIndex][columnIndex];
+        return data.get(rowIndex)[columnIndex];
     }
 
     @Override
     public void setValueAt(Object value, int row, int column) {
         logger.trace("Set value " + value + " to row " + row + " and col " + column);
 
-        if (row < 0 || row > data.length || column < 0 || column > columnNames.length) {
+        if (row < 0 || row > data.size() || column < 0 || column > columnNames.length) {
             throw new IllegalArgumentException("Row index or column index is out of range.");
         }
-        data[row][column] = value;
+        data.get(row)[column] = value;
         fireTableCellUpdated(row, column);
     }
 
     @Override
     public Object[] getColumnData(String columnName) {
-        if (data == null || data.length == 0) {
+        if (data == null || data.isEmpty()) {
             return null;
         }
-        int size = data.length;
+        int size = data.size();
         int[] rows = new int[size];
         for (int rowIndex = 0; rowIndex < size; rowIndex++) {
             rows[rowIndex] = rowIndex;
@@ -107,7 +112,7 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     @Override
     public int getColumnIndexByName(String columnName) {
-        if (data == null || data.length == 0) {
+        if (data == null || data.isEmpty()) {
             return -1;
         }
         int columnIndex = -1;
@@ -146,4 +151,29 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
         return columnData;
     }
 
+    @Override
+    public void removeRows(Set<Integer> roiIds) {
+        for (Integer roiId : roiIds) {
+            if (roiId < 0) {
+                throw new IllegalArgumentException("Row id must be equal or greater than zero.");
+            }
+            for (int i = 0; i < data.size(); i++) {
+                Object[] rowData = data.get(i);
+                if (rowData[AfmAnalyzerResultTable.ID_COLUMN_INDEX] == roiId) {
+
+                    data.remove(i);
+                }
+            }
+        }
+        fireTableDataChanged();
+    }
+
+    @Override
+    public void removeRow(int rowIndex) {
+        if (rowIndex < 0 || rowIndex > data.size()) {
+            throw new IllegalArgumentException("Row index or column index is out of range.");
+        }
+        data.remove(rowIndex);
+        fireTableDataChanged();
+    }
 }

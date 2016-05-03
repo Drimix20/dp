@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import org.apache.log4j.Logger;
 
 /**
@@ -32,7 +33,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     private static List<ImageSelectionListener> roiSelectedListeners;
     private ImagePlus duplicatedImp;
     private String imageName;
-    private OverlayManager overlayManager;
+    private OverlayManagerInterface overlayManager;
 
     public InteractiveImageWindow(ImagePlus imp, List<Roi> rois) {
         validate(imp, rois);
@@ -245,8 +246,19 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     public void clearAllSelectionsEvent() {
         overlayManager.deselectAllAndRedraw();
     }
-    // </editor-fold>
 
+    @Override
+    public void removeRois(Set<Integer> roiIds) {
+        if (roiIds == null) {
+            throw new NullPointerException("Set of rois can't be null");
+        }
+        for (Integer roiId : roiIds) {
+            overlayManager.removeRoi(roiId);
+        }
+        overlayManager.drawAllRois();
+    }
+
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="ChartSelectionListener...">
     @Override
     public void singleBarSelectedEvent(double downRangeValue,

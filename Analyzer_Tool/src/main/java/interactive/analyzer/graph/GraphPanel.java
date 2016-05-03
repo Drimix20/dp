@@ -23,6 +23,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
@@ -584,6 +585,11 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         for (ChartSelectionListener listener : selectionListeners) {
             listener.clearBarSelectionsEvent();
         }
+    }
+
+    @Override
+    public void removeRois(Set<Integer> roiIds) {
+
     }
     // </editor-fold>
 

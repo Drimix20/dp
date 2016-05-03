@@ -1,5 +1,8 @@
 package interactive.analyzer.result.table;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -10,11 +13,11 @@ import javax.swing.table.AbstractTableModel;
 public abstract class AbstractInteractiveTableModel extends AbstractTableModel {
 
     protected String[] columnNames;
-    protected Object[][] data;
+    protected List<Object[]> data;
 
     public AbstractInteractiveTableModel() {
         columnNames = new String[0];
-        data = new Object[0][0];
+        data = new ArrayList<Object[]>();
     }
 
     /**
@@ -85,6 +88,18 @@ public abstract class AbstractInteractiveTableModel extends AbstractTableModel {
      * @return column index for column with specified name. If no column exists then return -1.
      */
     public abstract int getColumnIndexByName(String columnName);
+
+    /**
+     * Remove specified row from table
+     * @param rowIndex
+     */
+    public abstract void removeRow(int rowIndex);
+
+    /**
+     * Remove rows with listed roi id
+     * @param roiIds
+     */
+    public abstract void removeRows(Set<Integer> roiIds);
 
     /**
      * Force firing TableDataChanged event

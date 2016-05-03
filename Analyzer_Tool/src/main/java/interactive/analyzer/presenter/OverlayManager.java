@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class OverlayManager {
+public class OverlayManager implements OverlayManagerInterface {
 
     private static Logger logger = Logger.getLogger(OverlayManager.class);
     //Map of rois : <roiID, roiObject>
@@ -40,18 +40,21 @@ public class OverlayManager {
         this.img = img;
 
         imageProcessor = new ColorProcessor(img.getBufferedImage());
+        imageProcessor.snapshot();
         img.setProcessor(imageProcessor);
     }
 
     /**
      * Draw all rois
      */
+    @Override
     public synchronized void drawAllRois() {
         logger.trace("");
         new Runnable() {
 
             @Override
             public void run() {
+                imageProcessor.reset();
                 imageProcessor.setLineWidth(ImageWindowConfiguration.getStrokeWidth());
                 for (Integer key : roisMap.keySet()) {
                     Roi r = roisMap.get(key);
@@ -69,6 +72,7 @@ public class OverlayManager {
         }.run();
     }
 
+    @Override
     public synchronized void drawRoi(final int roiId) {
         new Runnable() {
 
@@ -116,6 +120,7 @@ public class OverlayManager {
         }
     }
 
+    @Override
     public synchronized List<Roi> selectRoisInSelection(Polygon polygon,
             Color strokeColor) {
         if (polygon == null) {
@@ -138,6 +143,7 @@ public class OverlayManager {
         return selectedRois;
     }
 
+    @Override
     public synchronized void addRoiToSelection(Roi roi, Color strokeColor) {
         validateRoi(roi);
         validateColor(strokeColor);
@@ -151,6 +157,7 @@ public class OverlayManager {
         }
     }
 
+    @Override
     public synchronized void addRoiToSelection(int roiName, Color strokeColor) {
         validateRoiName(roiName);
         validateColor(strokeColor);
@@ -164,6 +171,7 @@ public class OverlayManager {
         }
     }
 
+    @Override
     public synchronized void selectRoi(Roi roi, Color strokeColor) {
         validateRoi(roi);
         validateColor(strokeColor);
@@ -181,6 +189,7 @@ public class OverlayManager {
         }
     }
 
+    @Override
     public synchronized void selectRoi(int roiName, Color strokeColor) {
         validateRoiName(roiName);
         validateColor(strokeColor);
@@ -198,6 +207,7 @@ public class OverlayManager {
         }
     }
 
+    @Override
     public synchronized void deselectRoi(int roiName, Color strokeColor) {
         validateRoiName(roiName);
         validateColor(strokeColor);
@@ -211,6 +221,7 @@ public class OverlayManager {
         }
     }
 
+    @Override
     public synchronized void deselectRoi(Roi roi) {
         validateRoi(roi);
         logger.trace("Deselect roi " + roi.getName());
@@ -222,9 +233,7 @@ public class OverlayManager {
         }
     }
 
-    /**
-     Set all rois to deselected state
-     */
+    @Override
     public void deselectAll() {
         logger.trace("Deselect all");
         for (Integer key : roisMap.keySet()) {
@@ -235,15 +244,14 @@ public class OverlayManager {
         }
     }
 
-    /**
-     * Deselect all rois in image and redraw image
-     */
+    @Override
     public synchronized void deselectAllAndRedraw() {
         logger.trace("Deselect all and redraw all rois");
         deselectAll();
         drawAllRois();
     }
 
+    @Override
     public synchronized Roi getRoiFromPoint(Point p) {
         validatePoint(p);
         logger.trace("Get roi contains point " + p);
@@ -254,6 +262,12 @@ public class OverlayManager {
             }
         }
         return null;
+    }
+
+    @Override
+    public void removeRoi(int roiName) {
+        validateRoiName(roiName);
+        roisMap.remove(roiName);
     }
 
     private void validateRoiName(int roiName) {

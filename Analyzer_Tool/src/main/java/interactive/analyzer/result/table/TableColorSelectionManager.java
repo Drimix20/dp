@@ -20,9 +20,17 @@ public class TableColorSelectionManager {
 
     public synchronized static TableColorSelectionManager getInstance() {
         if (instance == null) {
-            instance = new TableColorSelectionManager();
+            synchronized (TableColorSelectionManager.class) {
+                if (instance == null) {
+                    instance = new TableColorSelectionManager();
+                }
+            }
         }
         return instance;
+    }
+
+    public Set<Integer> getRowIndexesInSelection() {
+        return rows;
     }
 
     public Color getCurrentSelectionColor() {

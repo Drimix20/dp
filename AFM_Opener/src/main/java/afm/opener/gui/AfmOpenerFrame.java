@@ -19,6 +19,7 @@ import ij.ImagePlus;
 import ij.measure.Calibration;
 import java.util.Arrays;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.log4j.Logger;
 import scaler.module.types.LengthUnit;
 import scaler.module.types.UnsupportedScalingType;
@@ -260,6 +261,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         }
         JFileChooser fileChooser = new JFileChooser(currentDirectory);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fileChooser.setFileFilter(new FileNameExtensionFilter("*.jpk", "jpk"));
 
         int returnVal = fileChooser.showOpenDialog(AfmOpenerFrame.this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {

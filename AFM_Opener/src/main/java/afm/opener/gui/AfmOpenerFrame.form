@@ -224,7 +224,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="dimensionUnitLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value=" Dimensions Unit:"/>
+        <Property name="text" type="java.lang.String" value=" Dimensions unit:"/>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
       <AccessibilityProperties>

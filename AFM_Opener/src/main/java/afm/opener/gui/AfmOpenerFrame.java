@@ -49,7 +49,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         if (latch == null) {
             throw new IllegalArgumentException("Count down latch is null");
         }
-        initComponents();//new DefaultComboBoxModel(LengthUnit.retrieveAbbreviations())
+        initComponents();
         selectedChannelContainer = new ArrayList<ChannelContainer>();
         this.latch = latch;
         this.disposeAfterOpen = disposeAfterOpen;
@@ -162,16 +162,14 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
         });
 
         dimensionsUnitComboBox.setModel(new DefaultComboBoxModel(LengthUnit.retrieveAbbreviations()));
-        dimensionsUnitComboBox.setSelectedIndex(4);
         dimensionsUnitComboBox.setSelectedItem(LengthUnit.MICROMETER);
 
-        dimensionUnitLabel.setText(" Dimensions Unit:");
+        dimensionUnitLabel.setText(" Dimensions unit:");
         dimensionUnitLabel.setToolTipText("");
 
         calibrationUnitLabel.setText(" Height value unit:");
 
         calibrationUnitComboBox.setModel(new DefaultComboBoxModel(LengthUnit.retrieveAbbreviations()));
-        calibrationUnitComboBox.setSelectedIndex(5);
         calibrationUnitComboBox.setSelectedItem(LengthUnit.NANOMETER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

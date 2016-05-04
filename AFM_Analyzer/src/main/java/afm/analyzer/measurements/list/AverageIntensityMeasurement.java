@@ -20,7 +20,7 @@ public class AverageIntensityMeasurement extends AbstractMeasurement {
     private static Logger logger = Logger.getLogger(AverageIntensityMeasurement.class);
 
     public AverageIntensityMeasurement() {
-        super("Average Intensity Measurement", 1);
+        super("Average height measurement", 1);
     }
 
     @Override

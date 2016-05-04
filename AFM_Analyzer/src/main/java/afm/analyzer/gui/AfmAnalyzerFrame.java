@@ -132,16 +132,15 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Method");
+        jLabel1.setText("Method:");
 
-        selectSegmentedCheckBox.setText("Select Segmented");
+        selectSegmentedCheckBox.setText("Select segmented:");
         selectSegmentedCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 selectSegmentedCheckBoxActionPerformed(evt);
             }
         });
 
-        segmentedImagesComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         segmentedImagesComboBox.setEnabled(false);
         segmentedImagesComboBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -159,7 +158,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(selectSegmentedCheckBox)
                         .addGap(18, 18, 18)
-                        .addComponent(segmentedImagesComboBox, 0, 150, Short.MAX_VALUE))
+                        .addComponent(segmentedImagesComboBox, 0, 146, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(33, 33, 33)
@@ -349,6 +348,10 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         }
         logger.info("Selected segment image: " + (String) evt.getItem());
         ImagePlus image = WindowManager.getImage((String) evt.getItem());
+        if (!image.getProcessor().isBinary()) {
+            IJ.error("Selected segmented image must be binary");
+            return;
+        }
         Segmentation segmentation = new Segmentation();
         segmentImages = segmentation.segmentImage(image);
     }//GEN-LAST:event_segmentedImagesComboBoxItemStateChanged

@@ -18,7 +18,7 @@ public class MeasurementComputation {
     public AbstractMeasurementResult compute(ChannelContainer container,
             ImageSegments segmentedImage, AbstractMeasurement measure) {
         ImageProcessor thresholded = segmentedImage.getThresholdedImageProcessor();
-        //TODO unit of measurement result should be able defined by user
+
         ScalerModule scalerModule = new ScalerModule(container.getGeneralMetadata(), container.getChannelMetadata());
         AbstractMeasurementResult results = new MeasurementResult(measure.getLabel(), measure.getResultUnit().getAbbreviation(), measure.getUnitExponent());
 

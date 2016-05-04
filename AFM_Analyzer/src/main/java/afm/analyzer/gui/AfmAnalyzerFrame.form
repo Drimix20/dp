@@ -121,7 +121,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="selectSegmentedCheckBox" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="segmentedImagesComboBox" pref="150" max="32767" attributes="0"/>
+                          <Component id="segmentedImagesComboBox" pref="146" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
@@ -192,12 +192,12 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Method"/>
+            <Property name="text" type="java.lang.String" value="Method:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="selectSegmentedCheckBox">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Select Segmented"/>
+            <Property name="text" type="java.lang.String" value="Select segmented:"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectSegmentedCheckBoxActionPerformed"/>
@@ -206,12 +206,7 @@
         <Component class="javax.swing.JComboBox" name="segmentedImagesComboBox">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="4">
-                <StringItem index="0" value="Item 1"/>
-                <StringItem index="1" value="Item 2"/>
-                <StringItem index="2" value="Item 3"/>
-                <StringItem index="3" value="Item 4"/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>

@@ -598,8 +598,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         saveAsMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         optionMeniItem = new javax.swing.JMenuItem();
-        helpMenu = new javax.swing.JMenu();
-        showHelpMenuItem = new javax.swing.JMenuItem();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -684,18 +682,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         jMenuBar1.add(jMenu2);
 
-        helpMenu.setText("Help");
-
-        showHelpMenuItem.setText("Show help");
-        showHelpMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showHelpMenuItemActionPerformed(evt);
-            }
-        });
-        helpMenu.add(showHelpMenuItem);
-
-        jMenuBar1.add(helpMenu);
-
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -773,12 +759,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         TextTableExporter exporter = new TextTableExporter();
         exporter.export(interactiveImageWindow.getImageTitle(), jTable1, TagManager.getInstance(), TableColorSelectionManager.getInstance());
     }//GEN-LAST:event_saveAsMenuItemActionPerformed
-
-    private void showHelpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showHelpMenuItemActionPerformed
-        HelpJFrame frame = new HelpJFrame("helpPage.html");
-        frame.setLocationRelativeTo(this);
-        frame.setVisible(true);
-    }//GEN-LAST:event_showHelpMenuItemActionPerformed
 
     private void deleteSelectedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSelectedButtonActionPerformed
         Set<Integer> rowIndexes = TableColorSelectionManager.getInstance().getRowIndexesInSelection();
@@ -880,7 +860,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton clearSelectionsButton;
     private javax.swing.JButton deleteSelectedButton;
-    private javax.swing.JMenu helpMenu;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -890,7 +869,6 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private volatile javax.swing.JTable jTable1;
     private javax.swing.JMenuItem optionMeniItem;
     private javax.swing.JMenuItem saveAsMenuItem;
-    private javax.swing.JMenuItem showHelpMenuItem;
     private javax.swing.JButton showHistogram;
     // End of variables declaration//GEN-END:variables
 }

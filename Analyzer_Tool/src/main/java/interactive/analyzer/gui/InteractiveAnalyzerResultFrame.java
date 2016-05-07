@@ -51,7 +51,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
     enum TableSelectionMode {
 
-        SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, DRAGGED_MOVE, CLEAR_SELECTIONS_IN_TABLE, NONE;
+        SINGLE_CLICK, CLICK_WITH_CTRL, CLICK_WITH_SHIFT, DRAGGED_MOVE, CLEAR_SELECTIONS_IN_TABLE, ROW_DESELECTED, NONE;
     }
 
     private static final int CTRL_WITH_LMB_DOWN = CTRL_DOWN_MASK | BUTTON1_DOWN_MASK;
@@ -224,6 +224,16 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                 public void mouseClicked(MouseEvent e) {
                     notificationSendViaListener = false;
                     mousePressed = false;
+                    if (e.getButton() == MouseEvent.BUTTON3) {
+                        selectionMode = ROW_DESELECTED;
+                        int rowIndex = jTable1.rowAtPoint(e.getPoint());
+                        logger.info("Deselection of row " + rowIndex);
+                        jTable1.getSelectionModel().removeSelectionInterval(rowIndex, rowIndex);
+
+                        TableColorSelectionManager.getInstance().removeRowFromSelection(rowIndex);
+                        notifyRowDeselected(rowIndex);
+                        jTable1.repaint();
+                    }
                 }
 
                 @Override

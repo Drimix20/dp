@@ -55,6 +55,12 @@ public class TableColorSelectionManager {
         return rows.add(row);
     }
 
+    /**
+     * Add row to current selection
+     * @param color
+     * @param row
+     * @return
+     */
     public synchronized boolean addRowsToSelection(Color color, int... row) {
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
@@ -68,16 +74,17 @@ public class TableColorSelectionManager {
         return true;
     }
 
+    /**
+     * Remove row from current selection
+     @param row index of removing row
+     */
     public synchronized void removeRowFromSelection(int row) {
         rows.remove(row);
     }
 
-    public synchronized void removeRowsFromSelection(int... row) {
-        for (int r : row) {
-            rows.remove(r);
-        }
-    }
-
+    /**
+     * Remove all rows from current selection
+     */
     public synchronized void clearAllSelections() {
         rows.clear();
     }

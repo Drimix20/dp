@@ -83,21 +83,6 @@ public class AfmAnalyzerResultTable extends JTable {
         selectionManager.removeRowFromSelection(row);
     }
 
-    public void removeRowFromColorSelection(Color color, int row) {
-        if (color == null) {
-            throw new IllegalArgumentException("Color is null");
-        }
-        rowBounds(row);
-        selectionManager.removeRowFromSelection(row);
-    }
-
-    public void removeRowsFromColorSelection(Color color, int... rows) {
-        if (color == null) {
-            throw new IllegalArgumentException("Color is null");
-        }
-        selectionManager.removeRowsFromSelection(rows);
-    }
-
     @Override
     public void clearSelection() {
         logger.trace("");
@@ -126,11 +111,12 @@ public class AfmAnalyzerResultTable extends JTable {
 
     private void colorComponent(int row, Component comp) {
         Color selectionColor;
-        if (isRowSelected(row)) {
-            //selection performed by click on table row
-            selectionColor = selectionManager.getCurrentSelectionColor();
-        } else if (selectionManager.isRowInSelection(row)) {
+        //Check if row is set of selected rows
+        if (selectionManager.isRowInSelection(row)) {
             logger.trace("Selection color for row " + row);
+            selectionColor = selectionManager.getCurrentSelectionColor();
+        } else if (isRowSelected(row)) {
+            //selection performed by click on table row
             selectionColor = selectionManager.getCurrentSelectionColor();
         } else {
             //row is not selected

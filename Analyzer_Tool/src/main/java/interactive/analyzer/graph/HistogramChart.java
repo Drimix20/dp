@@ -4,6 +4,7 @@ import interactive.analyzer.graph.data.HistogramDataSet;
 import interactive.analyzer.graph.data.HistogramBin;
 import interactive.analyzer.graph.shape.Bar;
 import interactive.analyzer.graph.shape.Shape;
+import interactive.analyzer.result.table.TableColorSelectionManager;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -159,23 +160,7 @@ public class HistogramChart implements Chart {
         g.drawString(data.getMinValue() + "", (int) xPos, (int) yPos);
         //draw max value on x axe
         xPos = GRAPH_MARGIN + barWidth / 2 + enumerationMargin * (countOfBars - 1) - metrics.stringWidth(data.getMaxValue() + "") / 2;
-//        logger.trace("barWidth: " + barWidth);
-//        logger.trace("enumeration*(countsOfBars-1): " + (enumerationMargin * (countOfBars - 1)));
-//        logger.trace("max-val-half-width: " + (metrics.stringWidth(data.getMaxValue() + "") / 2));
-//        logger.trace("Position for x-max-val: xPos=" + xPos + ", yPos=" + yPos);
         g.drawString(data.getMaxValue() + "", (int) xPos, (int) yPos);
-//        for (int i = 0; i < countOfBars; i++) {
-//            double value = shapes.get(i).getValue();
-//            int xPos = GRAPH_MARGIN + barWidth / 2 + enumerationMargin * i - metrics.stringWidth(value + "") / 2;
-//            int yPos = metrics.getHeight() + TEXT_MARGIN;
-//            if (i % 2 == 0) {
-//                g.drawString(value + "", xPos, yPos);
-//                g.drawLine(xPos + metrics.stringWidth(value + "") / 2, 0, xPos + metrics.stringWidth(value + "") / 2, TEXT_MARGIN);
-//            } else {
-//                g.drawString(value + "", xPos, yPos + metrics.getHeight());
-//                g.drawLine(xPos + metrics.stringWidth(value + "") / 2, 0, xPos + metrics.stringWidth(value + "") / 2, yPos - TEXT_MARGIN);
-//            }
-//        }
 
         int numberOfYAxisLabels = data.getMaxOccurence() + 1;
         //draw y axis enumeration
@@ -222,11 +207,12 @@ public class HistogramChart implements Chart {
             double value = pairs.get(i).getOccurence();
             double barHeight = linearStretch((double) chartHeight - 2 * GRAPH_MARGIN, (double) GRAPH_MARGIN, (double) data.getMaxOccurence(), 0, value) - GRAPH_MARGIN;
             Shape shape = shapes.get(i);
-//            if (shape.getOccurence() == 0) {
-//                continue;
-//            }
+            if (shape.getOccurence() == 0) {
+                continue;
+            }
             shape.setLocationAndSize(0 + GRAPH_MARGIN + barWidth * i, -barHeight - GRAPH_MARGIN, barWidth, barHeight);
             logger.trace(shape.toString());
+            shape.setSelectionColor(TableColorSelectionManager.getInstance().getCurrentSelectionColor());
             shape.draw(g);
         }
     }

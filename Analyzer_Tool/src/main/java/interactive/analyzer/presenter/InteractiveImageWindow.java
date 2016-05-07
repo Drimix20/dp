@@ -26,7 +26,6 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     private static Logger logger = Logger.getLogger(InteractiveImageWindow.class);
 
     public static final Color DEFAULT_STROKE_ROI_COLOR = ImageWindowConfiguration.getStrokeColor();
-    public static final Color DEFAULT_ROI_SELECTION_COLOR = Color.CYAN;
 
     private String frameTitle = "Interactive Analyzer - Image window";
 

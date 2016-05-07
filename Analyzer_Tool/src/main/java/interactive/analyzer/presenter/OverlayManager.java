@@ -3,6 +3,7 @@ package interactive.analyzer.presenter;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
+import interactive.analyzer.result.table.TableColorSelectionManager;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
@@ -61,7 +62,8 @@ public class OverlayManager implements OverlayManagerInterface {
                     if (r != null && r.stateChanged()) {
                         Polygon polygon = r.getPolygon();
                         drawName(r.getName() + "", polygon, imageProcessor);
-                        Color strokeColor = r.isSelected() ? r.getStrokeColor() : ImageWindowConfiguration.getStrokeColor();
+                        Color strokeColor = r.isSelected() ? TableColorSelectionManager.getInstance().getCurrentSelectionColor() : ImageWindowConfiguration.getStrokeColor();
+                        r.setStrokeColor(strokeColor);
                         imageProcessor.setColor(strokeColor);
                         imageProcessor.drawPolygon(polygon);
                     }

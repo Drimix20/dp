@@ -16,7 +16,6 @@ public class ResultTableConfiguration {
     private static ResultTableConfiguration instance;
 
     private static volatile List<Integer> decimalPlacesConfigForColumn;
-    private static int decimalPlaces = INIT_PLACE;
     private static boolean colorEntireRow;
 
     private ResultTableConfiguration() {

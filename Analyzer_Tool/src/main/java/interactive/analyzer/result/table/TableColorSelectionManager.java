@@ -12,7 +12,7 @@ public class TableColorSelectionManager {
 
     private static TableColorSelectionManager instance = null;
     private volatile Set<Integer> rows;
-    private Color currentSelectionColor = Color.red;
+    private volatile Color currentSelectionColor = Color.red;
 
     private TableColorSelectionManager() {
         rows = new HashSet<Integer>();

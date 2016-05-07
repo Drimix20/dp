@@ -296,18 +296,6 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         this.selectionColor = selectionColor;
     }
 
-    public void changeSelectionColor(final Color oldC, final Color newC) {
-        if (chart == null || chart.isEmpty()) {
-            return;
-        }
-        for (Shape shape : chart.getDrawShapes()) {
-            if (shape.getSelectionColor().equals(oldC)) {
-                shape.setSelectionColor(newC);
-                notifyBarSelected(shape, newC);
-            }
-        }
-    }
-
     //TODO make it repaint after change decimal places
     private void showInformationAboutSelection(int occurence, double lowerBound,
             double upperBound) {

@@ -2,6 +2,7 @@ package interactive.analyzer.gui;
 
 import interactive.analyzer.options.ResultTableConfiguration;
 import interactive.analyzer.presenter.ImageWindowConfiguration;
+import interactive.analyzer.result.table.TableColorSelectionManager;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -38,6 +39,7 @@ public class OptionsFrame extends javax.swing.JDialog {
         defaultStrokeColorThumbnail.setBackground(ImageWindowConfiguration.getStrokeColor());
         fontColorThumbnail.setBackground(ImageWindowConfiguration.getFontColor());
         fontBackgroundColorThumbnail.setBackground(ImageWindowConfiguration.getFontBackgroundColor());
+        selectionColorThumbnail.setBackground(TableColorSelectionManager.getInstance().getCurrentSelectionColor());
 
         // Close the dialog when Esc is pressed
         String cancelName = "cancel";
@@ -54,11 +56,6 @@ public class OptionsFrame extends javax.swing.JDialog {
 
     public void setTable(JTable table) {
         this.table = table;
-    }
-
-    private void initDecimalPlacesSpinner() {
-        //TODO fix configuration
-        decimalPlacesSpinner.setValue(3);
     }
 
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -78,9 +75,10 @@ public class OptionsFrame extends javax.swing.JDialog {
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        decimalPlacesSpinner = new javax.swing.JSpinner();
-        jLabel1 = new javax.swing.JLabel();
         colorizedRowCheckBox = new javax.swing.JCheckBox();
+        selectionColorThumbnail = new javax.swing.JPanel();
+        selectSelectionColorButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         strokeWidthSpinner = new javax.swing.JSpinner();
@@ -119,43 +117,60 @@ public class OptionsFrame extends javax.swing.JDialog {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Table configuration"));
 
-        javax.swing.SpinnerNumberModel numbModel = new javax.swing.SpinnerNumberModel();
-        numbModel.setStepSize(1);
-        numbModel.setMinimum(new Integer(interactive.analyzer.options.ResultTableConfiguration.MIN_PLACE));
-        numbModel.setMaximum(new Integer(interactive.analyzer.options.ResultTableConfiguration.MAX_PLACE));
-        decimalPlacesSpinner.setModel(numbModel);
-        this.initDecimalPlacesSpinner();
-
-        jLabel1.setText("Decimal places:");
-
         colorizedRowCheckBox.setText("Color entire row");
         colorizedRowCheckBox.setSelected(ResultTableConfiguration.colorEntireRow());
+
+        selectionColorThumbnail.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout selectionColorThumbnailLayout = new javax.swing.GroupLayout(selectionColorThumbnail);
+        selectionColorThumbnail.setLayout(selectionColorThumbnailLayout);
+        selectionColorThumbnailLayout.setHorizontalGroup(
+            selectionColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 15, Short.MAX_VALUE)
+        );
+        selectionColorThumbnailLayout.setVerticalGroup(
+            selectionColorThumbnailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 15, Short.MAX_VALUE)
+        );
+
+        selectSelectionColorButton.setText("Select");
+        selectSelectionColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectColorButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Selection color:");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(colorizedRowCheckBox))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(decimalPlacesSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(selectionColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(selectSelectionColorButton)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(decimalPlacesSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(selectSelectionColorButton)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1)
+                        .addComponent(selectionColorThumbnail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(colorizedRowCheckBox)
-                .addContainerGap())
+                .addContainerGap(10, Short.MAX_VALUE))
         );
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Image window configuration"));
@@ -339,8 +354,6 @@ public class OptionsFrame extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        //TODO fix configuration
-        //ResultTableConfiguration.setDecimalPlaces((Integer) decimalPlacesSpinner.getValue());
         ResultTableConfiguration.setColorEntireRow(colorizedRowCheckBox.isSelected());
 
         ImageWindowConfiguration.setStrokeWidth((Integer) strokeWidthSpinner.getValue());
@@ -348,6 +361,7 @@ public class OptionsFrame extends javax.swing.JDialog {
         ImageWindowConfiguration.setFontBackgroundColor(fontBackgroundColorThumbnail.getBackground());
         ImageWindowConfiguration.setFontSize((Integer) fontSizeSpinner.getValue());
         ImageWindowConfiguration.setFontColor(fontColorThumbnail.getBackground());
+        TableColorSelectionManager.getInstance().setCurrentSelectionColor(selectionColorThumbnail.getBackground());
         doClose(RET_OK);
     }//GEN-LAST:event_okButtonActionPerformed
 
@@ -371,6 +385,10 @@ public class OptionsFrame extends javax.swing.JDialog {
         } else if (source == selectFontColorButton) {
             logger.trace("selectFontColorButton");
             fontColorThumbnail.setBackground(showColorChooser(fontBackgroundColorThumbnail.getBackground()));
+        } else if (source == selectSelectionColorButton) {
+            logger.trace("selectSelectionColorButton");
+            selectionColorThumbnail.setBackground(showColorChooser(selectionColorThumbnail.getBackground()));
+
         }
     }//GEN-LAST:event_selectColorButtonActionPerformed
 
@@ -430,7 +448,6 @@ public class OptionsFrame extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JCheckBox colorizedRowCheckBox;
-    private javax.swing.JSpinner decimalPlacesSpinner;
     private javax.swing.JPanel defaultStrokeColorThumbnail;
     private javax.swing.JPanel fontBackgroundColorThumbnail;
     private javax.swing.JPanel fontColorThumbnail;
@@ -447,6 +464,8 @@ public class OptionsFrame extends javax.swing.JDialog {
     private javax.swing.JButton selectDefaultStrokeColorButton;
     private javax.swing.JButton selectFontBackgroundColorButton;
     private javax.swing.JButton selectFontColorButton;
+    private javax.swing.JButton selectSelectionColorButton;
+    private javax.swing.JPanel selectionColorThumbnail;
     private javax.swing.JSpinner strokeWidthSpinner;
     // End of variables declaration//GEN-END:variables
 

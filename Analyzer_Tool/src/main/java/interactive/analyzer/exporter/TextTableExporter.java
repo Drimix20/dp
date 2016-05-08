@@ -1,6 +1,7 @@
 package interactive.analyzer.exporter;
 
 import ij.IJ;
+import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.TableColorSelectionManager;
 import interactive.analyzer.selection.Tag;
 import interactive.analyzer.selection.TagManager;
@@ -12,30 +13,45 @@ import javax.swing.JTable;
  *
  * @author Drimal
  */
-public class TextTableExporter {
+public class TextTableExporter implements ITableExporter {
 
     private static final char COLUMN_DELIMETR = ',';
     private static final char NEW_LINE = '\n';
 
+    @Override
     public void export(String imageName, JTable table, TagManager tagManager,
             TableColorSelectionManager colorSelectionManager) {
         StringBuilder sb = new StringBuilder("Results for " + imageName + " image:");
         sb = exportTableHeader(sb, table);
         sb.append('\n');
-        sb = exportTableData(sb, table);
-        sb = exportSelectionTag(sb, tagManager);
+        sb = exportTableData(sb, table, colorSelectionManager);
+        //sb = exportSelectionTag(sb, tagManager);
 
         IJ.saveString(sb.toString(), null);
     }
 
-    protected StringBuilder exportTableData(StringBuilder sb,
-            JTable table) {
+    /**
+     * Export table data to String Builder. If rows are in current selection then add color information
+     * @param sb string builder
+     * @param table table to export
+     * @param selectionManager current selection in table
+     * @return transformed table into string
+     */
+    protected StringBuilder exportTableData(StringBuilder sb, JTable table,
+            TableColorSelectionManager selectionManager) {
         int columnCount = table.getColumnCount();
         int rowCount = table.getRowCount();
 
         for (int row = 0; row < rowCount; row++) {
             for (int col = 0; col < columnCount; col++) {
-                sb.append(table.getModel().getValueAt(row, col));
+                if (col == AfmAnalyzerResultTable.SELECTION_COLUMN_INDEX) {
+                    if (selectionManager.isRowInSelection(row)) {
+                        Color c = selectionManager.getCurrentSelectionColor();
+                        sb.append(String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue()));
+                    }
+                } else {
+                    sb.append(table.getModel().getValueAt(row, col));
+                }
                 if (col < columnCount - 1) {
                     sb.append(COLUMN_DELIMETR);
                 }

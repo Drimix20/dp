@@ -1,6 +1,7 @@
 package interactive.analyzer.gui;
 
 import ij.IJ;
+import interactive.analyzer.exporter.ITableExporter;
 import interactive.analyzer.exporter.TextTableExporter;
 import static interactive.analyzer.gui.InteractiveAnalyzerResultFrame.TableSelectionMode.*;
 import interactive.analyzer.histogram.HistogramOptionDialog;
@@ -766,8 +767,14 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     }
 
     private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
-        TextTableExporter exporter = new TextTableExporter();
-        exporter.export(interactiveImageWindow.getImageTitle(), jTable1, TagManager.getInstance(), TableColorSelectionManager.getInstance());
+        new Runnable() {
+
+            @Override
+            public void run() {
+                ITableExporter exporter = new TextTableExporter();
+                exporter.export(interactiveImageWindow.getImageTitle(), jTable1, TagManager.getInstance(), TableColorSelectionManager.getInstance());
+            }
+        }.run();
     }//GEN-LAST:event_saveAsMenuItemActionPerformed
 
     private void deleteSelectedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSelectedButtonActionPerformed

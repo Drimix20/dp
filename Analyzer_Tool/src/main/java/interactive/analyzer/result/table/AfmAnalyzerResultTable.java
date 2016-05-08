@@ -58,13 +58,12 @@ public class AfmAnalyzerResultTable extends JTable {
         };
     }
 
-    public boolean addRowToColorSelection(Color color, int row) {
-        logger.info("row: " + row);
+    public boolean addRowToColorSelection(Color color, int objectId) {
+        logger.info("row: " + objectId);
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
         }
-        rowBounds(row);
-        selectionManager.addRowToSelection(color, row);
+        selectionManager.addObjectToSelection(color, objectId);
 
         return true;
     }
@@ -73,14 +72,13 @@ public class AfmAnalyzerResultTable extends JTable {
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
         }
-        selectionManager.addRowsToSelection(color, rows);
+        selectionManager.addObjectsToSelection(color, rows);
 
         return true;
     }
 
-    public void removeRowFromSelection(int row) {
-        rowBounds(row);
-        selectionManager.removeRowFromSelection(row);
+    public void removeRowFromSelection(int objectId) {
+        selectionManager.removeObjectFromSelection(objectId);
     }
 
     @Override
@@ -103,6 +101,7 @@ public class AfmAnalyzerResultTable extends JTable {
         } else if (column == SELECTION_COLUMN_INDEX) {
             colorComponent(row, comp);
         } else {
+            //Draw all component as background color
             comp.setBackground(Color.white);
         }
 
@@ -112,23 +111,21 @@ public class AfmAnalyzerResultTable extends JTable {
     private void colorComponent(int row, Component comp) {
         Color selectionColor;
         //Check if row is set of selected rows
-        if (selectionManager.isRowInSelection(row)) {
-            logger.trace("Selection color for row " + row);
-            selectionColor = selectionManager.getCurrentSelectionColor();
-        } else if (isRowSelected(row)) {
+        int objectID = (Integer) getValueAt(row, AfmAnalyzerResultTable.ID_COLUMN_INDEX);
+        if (isRowSelected(row) && selectionManager.isObjectInSelection(objectID)) {
             //selection performed by click on table row
+            logger.trace("Selected row - coloring row " + row);
             selectionColor = selectionManager.getCurrentSelectionColor();
         } else {
-            //row is not selected
+            //row is not selecteds
             selectionColor = DEFAULT_BACKGROUND_ROW_COLOR;
         }
         comp.setBackground(selectionColor);
     }
 
-    private void rowBounds(int row) throws IllegalArgumentException {
-        if (row < 0 || row > (getRowCount() - 1)) {
-            throw new IllegalArgumentException("Row index is out of range");
-        }
-    }
-
+//    private void rowBounds(int row) throws IllegalArgumentException {
+//        if (row < 0 || row > (getRowCount() - 1)) {
+//            throw new IllegalArgumentException("Row index is out of range");
+//        }
+//    }
 }

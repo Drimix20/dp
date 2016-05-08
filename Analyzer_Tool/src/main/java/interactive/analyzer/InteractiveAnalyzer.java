@@ -49,7 +49,7 @@ public class InteractiveAnalyzer {
         AfmAnalyzerTableModel tableModel = TableUtils.convertResultTableToInteractiveResultTable(ijResultTable);
         resultFrame = new InteractiveAnalyzerResultFrame(imageWindow, Collections.EMPTY_LIST, tableModel);
         resultFrame.addTableSelectionListener((TableSelectionListener) imageWindow);
-
+        resultFrame.setLocationRelativeTo(null);
         imageWindow.addRoiSelectedListener((ImageSelectionListener) resultFrame);
     }
 

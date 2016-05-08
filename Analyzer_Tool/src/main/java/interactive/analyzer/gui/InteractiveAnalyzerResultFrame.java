@@ -233,7 +233,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                         logger.info("Deselection of row " + rowIndex);
                         jTable1.getSelectionModel().removeSelectionInterval(rowIndex, rowIndex);
 
-                        TableColorSelectionManager.getInstance().removeRowFromSelection(rowIndex);
+                        TableColorSelectionManager.getInstance().removeObjectFromSelection(rowIndex);
                         notifyRowDeselected(rowIndex);
                         jTable1.repaint();
                     }
@@ -324,7 +324,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         clearTableSelection();
         int rowIndex = jTable.getSelectionModel().getLeadSelectionIndex();
-        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(selectionManager.getCurrentSelectionColor(), rowIndex);
+        jTable.addRowSelectionInterval(rowIndex, rowIndex);
+        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(selectionManager.getCurrentSelectionColor(), getObjectIdFromRow(rowIndex));
         //TODO enable tagManager
 //        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
         notifySingleRowSelected(rowIndex, columnValue, selectionManager.getCurrentSelectionColor());
@@ -340,7 +341,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         }
 
         double columnValue = (Double) jTable1.getValueAt(rowIndex, columnIndex);
-        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(selectionManager.getCurrentSelectionColor(), rowIndex);
+        ((AfmAnalyzerResultTable) jTable).addRowToColorSelection(selectionManager.getCurrentSelectionColor(), getObjectIdFromRow(rowIndex));
         //TODO enable tagManager
 //        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
         notifyMultipleRowsSelected(rowIndex, columnValue, selectionManager.getCurrentSelectionColor());
@@ -400,16 +401,11 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
     /**
      * Notify all listeners that row index was deselected
-     * @param rowIndex
+     * @param objectId
      */
-    public void notifyRowDeselected(int rowIndex) {
-        Integer roiId = getRoiIdFromRow(rowIndex);
-        if (roiId == null) {
-            logger.trace("Object from first column is not roiID");
-            return;
-        }
+    public void notifyRowDeselected(int objectId) {
         for (TableSelectionListener listener : tableSelectionListeners) {
-            listener.rowDeselectedEvent(roiId);
+            listener.rowDeselectedEvent(objectId);
         }
     }
 
@@ -443,7 +439,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         selectionMode = CLICK_WITH_CTRL;
 
         int rowIndex = roiLabel - 1;
-        jTable1.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+        jTable1.getSelectionModel().addSelectionInterval(rowIndex, rowIndex);
         //TODO enable tagManager
 //        addSelectionIdToRow(selectionManager.getCurrentSelectionColor(), rowIndex);
         jTable1.scrollRectToVisible(new Rectangle(jTable1.getCellRect(rowIndex, 0, true)));
@@ -477,7 +473,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
             double val = (Double) tableModel.getValueAt(rowIndex, columnIndex);
             if (val >= downRangeValue && val < upperRangeValue) {
-                ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
+                ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, getObjectIdFromRow(rowIndex));
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
 
                 //TODO enable tagManager
@@ -506,7 +502,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         for (int rowIndex = 0; rowIndex < jTable1.getRowCount(); rowIndex++) {
             double val = (Double) tableModel.getValueAt(rowIndex, columnIndex);
             if (val >= downRangeValue && val < upperRangeValue) {
-                ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, rowIndex);
+                ((AfmAnalyzerResultTable) jTable1).addRowToColorSelection(color, getObjectIdFromRow(rowIndex));
                 jTable1.addRowSelectionInterval(rowIndex, rowIndex);
 
                 //TODO enable tagManager
@@ -533,7 +529,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             int columnIndex = ((AfmAnalyzerTableModel) tableModel).getColumnIndexByName(selectedColumnName);
             double val = (Double) tableModel.getValueAt(rowIndex, columnIndex);
             if (val >= downRangeValue && val < upperRangeValue) {
-                ((AfmAnalyzerResultTable) jTable1).removeRowFromSelection(rowIndex);
+                ((AfmAnalyzerResultTable) jTable1).removeRowFromSelection(getObjectIdFromRow(rowIndex));
                 jTable1.removeRowSelectionInterval(rowIndex, rowIndex);
                 //Row is deselected and selection id is removed
                 setValueToSelectionColumn(tableModel, null, rowIndex);
@@ -543,6 +539,10 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             }
         }
         jTable1.repaint();
+    }
+
+    private int getObjectIdFromRow(int row) {
+        return (Integer) jTable1.getValueAt(row, AfmAnalyzerResultTable.ID_COLUMN_INDEX);
     }
 
     @Override
@@ -731,6 +731,9 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
     private void showHistogramActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showHistogramActionPerformed
         logger.info("Show histogram");
+
+        logger.warn("Selection in table: " + Arrays.toString(jTable1.getSelectedRows()));
+
         if (objectFilteringFrame == null) {
             objectFilteringFrame = new ObjectFilteringFrame((AbstractInteractiveTableModel) tableModel);
             objectFilteringFrame.addChartSelectionListener(this);
@@ -789,7 +792,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     }//GEN-LAST:event_saveTableAsMenuItemActionPerformed
 
     private void deleteSelectedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSelectedButtonActionPerformed
-        Set<Integer> rowIndexes = TableColorSelectionManager.getInstance().getRowIndexesInSelection();
+        Set<Integer> rowIndexes = TableColorSelectionManager.getInstance().getObjectsInSelection();
         if (rowIndexes.isEmpty()) {
             IJ.showMessage("No selection to remove.");
             logger.trace("No selection to remove");

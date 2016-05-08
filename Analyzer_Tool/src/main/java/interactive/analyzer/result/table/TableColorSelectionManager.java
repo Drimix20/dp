@@ -11,11 +11,11 @@ import java.util.Set;
 public class TableColorSelectionManager {
 
     private static TableColorSelectionManager instance = null;
-    private volatile Set<Integer> rows;
+    private volatile Set<Integer> objectIdSet;
     private volatile Color currentSelectionColor = Color.red;
 
     private TableColorSelectionManager() {
-        rows = new HashSet<Integer>();
+        objectIdSet = new HashSet<Integer>();
     }
 
     public synchronized static TableColorSelectionManager getInstance() {
@@ -29,16 +29,16 @@ public class TableColorSelectionManager {
         return instance;
     }
 
-    public Set<Integer> getRowIndexesInSelection() {
-        return rows;
+    public Set<Integer> getObjectsInSelection() {
+        return objectIdSet;
     }
 
     public Color getCurrentSelectionColor() {
         return currentSelectionColor;
     }
 
-    public boolean isRowInSelection(int row) {
-        return rows.contains(row);
+    public boolean isObjectInSelection(int objectId) {
+        return objectIdSet.contains(objectId);
     }
 
     public synchronized void setCurrentSelectionColor(
@@ -46,29 +46,30 @@ public class TableColorSelectionManager {
         this.currentSelectionColor = currentSelectionColor;
     }
 
-    public synchronized boolean addRowToSelection(Color color, int row) {
+    public synchronized boolean addObjectToSelection(Color color, int objectId) {
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
         }
 
         currentSelectionColor = color;
-        return rows.add(row);
+        return objectIdSet.add(objectId);
     }
 
     /**
      * Add row to current selection
      * @param color
-     * @param row
+     * @param objectIds
      * @return
      */
-    public synchronized boolean addRowsToSelection(Color color, int... row) {
+    public synchronized boolean addObjectsToSelection(Color color,
+            int... objectIds) {
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
         }
 
         currentSelectionColor = color;
-        for (int r : row) {
-            rows.add(r);
+        for (int id : objectIds) {
+            objectIdSet.add(id);
         }
 
         return true;
@@ -76,17 +77,17 @@ public class TableColorSelectionManager {
 
     /**
      * Remove row from current selection
-     @param row index of removing row
+     @param objectId index of removing row
      */
-    public synchronized void removeRowFromSelection(int row) {
-        rows.remove(row);
+    public synchronized void removeObjectFromSelection(int objectId) {
+        objectIdSet.remove(objectId);
     }
 
     /**
      * Remove all rows from current selection
      */
     public synchronized void clearAllSelections() {
-        rows.clear();
+        objectIdSet.clear();
     }
 
 }

@@ -24,7 +24,7 @@
     <logger name="interactive.analyzer.presenter"> <level value="none"/></logger>
 
     <root>
-        <priority value="INFO"/>
+        <priority value="trace"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>

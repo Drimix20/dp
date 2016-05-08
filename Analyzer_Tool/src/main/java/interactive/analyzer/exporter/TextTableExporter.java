@@ -45,7 +45,7 @@ public class TextTableExporter implements ITableExporter {
         for (int row = 0; row < rowCount; row++) {
             for (int col = 0; col < columnCount; col++) {
                 if (col == AfmAnalyzerResultTable.SELECTION_COLUMN_INDEX) {
-                    if (selectionManager.isRowInSelection(row)) {
+                    if (selectionManager.isObjectInSelection(row)) {
                         Color c = selectionManager.getCurrentSelectionColor();
                         sb.append(String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue()));
                     }

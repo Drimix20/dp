@@ -30,7 +30,7 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     @Override
     public String getColumnName(int col) throws IllegalArgumentException {
-        logger.debug("Get column name from " + col + " index.");
+//        logger.debug("Get column name from " + col + " index.");
         if (col < 0 || col > columnNames.length - 1) {
             throw new IllegalArgumentException("Column index is out of range.");
         }
@@ -39,7 +39,7 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     @Override
     public void setValues(Object[][] values) {
-        logger.debug("Set table values with rows " + values.length);
+//        logger.debug("Set table values with rows " + values.length);
         data = new ArrayList<Object[]>();
         for (int i = 0; i < values.length; i++) {
             data.add(values[i]);
@@ -49,13 +49,12 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     @Override
     public int getRowCount() {
-        logger.trace("Row count " + data.size());
         return data.size();
     }
 
     @Override
     public int getColumnCount() {
-        logger.trace("Column count " + columnNames.length);
+//        logger.trace("Column count " + columnNames.length);
         return columnNames.length;
     }
 
@@ -87,7 +86,7 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     @Override
     public void setValueAt(Object value, int row, int column) {
-        logger.trace("Set value " + value + " to row " + row + " and col " + column);
+//        logger.trace("Set value " + value + " to row " + row + " and col " + column);
 
         if (row < 0 || row > data.size() || column < 0 || column > columnNames.length) {
             throw new IllegalArgumentException("Row index or column index is out of range.");

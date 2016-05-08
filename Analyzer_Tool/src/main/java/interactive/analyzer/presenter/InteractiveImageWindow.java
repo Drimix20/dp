@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
@@ -32,7 +33,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     private static List<ImageSelectionListener> roiSelectedListeners;
     private ImagePlus duplicatedImp;
     private String imageName;
-    private OverlayManagerInterface overlayManager;
+    private IOverlayManager overlayManager;
 
     public InteractiveImageWindow(ImagePlus imp, List<Roi> rois) {
         validate(imp, rois);
@@ -299,5 +300,20 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
         overlayManager.drawRoi(roiId);
     }
     // </editor-fold>
+
+    @Override
+    public Collection<Roi> getAllRoisInImage() {
+        return overlayManager.getAllRois();
+    }
+
+    @Override
+    public int getImageWidth() {
+        return duplicatedImp.getWidth();
+    }
+
+    @Override
+    public int getImageHeight() {
+        return duplicatedImp.getHeight();
+    }
 
 }

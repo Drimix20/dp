@@ -3,6 +3,7 @@ package interactive.analyzer.presenter;
 import interactive.analyzer.listeners.ChartSelectionListener;
 import interactive.analyzer.listeners.ImageSelectionListener;
 import interactive.analyzer.listeners.ImageWindowObjectListener;
+import java.util.Collection;
 
 /**
  * Defined methods for image presenter
@@ -57,5 +58,23 @@ public interface ImageWindowI extends ChartSelectionListener, ImageWindowObjectL
      * Remove all listeners
      */
     public void removeAllRoiSelectedListeners();
+
+    /**
+     * Return all ROIs in image as unmodifiable collection
+     * @return rois
+     */
+    public Collection<Roi> getAllRoisInImage();
+
+    /**
+     * Return width of opened image
+     * @return
+     */
+    public int getImageWidth();
+
+    /**
+     * Return height of opened image
+     * @return
+     */
+    public int getImageHeight();
 
 }

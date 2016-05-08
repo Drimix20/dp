@@ -14,12 +14,20 @@
             <Property name="text" type="java.lang.String" value="Export"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="saveAsMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="saveTableAsMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Save as..."/>
+                <Property name="text" type="java.lang.String" value="Save table as..."/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveAsMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveTableAsMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="saveLabeledImageAsMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Save labeled image as..."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveLabeledImageAsMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

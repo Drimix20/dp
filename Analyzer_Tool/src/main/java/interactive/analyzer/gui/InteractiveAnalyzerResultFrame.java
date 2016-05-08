@@ -2,6 +2,8 @@ package interactive.analyzer.gui;
 
 import ij.IJ;
 import interactive.analyzer.exporter.ITableExporter;
+import interactive.analyzer.exporter.ImageExporter;
+import interactive.analyzer.exporter.LabeledImageExporter;
 import interactive.analyzer.exporter.TextTableExporter;
 import static interactive.analyzer.gui.InteractiveAnalyzerResultFrame.TableSelectionMode.*;
 import interactive.analyzer.histogram.HistogramOptionDialog;
@@ -606,7 +608,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         deleteSelectedButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        saveAsMenuItem = new javax.swing.JMenuItem();
+        saveTableAsMenuItem = new javax.swing.JMenuItem();
+        saveLabeledImageAsMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         optionMeniItem = new javax.swing.JMenuItem();
 
@@ -671,13 +674,21 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         jMenu1.setText("Export");
 
-        saveAsMenuItem.setText("Save as...");
-        saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        saveTableAsMenuItem.setText("Save table as...");
+        saveTableAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveAsMenuItemActionPerformed(evt);
+                saveTableAsMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(saveAsMenuItem);
+        jMenu1.add(saveTableAsMenuItem);
+
+        saveLabeledImageAsMenuItem.setText("Save labeled image as...");
+        saveLabeledImageAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveLabeledImageAsMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(saveLabeledImageAsMenuItem);
 
         jMenuBar1.add(jMenu1);
 
@@ -766,7 +777,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
         }
     }
 
-    private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
+    private void saveTableAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveTableAsMenuItemActionPerformed
         new Runnable() {
 
             @Override
@@ -775,7 +786,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
                 exporter.export(interactiveImageWindow.getImageTitle(), jTable1, TagManager.getInstance(), TableColorSelectionManager.getInstance());
             }
         }.run();
-    }//GEN-LAST:event_saveAsMenuItemActionPerformed
+    }//GEN-LAST:event_saveTableAsMenuItemActionPerformed
 
     private void deleteSelectedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSelectedButtonActionPerformed
         Set<Integer> rowIndexes = TableColorSelectionManager.getInstance().getRowIndexesInSelection();
@@ -796,6 +807,18 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
             listener.removeRois(rowIds);
         }
     }//GEN-LAST:event_deleteSelectedButtonActionPerformed
+
+    private void saveLabeledImageAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveLabeledImageAsMenuItemActionPerformed
+        new Runnable() {
+
+            @Override
+            public void run() {
+                ImageExporter imageExporter = new LabeledImageExporter();
+                imageExporter.export(interactiveImageWindow.getImageTitle() + "-labeled", interactiveImageWindow.getAllRoisInImage(), interactiveImageWindow.getImageWidth(), interactiveImageWindow.getImageHeight());
+            }
+
+        }.run();
+    }//GEN-LAST:event_saveLabeledImageAsMenuItemActionPerformed
 
     private void clearTableSelectionAndNotifyListeners() {
         clearTableSelection();
@@ -885,7 +908,8 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
     private final javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
     private volatile javax.swing.JTable jTable1;
     private javax.swing.JMenuItem optionMeniItem;
-    private javax.swing.JMenuItem saveAsMenuItem;
+    private javax.swing.JMenuItem saveLabeledImageAsMenuItem;
+    private javax.swing.JMenuItem saveTableAsMenuItem;
     private javax.swing.JButton showHistogram;
     // End of variables declaration//GEN-END:variables
 }

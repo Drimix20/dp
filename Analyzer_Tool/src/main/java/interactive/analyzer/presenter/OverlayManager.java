@@ -11,7 +11,10 @@ import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.apache.log4j.Logger;
@@ -20,7 +23,7 @@ import org.apache.log4j.Logger;
  *
  * @author Drimal
  */
-public class OverlayManager implements OverlayManagerInterface {
+public class OverlayManager implements IOverlayManager {
 
     private static Logger logger = Logger.getLogger(OverlayManager.class);
     //Map of rois : <roiID, roiObject>
@@ -43,6 +46,15 @@ public class OverlayManager implements OverlayManagerInterface {
         imageProcessor = new ColorProcessor(img.getBufferedImage());
         imageProcessor.snapshot();
         img.setProcessor(imageProcessor);
+    }
+
+    public Collection<Roi> getAllRois() {
+        List<Roi> rois = new ArrayList<Roi>();
+        for (Map.Entry<Integer, Roi> entrySet : roisMap.entrySet()) {
+            rois.add(entrySet.getValue());
+        }
+
+        return Collections.unmodifiableCollection(rois);
     }
 
     /**

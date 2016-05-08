@@ -3,13 +3,14 @@ package interactive.analyzer.presenter;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.util.Collection;
 import java.util.List;
 
 /**
  *
  * @author Drimal
  */
-public interface OverlayManagerInterface {
+public interface IOverlayManager {
 
     /**
      * Add roi to current selection. This method is used when manager is making multiple selection with specified selection color
@@ -92,4 +93,11 @@ public interface OverlayManagerInterface {
      * Remove specified roi from selection.
      */
     void removeRoi(int roiName);
+
+    /**
+     * Return all ROIs in image as unmodifiable collection
+     * @return rois
+     */
+    Collection<Roi> getAllRois();
+
 }

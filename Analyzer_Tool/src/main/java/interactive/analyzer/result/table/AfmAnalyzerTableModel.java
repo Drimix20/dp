@@ -1,6 +1,7 @@
 package interactive.analyzer.result.table;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
@@ -66,7 +67,7 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
         if (data.isEmpty()) {
             return Object.class;
         }
-        logger.trace("Column index " + columnIndex);
+//        logger.trace("Column index " + columnIndex);
         Object columnValueObject = getValueAt(0, columnIndex);
         if (columnValueObject == null) {
             return Object.class;
@@ -152,14 +153,14 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     @Override
     public void removeRows(Set<Integer> roiIds) {
+        logger.trace("Row indexes " + Arrays.toString(roiIds.toArray()));
         for (Integer roiId : roiIds) {
             if (roiId < 0) {
                 throw new IllegalArgumentException("Row id must be equal or greater than zero.");
             }
             for (int i = 0; i < data.size(); i++) {
                 Object[] rowData = data.get(i);
-                if (rowData[AfmAnalyzerResultTable.ID_COLUMN_INDEX] == roiId) {
-
+                if (((Integer) rowData[AfmAnalyzerResultTable.ID_COLUMN_INDEX]).equals(roiId)) {
                     data.remove(i);
                 }
             }
@@ -169,6 +170,7 @@ public class AfmAnalyzerTableModel extends AbstractInteractiveTableModel {
 
     @Override
     public void removeRow(int rowIndex) {
+        logger.trace("Row index " + rowIndex);
         if (rowIndex < 0 || rowIndex > data.size()) {
             throw new IllegalArgumentException("Row index or column index is out of range.");
         }

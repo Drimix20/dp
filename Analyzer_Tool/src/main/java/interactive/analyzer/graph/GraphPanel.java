@@ -52,6 +52,10 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
          */
         MULTI_MODE_SELECTION,
         /**
+         * Multi mode selection by left mouse with shift key down
+         */
+        MULTI_MODE_SHIFT_KEY_SELECTION,
+        /**
          * Multi mode deselection by left mouse dragged click
          */
         MULTI_MODE_DESELECTION;
@@ -62,6 +66,10 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     private Color selectionColor;
     private List<Shape> selectionByDragged;
     private List<ChartSelectionListener> selectionListeners;
+
+    private boolean shiftSelection;
+    private int firstSelectionBarId;
+    private int lastSelectionBarId;
 
     private static InformativePanel informativePanel;
     private int sumOfOccurence;
@@ -137,21 +145,60 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         addMouseListener(
                 new MouseAdapter() {
                     @Override
-                    public void mouseClicked(MouseEvent e
-                    ) {
-                        selectionAction(GraphSelection.SINGLE_MODE, e);
+                    public void mouseClicked(MouseEvent e) {
+                        if (e.getModifiersEx() == MouseEvent.SHIFT_DOWN_MASK) {
+                            logger.warn("Shift key down");
+                            if (shiftSelection) {
+                                //ukonceni vyberu pomoci shift
+                                lastSelectionBarId = getShapeAtPoint(e.getPoint()).getID();
+                                createSelectionListByShiftKeyDown(firstSelectionBarId, lastSelectionBarId);
+                                shiftSelection = false;
+                                selectionAction(GraphSelection.MULTI_MODE_SHIFT_KEY_SELECTION, e);
+                            } else {
+                                //prvni vyber pomoci shift
+                                clearAllSelectionsEvent();
+                                firstSelectionBarId = getShapeAtPoint(e.getPoint()).getID();
+                                selectionAction(GraphSelection.MULTI_MODE_SELECTION, e);
+                                shiftSelection = true;
+                            }
+
+                        } else {
+                            selectionAction(GraphSelection.SINGLE_MODE, e);
+                        }
+                    }
+
+                    private void createSelectionListByShiftKeyDown(int firstId,
+                            int lastId) {
+                        String msg = "";
+                        int start = -1;
+                        int end = -1;
+
+                        if (firstId < lastId) {
+                            start = firstId + 1;
+                            end = lastId;
+                        } else {
+                            start = lastId;
+                            end = firstId - 1;
+                        }
+
+                        for (int i = start; i <= end; i++) {
+                            Shape shape = chart.getDrawShapes().get(i);
+                            shape.setSelected(true);
+                            selectionByDragged.add(shape);
+                            msg += shape.getID() + ",";
+                        }
+
+                        logger.trace("Objects " + msg);
                     }
 
                     @Override
-                    public void mousePressed(MouseEvent e
-                    ) {
+                    public void mousePressed(MouseEvent e) {
                         logger.info("Mouse button " + e.getButton());
                         if (chart == null || chart.isEmpty()) {
                             return;
                         }
 
                         if (e.getButton() == MouseEvent.BUTTON1) {
-
                             initMultipleSelection = true;
                         }
 
@@ -178,6 +225,9 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
                 break;
             case MULTI_MODE_DESELECTION:
                 mulptipleBarDeselectionAction(event);
+                break;
+            case MULTI_MODE_SHIFT_KEY_SELECTION:
+                multipleSelectionByShiftKeyAction();
                 break;
         }
     }
@@ -244,6 +294,24 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         maxUpperBound = (sMax > maxUpperBound) ? sMax : maxUpperBound;
         showInformationAboutSelection(sumOfOccurence, minLowerBound, maxUpperBound);
         notifyBarSelected(shape, selectionColor);
+    }
+
+    /**
+     Multiple bars were selected by mouse dragged with left button clicked.
+     @param event
+     */
+    private synchronized void multipleSelectionByShiftKeyAction() {
+        updatePaint();
+        minLowerBound = selectionByDragged.get(0).getLowerBound();
+        maxUpperBound = selectionByDragged.get(selectionByDragged.size() - 1).getUpperBound();
+        sumOfOccurence = 0;
+        for (Shape shape : selectionByDragged) {
+            sumOfOccurence += shape.getOccurence();
+        }
+        showInformationAboutSelection(sumOfOccurence, minLowerBound, maxUpperBound);
+        for (Shape shape : selectionByDragged) {
+            notifyBarSelected(shape, selectionColor);
+        }
     }
 
     private synchronized void mulptipleBarDeselectionAction(
@@ -541,7 +609,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
         }
         for (Shape shape : chart.getDrawShapes()) {
             if (shape.isValueInRange(value)) {
-                logger.trace("Shape selected: " + shape.getID());
+                logger.trace("Shape selected id: " + shape.getID());
                 shape.setSelected(true);
                 shape.setSelectionColor(selectionColor);
                 selectionByDragged.add(shape);

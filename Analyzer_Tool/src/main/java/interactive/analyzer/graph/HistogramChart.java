@@ -11,6 +11,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -89,8 +90,7 @@ public class HistogramChart implements Chart {
     }
 
     /**
-     * Prepare shapes representing bars in graph. If sorting was performed after
-     * selection then selection will be visible after sorting
+     * Prepare shapes representing bars in graph. Sort shapes by ID values.
      * @param selectPreviousSelected
      */
     private void prepareShapes(HistogramDataSet data) {
@@ -108,7 +108,7 @@ public class HistogramChart implements Chart {
             Bar bar = new Bar(bin.getID(), bin.getLowerBound(), bin.getUpperBound(), bin.getOccurence());
             shapes.add(bar);
         }
-
+        Collections.sort(shapes, new ShapeComparator());
     }
 
     @Override

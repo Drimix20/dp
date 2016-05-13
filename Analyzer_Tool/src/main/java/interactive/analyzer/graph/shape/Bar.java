@@ -76,10 +76,15 @@ public class Bar extends Shape {
 
     @Override
     public String toString() {
-        return "Bar{" + " x=" + rectangle.getX()
-                + ", y=" + rectangle.getY()
-                + ", width=" + rectangle.getWidth()
-                + ", height=" + rectangle.getHeight() + '}';
+        if (rectangle != null) {
+            return "Bar{" + " id=" + getID()
+                    + " x=" + rectangle.getX()
+                    + ", y=" + rectangle.getY()
+                    + ", width=" + rectangle.getWidth()
+                    + ", height=" + rectangle.getHeight() + '}';
+        } else {
+            return "Empty bar";
+        }
     }
 
 }

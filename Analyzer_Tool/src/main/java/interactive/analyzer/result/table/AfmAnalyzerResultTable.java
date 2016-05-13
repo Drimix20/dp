@@ -58,26 +58,25 @@ public class AfmAnalyzerResultTable extends JTable {
         };
     }
 
-    public boolean addRowToColorSelection(Color color, int objectId) {
+    /**
+     *
+     * @param color
+     * @param objectId
+     * @return
+     */
+    public boolean addObjectToColorSelection(Color color, int objectId) {
         logger.info("row: " + objectId);
         if (color == null) {
             throw new IllegalArgumentException("Color is null");
         }
-        selectionManager.addObjectToSelection(color, objectId);
-
-        return true;
+        return selectionManager.addObjectToSelection(color, objectId);
     }
 
-    public boolean addRowsToColorSelection(Color color, int... rows) {
-        if (color == null) {
-            throw new IllegalArgumentException("Color is null");
-        }
-        selectionManager.addObjectsToSelection(color, rows);
-
-        return true;
-    }
-
-    public void removeRowFromSelection(int objectId) {
+    /**
+     * Remove specified object from current selection
+     * @param objectId
+     */
+    public void removeObjectFromSelection(int objectId) {
         selectionManager.removeObjectFromSelection(objectId);
     }
 
@@ -101,7 +100,7 @@ public class AfmAnalyzerResultTable extends JTable {
         } else if (column == SELECTION_COLUMN_INDEX) {
             colorComponent(row, comp);
         } else {
-            //Draw all component as background color
+            //Draw all others component as background color
             comp.setBackground(Color.white);
         }
 
@@ -122,10 +121,4 @@ public class AfmAnalyzerResultTable extends JTable {
         }
         comp.setBackground(selectionColor);
     }
-
-//    private void rowBounds(int row) throws IllegalArgumentException {
-//        if (row < 0 || row > (getRowCount() - 1)) {
-//            throw new IllegalArgumentException("Row index is out of range");
-//        }
-//    }
 }

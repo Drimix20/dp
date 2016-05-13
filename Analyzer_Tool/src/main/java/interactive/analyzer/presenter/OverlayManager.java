@@ -48,6 +48,7 @@ public class OverlayManager implements IOverlayManager {
         img.setProcessor(imageProcessor);
     }
 
+    @Override
     public Collection<Roi> getAllRois() {
         List<Roi> rois = new ArrayList<Roi>();
         for (Map.Entry<Integer, Roi> entrySet : roisMap.entrySet()) {
@@ -57,9 +58,6 @@ public class OverlayManager implements IOverlayManager {
         return Collections.unmodifiableCollection(rois);
     }
 
-    /**
-     * Draw all rois
-     */
     @Override
     public synchronized void drawAllRois() {
         logger.trace("");
@@ -109,7 +107,6 @@ public class OverlayManager implements IOverlayManager {
     private void drawName(String name, Polygon p, ImageProcessor ip) {
         validateDrawName(name, p, ip);
         FontMetrics fontMetrics = createFont();
-        //logger.trace(fontMetrics.getFont().getName() + ", " + fontMetrics.getFont().getStyle() + ", " + fontMetrics.getFont().getSize());
         int centerX = (int) p.getBounds().getCenterX() - fontMetrics.stringWidth(name) / 2;
         int centerY = (int) p.getBounds().getCenterY() + fontMetrics.getHeight() / 2;
 
@@ -158,20 +155,6 @@ public class OverlayManager implements IOverlayManager {
     }
 
     @Override
-    public synchronized void addRoiToSelection(Roi roi, Color strokeColor) {
-        validateRoi(roi);
-        validateColor(strokeColor);
-        logger.trace("Add roi " + roi.getName() + " to selection");
-        Roi r = roisMap.get(roi.getName());
-        if (r != null) {
-            r.setStrokeColor(strokeColor);
-            if (!r.isSelected()) {
-                r.setSelected(true);
-            }
-        }
-    }
-
-    @Override
     public synchronized void addRoiToSelection(int roiName, Color strokeColor) {
         validateRoiName(roiName);
         validateColor(strokeColor);
@@ -181,24 +164,6 @@ public class OverlayManager implements IOverlayManager {
             r.setStrokeColor(strokeColor);
             if (!r.isSelected()) {
                 r.setSelected(true);
-            }
-        }
-    }
-
-    @Override
-    public synchronized void selectRoi(Roi roi, Color strokeColor) {
-        validateRoi(roi);
-        validateColor(strokeColor);
-        logger.trace("Select roi " + roi.getName());
-        for (Integer key : roisMap.keySet()) {
-            Roi r = roisMap.get(key);
-            if (r.equals(roi)) {
-                r.setStrokeColor(strokeColor);
-                if (!r.isSelected()) {
-                    r.setSelected(true);
-                }
-            } else {
-                r.setSelected(false);
             }
         }
     }
@@ -231,18 +196,6 @@ public class OverlayManager implements IOverlayManager {
             if (r.getName() == roiName) {
                 r.setStrokeColor(strokeColor);
                 r.setSelected(false);
-            }
-        }
-    }
-
-    @Override
-    public synchronized void deselectRoi(Roi roi) {
-        validateRoi(roi);
-        logger.trace("Deselect roi " + roi.getName());
-        Roi r = roisMap.get(roi.getName());
-        if (r != null) {
-            if (r.equals(roi)) {
-                roi.setStrokeColor(InteractiveImageWindow.DEFAULT_STROKE_ROI_COLOR);
             }
         }
     }

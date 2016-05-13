@@ -14,7 +14,6 @@ import interactive.analyzer.options.ObjectFilteringConfiguration;
 import interactive.analyzer.result.table.AbstractInteractiveTableModel;
 import interactive.analyzer.result.table.AfmAnalyzerTableModel;
 import interactive.analyzer.result.table.TableColorSelectionManager;
-import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -329,7 +328,6 @@ public class ObjectFilteringFrame extends javax.swing.JFrame {
             if (graphPanel != null) {
                 graphPanel.clearAllSelectionsEvent();
             }
-            TagManager.getInstance().clearAllTags();
         }
     }//GEN-LAST:event_clearButtonActionPerformed
 

@@ -14,13 +14,6 @@ public interface IOverlayManager {
 
     /**
      * Add roi to current selection. This method is used when manager is making multiple selection with specified selection color
-     * @param roi roi to add to selection
-     * @param strokeColor selection color
-     */
-    void addRoiToSelection(Roi roi, Color strokeColor);
-
-    /**
-     * Add roi to current selection. This method is used when manager is making multiple selection with specified selection color
      * @param roiName roi to add to selection
      * @param strokeColor selection color
      */
@@ -44,12 +37,6 @@ public interface IOverlayManager {
     void deselectRoi(int roiName, Color strokeColor);
 
     /**
-     * Deselect specified roi
-     * @param roi roi to deselect
-     */
-    void deselectRoi(Roi roi);
-
-    /**
      * Draw all rois
      */
     void drawAllRois();
@@ -66,13 +53,6 @@ public interface IOverlayManager {
      * @return roi or null
      */
     Roi getRoiFromPoint(Point p);
-
-    /**
-     * Make specified roi as selected and draw it with defined color
-     * @param roi roi which is selected
-     * @param strokeColor color of selection
-     */
-    void selectRoi(Roi roi, Color strokeColor);
 
     /**
      * Make specified roi as selected and draw it with defined color

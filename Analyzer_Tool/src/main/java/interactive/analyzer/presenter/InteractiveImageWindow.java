@@ -110,8 +110,6 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                logger.trace("Released on image: " + e.getX() + ", " + e.getY());
-                super.mousePressed(e);
                 ij.gui.Roi selectionRoi = duplicatedImp.getRoi();
 
                 if (selectionRoi != null) {
@@ -125,37 +123,44 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
             }
 
             @Override
-            public void mouseClicked(MouseEvent e) {
-                ij.gui.Roi selectionRoi = duplicatedImp.getRoi();
+            public void mouseClicked(final MouseEvent e) {
+                new Runnable() {
 
-                if (selectionRoi != null) {
-                    logger.trace("Selection done by other roi");
-                    overlayManager.deselectAll();
-                    notifyClearAllSelections();
-                    List<Roi> multipleSelection = overlayManager.selectRoisInSelection(selectionRoi.getPolygon(), DEFAULT_STROKE_ROI_COLOR);
-                    printSelectedRois(multipleSelection);
-                    notifyMultipleSelectionRoi(multipleSelection);
-                } else {
-                    Point cursorLoc = duplicatedImp.getCanvas().getCursorLoc();
-                    int modifiersEx = e.getModifiersEx();
-                    Roi selectedRoi = overlayManager.getRoiFromPoint(cursorLoc);
-                    if (selectedRoi == null) {
-                        logger.trace("No roi is selected by click");
-                        return;
+                    @Override
+                    public void run() {
+                        ij.gui.Roi selectionRoi = duplicatedImp.getRoi();
+
+                        if (selectionRoi != null) {
+                            logger.trace("Selection done by other roi");
+                            overlayManager.deselectAll();
+                            notifyClearAllSelections();
+                            List<Roi> multipleSelection = overlayManager.selectRoisInSelection(selectionRoi.getPolygon(), DEFAULT_STROKE_ROI_COLOR);
+                            printSelectedRois(multipleSelection);
+                            notifyMultipleSelectionRoi(multipleSelection);
+                        } else {
+                            Point cursorLoc = duplicatedImp.getCanvas().getCursorLoc();
+                            int modifiersEx = e.getModifiersEx();
+                            Roi selectedRoi = overlayManager.getRoiFromPoint(cursorLoc);
+                            if (selectedRoi == null) {
+                                logger.trace("No roi is selected by click");
+                                return;
+                            }
+                            int roiId = selectedRoi.getName();
+                            if (modifiersEx == CTRL_DOWN_MASK) {
+                                logger.trace("Selection with ctrl key down: " + roiId + " roi name");
+                                overlayManager.addRoiToSelection(roiId, DEFAULT_STROKE_ROI_COLOR);
+                                overlayManager.drawRoi(roiId);
+                                notifyMultipleSelectionRoi(Arrays.asList(selectedRoi));
+                            } else {
+                                logger.trace("Single selection: " + roiId + " roi name");
+                                overlayManager.deselectAll();
+                                overlayManager.selectRoi(roiId, DEFAULT_STROKE_ROI_COLOR);
+                                overlayManager.drawAllRois();
+                                notifySingleSelectionRoi(selectedRoi);
+                            }
+                        }
                     }
-                    if (modifiersEx == CTRL_DOWN_MASK) {
-                        logger.trace("Selection with ctrl key down: " + selectedRoi.getName() + " roi name");
-                        overlayManager.addRoiToSelection(selectedRoi, DEFAULT_STROKE_ROI_COLOR);
-                        overlayManager.drawRoi(selectedRoi.getName());
-                        notifyMultipleSelectionRoi(Arrays.asList(selectedRoi));
-                    } else {
-                        logger.trace("Single selection: " + selectedRoi.getName() + " roi name");
-                        overlayManager.deselectAll();
-                        overlayManager.selectRoi(selectedRoi, DEFAULT_STROKE_ROI_COLOR);
-                        overlayManager.drawAllRois();
-                        notifySingleSelectionRoi(selectedRoi);
-                    }
-                }
+                }.run();
             }
 
             private void printSelectedRois(List<Roi> rois) {
@@ -193,7 +198,6 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
 
     @Override
     public void setImageVisible(boolean visible) {
-        int size = duplicatedImp.getStackSize();
         if (visible) {
             logger.debug("Numb of images is 0. No images will be shown");
             duplicatedImp.show();
@@ -221,14 +225,14 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     @Override
     public void multipleRowsSelectedEvent(int roiId, double value,
             Color color) {
-        logger.trace("rowIndex: " + roiId);
+        logger.trace("RoiId: " + roiId);
         overlayManager.addRoiToSelection(roiId, color);
         overlayManager.drawRoi(roiId);
     }
 
     @Override
     public void rowDeselectedEvent(int roiId) {
-        logger.trace("rowIndex: " + roiId);
+        logger.trace("RoiId: " + roiId);
         overlayManager.deselectRoi(roiId, DEFAULT_STROKE_ROI_COLOR);
         overlayManager.drawRoi(roiId);
     }
@@ -237,7 +241,7 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
      Redraw all rois
      */
     @Override
-    public void redrawAllEvent() {
+    public void repaintAllEvent() {
         logger.warn("Drawing all rois");
         overlayManager.drawAllRois();
     }
@@ -248,7 +252,8 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     }
 
     @Override
-    public void removeRois(Set<Integer> roiIds) {
+    public void removeRoisEvent(final Set<Integer> roiIds) {
+        logger.trace("RoisIds: " + roiIds.size());
         if (roiIds == null) {
             throw new NullPointerException("Set of rois can't be null");
         }
@@ -270,13 +275,13 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     public void multipleBarSelectedEvent(double downRangeValue,
             double upperRangeValue,
             Color color) {
-        logger.trace("Can not Implemented");
+        logger.trace("Can not implement");
     }
 
     @Override
     public void barDeselectedEvent(double downRangeValue,
             double upperRangeValue) {
-        logger.trace("Can not Implemented");
+        logger.trace("Can not implement");
     }
 
     @Override
@@ -288,14 +293,14 @@ public class InteractiveImageWindow implements ImageWindowI, TableSelectionListe
     // <editor-fold defaultstate="collapsed" desc="ImageWindowObjectListener...">
     @Override
     public void multipleRoiSelected(int roiId, Color color) {
-        logger.trace("rowId: " + roiId);
+        logger.trace("RoiId: " + roiId);
         overlayManager.addRoiToSelection(roiId, color);
         overlayManager.drawRoi(roiId);
     }
 
     @Override
     public void roiDeselected(int roiId) {
-        logger.trace("rowId: " + roiId);
+        logger.trace("RoiId: " + roiId);
         overlayManager.deselectRoi(roiId, DEFAULT_STROKE_ROI_COLOR);
         overlayManager.drawRoi(roiId);
     }

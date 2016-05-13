@@ -3,10 +3,7 @@ package interactive.analyzer.exporter;
 import ij.IJ;
 import interactive.analyzer.result.table.AfmAnalyzerResultTable;
 import interactive.analyzer.result.table.TableColorSelectionManager;
-import interactive.analyzer.selection.Tag;
-import interactive.analyzer.selection.TagManager;
 import java.awt.Color;
-import java.util.List;
 import javax.swing.JTable;
 
 /**
@@ -19,13 +16,12 @@ public class TextTableExporter implements ITableExporter {
     private static final char NEW_LINE = '\n';
 
     @Override
-    public void export(String imageName, JTable table, TagManager tagManager,
+    public void export(String imageName, JTable table,
             TableColorSelectionManager colorSelectionManager) {
         StringBuilder sb = new StringBuilder("Results for " + imageName + " image:");
         sb = exportTableHeader(sb, table);
         sb.append('\n');
         sb = exportTableData(sb, table, colorSelectionManager);
-        //sb = exportSelectionTag(sb, tagManager);
 
         IJ.saveString(sb.toString(), null);
     }
@@ -57,26 +53,6 @@ public class TextTableExporter implements ITableExporter {
                 }
             }
             sb.append(NEW_LINE);
-        }
-
-        return sb;
-    }
-
-    protected StringBuilder exportSelectionTag(StringBuilder sb,
-            TagManager manager) {
-        List<Tag> tags = manager.getTags();
-        sb.append(NEW_LINE).append("Selection tags:\n");
-        sb.append("id")
-                .append(COLUMN_DELIMETR).append("color")
-                .append(COLUMN_DELIMETR).append("name")
-                .append(COLUMN_DELIMETR).append("description").append(NEW_LINE);
-
-        for (Tag tag : tags) {
-            Color c = tag.getColor();
-            sb.append(tag.getId()).append(COLUMN_DELIMETR).append(String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue()))
-                    .
-                    append(COLUMN_DELIMETR).append(tag.getName()).append(COLUMN_DELIMETR)
-                    .append(tag.getDescription()).append(NEW_LINE);
         }
 
         return sb;

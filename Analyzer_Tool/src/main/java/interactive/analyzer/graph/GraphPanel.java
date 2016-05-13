@@ -558,7 +558,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     @Override
-    public void redrawAllEvent() {
+    public void repaintAllEvent() {
         updatePaint();
     }
 
@@ -576,7 +576,7 @@ public class GraphPanel extends JPanel implements TableSelectionListener {
     }
 
     @Override
-    public void removeRois(Set<Integer> roiIds) {
+    public void removeRoisEvent(Set<Integer> roiIds) {
 
     }
     // </editor-fold>

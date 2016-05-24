@@ -47,6 +47,9 @@ public class ImageOptionManager extends Thread {
      * @param select selection flag
      */
     public void selectAllImages(boolean select) {
+        if (select) {
+            selectedChannels.clear();
+        }
         selectAll = select;
     }
 

@@ -169,11 +169,11 @@ public class HistogramChart implements Chart {
         for (int i = 0; i < (numberOfYAxisLabels - 1); i++) {
             xPos = -TEXT_MARGIN;
             yPos = -(GRAPH_MARGIN + enumerationMargin * i);
-
-            g.drawLine((int) xPos, (int) yPos, (int) (xPos + 8), (int) yPos);
+            //g.drawLine((int) xPos, (int) yPos, (int) (xPos + 8), (int) yPos);
             if (isMultiple(i, tupleNumber)) {
                 logger.trace("Label: " + i + "-> yPos= " + yPos);
                 g.drawString(i + "", (int) (xPos - metrics.stringWidth(i + "")), (int) ((yPos + (metrics.getHeight() / 4))));
+                g.drawLine((int) xPos, (int) yPos, (int) (xPos + 8), (int) yPos);
             }
 
         }

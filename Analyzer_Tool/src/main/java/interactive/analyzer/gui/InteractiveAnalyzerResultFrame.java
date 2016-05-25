@@ -601,6 +601,7 @@ public class InteractiveAnalyzerResultFrame extends JFrame implements ImageSelec
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Interactive Analyzer - Results");
+        setMinimumSize(new java.awt.Dimension(472, 368));
 
         jTable1.setModel(getTableModelInstance());
         //set DecimalPrecisonRenderer for all columns but first. First column is column with RowID

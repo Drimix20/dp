@@ -1,13 +1,13 @@
 package afm.analyzer.measurements.list;
 
 import afm.analyzer.measurements.AbstractMeasurement;
-import scaler.module.ScalerModule;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import java.awt.Rectangle;
 import org.apache.log4j.Logger;
+import scaler.module.ScalerModule;
 import scaler.module.types.LengthUnit;
 import scaler.module.types.UnitConvertor;
 
@@ -25,7 +25,8 @@ public class AverageIntensityMeasurement extends AbstractMeasurement {
 
     @Override
     public double compute(Roi roi, ImagePlus origImage, ImageProcessor binary,
-            ScalerModule scalerModule, LengthUnit resultUnit) {
+            Double backgroundHeightInUnit, ScalerModule scalerModule,
+            LengthUnit resultUnit) {
         double intensitySum = 0;
         int count = 0;
 
@@ -45,6 +46,9 @@ public class AverageIntensityMeasurement extends AbstractMeasurement {
         LengthUnit heightUnit = LengthUnit.parseFromAbbreviation(calibration.getValueUnit().trim());
 
         double averageIntensity = intensitySum / count;
+        if (backgroundHeightInUnit != null) {
+            averageIntensity -= backgroundHeightInUnit;
+        }
         double convertedAverageIntensity = UnitConvertor.convertValueFromUnitToUnit(averageIntensity, heightUnit, resultUnit);
         return convertedAverageIntensity;
     }

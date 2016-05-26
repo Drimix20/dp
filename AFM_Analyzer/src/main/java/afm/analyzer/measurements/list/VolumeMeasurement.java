@@ -25,8 +25,10 @@ public class VolumeMeasurement extends AbstractMeasurement {
 
     @Override
     public double compute(Roi roi, ImagePlus origImage, ImageProcessor binary,
-            ScalerModule scalerModule, LengthUnit resultUnit) {
-        double intensitySum = 0;
+            Double backgroundHeightInUnit, ScalerModule scalerModule,
+            LengthUnit resultUnit) {
+        double proteinHeightSum = 0;
+        double backgroundHeightSum = 0;
         double count = 0;
 
         Rectangle bounds = roi.getBounds();
@@ -34,7 +36,17 @@ public class VolumeMeasurement extends AbstractMeasurement {
         for (int i = (int) bounds.getX(); i < (int) (bounds.getX() + bounds.getWidth()); i++) {
             for (int j = (int) bounds.getY(); j < (int) (bounds.getY() + bounds.getHeight()); j++) {
                 if (binary.get(i, j) == 255) {
-                    intensitySum += ip.getPixelValue(i, j);
+                    float heightValue = ip.getPixelValue(i, j);
+                    proteinHeightSum += heightValue;
+
+                    if (backgroundHeightInUnit != null) {
+                        if (heightValue <= backgroundHeightInUnit) {
+                            backgroundHeightSum += heightValue;
+                        } else {
+                            backgroundHeightSum += backgroundHeightInUnit;
+                        }
+                    }
+
                     count++;
                 }
             }
@@ -44,14 +56,17 @@ public class VolumeMeasurement extends AbstractMeasurement {
         LengthUnit heightUnit = LengthUnit.parseFromAbbreviation(calibration.getValueUnit().trim());
         LengthUnit dimensionUnit = LengthUnit.parseFromAbbreviation(calibration.getUnit().trim());
 
-        double averageIntensity = intensitySum / count;
-        double convertedAverageIntensity = UnitConvertor.convertValueFromUnitToUnit(averageIntensity, heightUnit, resultUnit);
+        double averageProteinHeight = proteinHeightSum / count;
+        double convertedAverageHeight = UnitConvertor.convertValueFromUnitToUnit(averageProteinHeight, heightUnit, resultUnit);
+
+        double averageBackgroundHeight = backgroundHeightSum / count;
+        double convertedAverageBackgroundHeight = UnitConvertor.convertValueFromUnitToUnit(averageBackgroundHeight, heightUnit, resultUnit);
 
         double area = count * calibration.pixelWidth * calibration.pixelHeight;
         double convertedArea = UnitConvertor.convertValueWithPowerOfExponent(area, dimensionUnit, resultUnit, 2);
 
-        double volumeInUnit = convertedArea * convertedAverageIntensity;
-        logger.trace("Unit = " + resultUnit + "saceldAverageInensity: " + convertedAverageIntensity + ", area: " + convertedArea + ", volume: " + volumeInUnit);
+        double volumeInUnit = convertedArea * convertedAverageHeight;// - (convertedAverageBackgroundHeight * convertedArea);
+        logger.trace("RoiName=" + roi.getName() + ", unit = " + resultUnit.getAbbreviation() + "saceldAverageInensity: " + convertedAverageHeight + ", area: " + convertedArea + ", volume: " + volumeInUnit);
         return volumeInUnit;
     }
 

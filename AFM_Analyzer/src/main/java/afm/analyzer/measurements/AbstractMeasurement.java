@@ -65,13 +65,14 @@ public abstract class AbstractMeasurement {
      @param roi region of interest
      @param origImage original image with height values
      @param binary thresholded image
+     @param backgroundHeightInUnit background height value transformed into units, can be null
      @param scalerModule module for scaling computation
      @param resultUnit unit of result
      @return computed result for specific roi
      */
     public abstract double compute(Roi roi, ImagePlus origImage,
-            ImageProcessor binary, ScalerModule scalerModule,
-            LengthUnit resultUnit);
+            ImageProcessor binary, Double backgroundHeightInUnit,
+            ScalerModule scalerModule, LengthUnit resultUnit);
 
     @Override
     public int hashCode() {

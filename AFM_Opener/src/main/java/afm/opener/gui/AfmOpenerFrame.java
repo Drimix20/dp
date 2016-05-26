@@ -33,7 +33,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private Logger logger = Logger.getLogger(AfmOpenerFrame.class);
     private final CountDownLatch latch;
     //TODO property for manual testing
-    private File currentDirectory = new File("c:\\Users\\Drimal\\Dropbox\\DP\\DATA\\");
+    private File currentDirectory = new File("c:\\Users\\Drimal\\Skola\\dp-volumetricka-analyza\\obrazy\\");
 //    private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
     private List<ChannelContainer> selectedChannelContainer;
     private ImageOptionManager imageOptionManager;
@@ -334,18 +334,21 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
             IJ.run(cc.getImagePlus(), "Set Scale...", "distance=" + cc.getImagePlus().getWidth() + " known=" + calibrateImageWidth + " unit=" + dimensionUnit.getAbbreviation());
 
             logger.trace("Intensity calibration");
-            double minValueBeforeChangingTo16bit = cc.getImagePlus().getProcessor().getMin();
-            double maxValueBeforeChangingTo16bit = cc.getImagePlus().getProcessor().getMax();
             ImagePlus imagePlus = cc.getImagePlus();
+            double minValueBeforeChangingTo16bit = imagePlus.getProcessor().getMin();
+            double maxValueBeforeChangingTo16bit = imagePlus.getProcessor().getMax();
+            logger.trace("Before converting to 16-bit image: min: " + minValueBeforeChangingTo16bit + ", max: " + maxValueBeforeChangingTo16bit);
             logger.trace("Convert image into 16-bit image");
             IJ.run(imagePlus, "16-bit", "");
+
             cc.setImagePlus(imagePlus);
             IntensityCalibrator ic = new IntensityCalibrator();
             double[] parameters = ic.computeCalibrationFunction(cc, minValueBeforeChangingTo16bit, maxValueBeforeChangingTo16bit, Calibration.STRAIGHT_LINE, heightValueUnit);
 
             if (parameters != null) {
                 logger.trace("Calibration function parameters " + Arrays.toString(parameters));
-                imagePlus.getCalibration().setFunction(Calibration.STRAIGHT_LINE, parameters, heightValueUnit.getAbbreviation());
+                //imagePlus.getCalibration().setFunction(Calibration.STRAIGHT_LINE, parameters, heightValueUnit.getAbbreviation());
+                IJ.run(imagePlus, "Calibrate...", "function=[Straight Line] unit=nm text1=[" + imagePlus.getProcessor().getMin() + " " + imagePlus.getProcessor().getMax() + "] text2=[" + parameters[0] + " " + (double) parameters[1] + "]");
             } else {
                 logger.trace("Parameters of calibration funcition are null");
             }

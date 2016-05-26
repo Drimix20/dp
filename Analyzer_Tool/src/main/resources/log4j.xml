@@ -17,14 +17,14 @@
         </layout>
     </appender>
 
-    <logger name="interactive.analyzer.gui.ObjectFilteringFrame"> <level value="trace"/></logger>
-    <logger name="interactive.analyzer.graph.GraphPanel"> <level value="trace"/></logger>
-    <logger name="interactive.analyzer.gui.InteractiveAnalyzerResultFrame"> <level value="info"/></logger>
-    <logger name="interactive.analyzer.result.table"> <level value="none"/></logger>
-    <logger name="interactive.analyzer.presenter"> <level value="none"/></logger>
+    <logger name="interactive.analyzer.gui.ObjectFilteringFrame"> <level value="none"/></logger>
+    <logger name="interactive.analyzer.graph.GraphPanel"> <level value="none"/></logger>
+    <logger name="interactive.analyzer.gui.InteractiveAnalyzerResultFrame"> <level value="trace"/></logger>
+    <logger name="interactive.analyzer.result.table.AfmAnalyzerTableModel"> <level value="trace"/></logger>
+    <logger name="interactive.analyzer.presenter"> <level value="trace"/></logger>
 
     <root>
-        <priority value="trace"/>
+        <priority value="info"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>

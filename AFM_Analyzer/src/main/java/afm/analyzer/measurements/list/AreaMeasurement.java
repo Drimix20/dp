@@ -24,7 +24,8 @@ public class AreaMeasurement extends AbstractMeasurement {
 
     @Override
     public double compute(Roi roi, ImagePlus origImage, ImageProcessor binary,
-            ScalerModule scalerModule, LengthUnit unit) {
+            Double backgroundHeightInUnit, ScalerModule scalerModule,
+            LengthUnit unit) {
         int count = 0;
 
         Rectangle bounds = roi.getBounds();

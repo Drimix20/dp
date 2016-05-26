@@ -259,6 +259,7 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         segmentationConfDialog = ThresholderExecutor.getSegmentationConfigDialog(getSelectedThresholdStrategy());
         logger.info("Start computing");
 
+        Double backgroundHeightIntensity;
         if (segmentImages.isEmpty() || segmentationChanged) {
             logger.info("Recompute segments");
             segmentationChanged = false;

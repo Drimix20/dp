@@ -16,6 +16,7 @@ public class ChannelContainer {
     private final int channelIndex;
     private String IFD;
     private final String channelName;
+    private Double thresholdIntensityValue = null;
     private ChannelMetadata generalMetadata;
     private ChannelMetadata channelmetadata;
 
@@ -69,6 +70,14 @@ public class ChannelContainer {
 
     public String getChannelName() {
         return channelName;
+    }
+
+    public Double getThresholdValue() {
+        return thresholdIntensityValue;
+    }
+
+    public void setThresholdValue(double thresholdValue) {
+        this.thresholdIntensityValue = thresholdValue;
     }
 
     @Override

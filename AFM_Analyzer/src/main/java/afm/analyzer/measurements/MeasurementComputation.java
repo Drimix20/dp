@@ -24,7 +24,7 @@ public class MeasurementComputation {
 
         for (Roi roi : segmentedImage.getRois()) {
             int labelIndex = Integer.parseInt(roi.getName());
-            double computedResult = measure.compute(roi, container.getImagePlus(), thresholded, scalerModule, measure.getResultUnit());
+            double computedResult = measure.compute(roi, container.getImagePlus(), thresholded, container.getThresholdValue(), scalerModule, measure.getResultUnit());
             results.addResult(labelIndex, computedResult);
         }
 

@@ -59,6 +59,14 @@ public class Segmentation {
             segmentedImages.add(segmentedImage);
 
             IJ.showProgress(currentIndex, channelContainers.size());
+            double upperThresholdCalibrated = img.getCalibration().getCValue(thresholdStrategy.getUpperThreshold());
+            double lowerThresholdCalibrated = img.getCalibration().getCValue(thresholdStrategy.getLowerThreshold());
+            if (lowerThresholdCalibrated > upperThresholdCalibrated) {
+                channel.setThresholdValue(upperThresholdCalibrated);
+            } else {
+                channel.setThresholdValue(lowerThresholdCalibrated);
+            }
+
             currentIndex++;
         }
 

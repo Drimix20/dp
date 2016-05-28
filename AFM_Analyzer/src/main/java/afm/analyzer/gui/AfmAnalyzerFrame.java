@@ -234,7 +234,9 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
             for (ChannelContainer channelContainer : selectedChannelContainer) {
                 ImagePlus imp = channelContainer.getImagePlus();
                 thresholder = ThresholderExecutor.getThresholder(getSelectedThresholdStrategy());
-                thresholder.makeBinary(imp.duplicate());
+                Segmentation segmentation = new Segmentation();
+                ImageProcessor makeBinary = segmentation.makeBinary(imp.duplicate(), thresholder);
+//                thresholder.makeBinary(imp.duplicate());
                 ImageProcessor processor = imp.getProcessor();
                 processor.setThreshold(thresholder.getLowerThreshold(), thresholder.getUpperThreshold(), ImageProcessor.RED_LUT);
                 imp.updateAndDraw();
@@ -352,12 +354,31 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         if (evt.getStateChange() == ItemEvent.DESELECTED || !selectSegmentedImageManually) {
             return;
         }
+
         logger.info("Selected segment image: " + (String) evt.getItem());
         ImagePlus image = WindowManager.getImage((String) evt.getItem());
         if (!image.getProcessor().isBinary()) {
             IJ.error("Selected segmented image must be binary");
             return;
         }
+
+        BackgroudHeightDialog dialog = new BackgroudHeightDialog(this, true);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        if (dialog.getReturnStatus() == BackgroudHeightDialog.RET_OK) {
+            //TODO this is not prepared for multiple image processing
+            Double backgroundHeight = null;
+            if (dialog.isCalibrated()) {
+                backgroundHeight = dialog.getBackgroundHeight();
+            } else {
+                double rawValue = dialog.getBackgroundHeight();
+                backgroundHeight = selectedChannelContainer.get(0).getImagePlus().getCalibration().getCValue(rawValue);
+            }
+            for (int i = 0; i < selectedChannelContainer.size(); i++) {
+                selectedChannelContainer.get(i).setThresholdValue(backgroundHeight);
+            }
+        }
+
         Segmentation segmentation = new Segmentation();
         segmentImages = segmentation.segmentImage(image);
     }//GEN-LAST:event_segmentedImagesComboBoxItemStateChanged

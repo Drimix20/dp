@@ -65,9 +65,11 @@ public class Segmentation {
             double upperThresholdCalibrated = img.getCalibration().getCValue(thresholdStrategy.getUpperThreshold());
             double lowerThresholdCalibrated = img.getCalibration().getCValue(thresholdStrategy.getLowerThreshold());
             if (lowerThresholdCalibrated > upperThresholdCalibrated) {
+                logger.info("Background height: " + upperThresholdCalibrated);
                 channel.setThresholdValue(upperThresholdCalibrated);
             } else {
                 channel.setThresholdValue(lowerThresholdCalibrated);
+                logger.info("Background height: " + lowerThresholdCalibrated);
             }
 
             currentIndex++;
@@ -117,7 +119,15 @@ public class Segmentation {
     public ImageProcessor makeBinary(ImagePlus imp,
             ImageThresholdStrategy thresholdStrategy) {
         logger.info("Make binary image " + imp.getTitle());
-        return thresholdStrategy.makeBinary(imp.duplicate());
+        ImageProcessor binary = thresholdStrategy.makeBinary(imp.duplicate());
+        double upperThresholdCalibrated = imp.getCalibration().getCValue(thresholdStrategy.getUpperThreshold());
+        double lowerThresholdCalibrated = imp.getCalibration().getCValue(thresholdStrategy.getLowerThreshold());
+        if (lowerThresholdCalibrated > upperThresholdCalibrated) {
+            logger.info("Background height: " + upperThresholdCalibrated);
+        } else {
+            logger.info("Background height: " + lowerThresholdCalibrated);
+        }
+        return binary;
     }
 
     public List<Roi> computeRoiOfSegments(RoiManager roiManager) {

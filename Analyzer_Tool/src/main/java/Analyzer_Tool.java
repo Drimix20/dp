@@ -41,9 +41,11 @@ public class Analyzer_Tool implements PlugIn {
         // start ImageJ
         new ImageJ();
 
-        preparationForDevelop();
+        //preparationForDevelop();
+        //Show Roi Manager
+        IJ.run("ROI Manager...", "");
         // run the plugin
-        IJ.runPlugIn(clazz.getName(), "");
+        //IJ.runPlugIn(clazz.getName(), "");
     }
 
     private static void preparationForDevelop() {

@@ -44,6 +44,11 @@ public class DecimalPrecisionRenderer extends DefaultTableCellRenderer {
             nf.setMaximumFractionDigits(decimalPlaces);
             nf.setRoundingMode(RoundingMode.HALF_UP);
             value = nf.format(numberValue.doubleValue());
+        } else {
+            //TODO check NaN values
+            if (currentColumn != 1) {
+                value = Double.NaN;
+            }
         }
         super.setValue(value);
     }

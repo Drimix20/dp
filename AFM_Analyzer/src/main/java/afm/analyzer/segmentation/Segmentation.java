@@ -31,10 +31,13 @@ public class Segmentation {
 
         List<ImageSegments> segmentedImages = new ArrayList<ImageSegments>();
         ResultsTable resultsTable = new ResultsTable();
-        RoiManager roiManager = new RoiManager(true);
+        RoiManager roiManager = RoiManager.getInstance2();
+        if (roiManager == null) {
+            roiManager = new RoiManager(true);
+        }
 
-        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE,
-                Measurements.ADD_TO_OVERLAY | Measurements.RECT,
+        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE, ParticleAnalyzer.ADD_TO_MANAGER
+                | Measurements.ADD_TO_OVERLAY | Measurements.RECT,
                 resultsTable, getMinPixelSize(), getMaxPixelSize(),
                 getMinCircularity(), getMaxCircularity());
         ParticleAnalyzer.setRoiManager(roiManager);
@@ -54,7 +57,7 @@ public class Segmentation {
             ImagePlus segmentedImgWithRois = new ImagePlus("Segmented image", segmentedImage.getThresholdedImageProcessor().duplicate());
             segmentedImgWithRois.show();
             resultsTable.reset();
-            roiManager.reset();
+//            roiManager.reset();
 
             segmentedImages.add(segmentedImage);
 
@@ -78,10 +81,13 @@ public class Segmentation {
 
         List<ImageSegments> segments = new ArrayList<ImageSegments>();
         ResultsTable resultsTable = new ResultsTable();
-        RoiManager roiManager = new RoiManager(true);
+        RoiManager roiManager = RoiManager.getInstance2();
+        if (roiManager == null) {
+            roiManager = new RoiManager(true);
+        }
 
-        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE,
-                Measurements.ADD_TO_OVERLAY | Measurements.RECT,
+        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.SHOW_NONE, ParticleAnalyzer.ADD_TO_MANAGER
+                | Measurements.ADD_TO_OVERLAY | Measurements.RECT,
                 resultsTable, getMinPixelSize(), getMaxPixelSize(),
                 getMinCircularity(), getMaxCircularity());
         ParticleAnalyzer.setRoiManager(roiManager);
@@ -89,8 +95,8 @@ public class Segmentation {
 
         ImageSegments segmentedImage = new ImageSegments();
         analyzer.analyze(binaryImp);
-        segmentedImage.setRois(computeRoiOfSegments(roiManager));
         segmentedImage.setThresholdedIp(binaryImp.getProcessor());
+        segmentedImage.setRois(computeRoiOfSegments(roiManager));
         segments.add(segmentedImage);
 
         return segments;

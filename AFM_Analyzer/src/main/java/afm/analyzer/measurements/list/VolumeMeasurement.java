@@ -65,7 +65,7 @@ public class VolumeMeasurement extends AbstractMeasurement {
         double area = count * calibration.pixelWidth * calibration.pixelHeight;
         double convertedArea = UnitConvertor.convertValueWithPowerOfExponent(area, dimensionUnit, resultUnit, 2);
 
-        double volumeInUnit = convertedArea * convertedAverageHeight;// - (convertedAverageBackgroundHeight * convertedArea);
+        double volumeInUnit = convertedArea * convertedAverageHeight - (convertedAverageBackgroundHeight * convertedArea);
         logger.trace("RoiName=" + roi.getName() + ", unit = " + resultUnit.getAbbreviation() + "saceldAverageInensity: " + convertedAverageHeight + ", area: " + convertedArea + ", volume: " + volumeInUnit);
         return volumeInUnit;
     }

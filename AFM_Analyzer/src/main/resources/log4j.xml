@@ -9,10 +9,9 @@
     </appender>
 
     <appender name="FILE" class="org.apache.log4j.FileAppender">
-        <param name="File" value="${java.io.tmpdir}${file.separator}AFM_Analyzer.log" />
+        <param name="File" value="${java.io.tmpdir}${file.separator}AFM_Volume_Analyzer.log" />
         <!--Append to current log file-->
         <param name="append" value="false" />
-        <!--<param name="Threshold" value="trace" />-->
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d [%t] | %-5p | %c{1} | %M  - %m%n" />
         </layout>
@@ -21,7 +20,7 @@
     <logger name="afm.analyzer.measurements.list.VolumeMeasurement"> <level value="trace"/></logger>
 
     <root>
-        <priority value="INFO"/>
+        <priority value="TRACE"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>

@@ -259,7 +259,6 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
         segmentationConfDialog = ThresholderExecutor.getSegmentationConfigDialog(getSelectedThresholdStrategy());
         logger.info("Start computing");
 
-        Double backgroundHeightIntensity;
         if (segmentImages.isEmpty() || segmentationChanged) {
             logger.info("Recompute segments");
             segmentationChanged = false;
@@ -284,6 +283,8 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
 
         boolean increaseRowCounter = true;
         ResultsTable resultTable = new ResultsTable();
+
+        int columnIndex = 0;
         for (Map.Entry<String, List<AbstractMeasurementResult>> entrySet : afmAnalyzerResult.entrySet()) {
             String key = entrySet.getKey();//imageFilename
             for (AbstractMeasurementResult measRes : entrySet.getValue()) {
@@ -292,11 +293,15 @@ public class AfmAnalyzerFrame extends javax.swing.JFrame {
                         //Increment row counter just for first measurement
                         resultTable.incrementCounter();
                     }
-                    resultTable.setValue(measRes.getMeasurementName() + " [" + measRes.getUnit() + "^" + measRes.getUnitExponent() + "] ", (roiObjectId - 1), ResultsTable.d2s((Double) measRes.getResultForRoiKey(roiObjectId), 9));
+                    resultTable.setDecimalPlaces(columnIndex, 9);
+//                    resultTable.setValue(measRes.getMeasurementName() + " [" + measRes.getUnit() + "^" + measRes.getUnitExponent() + "] ", (roiObjectId - 1), ResultsTable.d2s((Double) measRes.getResultForRoiKey(roiObjectId), 9));
+                    resultTable.setValue(measRes.getMeasurementName() + " [" + measRes.getUnit() + "^" + measRes.getUnitExponent() + "] ", (roiObjectId - 1), (Double) measRes.getResultForRoiKey(roiObjectId));
                 }
                 increaseRowCounter = false;
             }
+            columnIndex++;
         }
+        resultTable.setPrecision(9);
         resultTable.show("Afm Analyzer Results Table");
     }//GEN-LAST:event_measureButtonActionPerformed
 

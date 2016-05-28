@@ -33,7 +33,7 @@ public class AfmOpenerFrame extends javax.swing.JFrame {
     private Logger logger = Logger.getLogger(AfmOpenerFrame.class);
     private final CountDownLatch latch;
     //TODO property for manual testing
-    private File currentDirectory = new File("c:\\Users\\Drimal\\Skola\\dp-volumetricka-analyza\\obrazy\\");
+    private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\allDpFiles");
 //    private File currentDirectory = new File("c:\\Users\\Drimal\\Downloads\\zasilka-CHKRI8DLZPAYS4EY\\");
     private List<ChannelContainer> selectedChannelContainer;
     private ImageOptionManager imageOptionManager;
